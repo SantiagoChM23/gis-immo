@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BBL Immobilienportfolio - GIS POC</title>
     
-    <!-- Mapbox GL JS -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet" />
     
-    <!-- Google Material Symbols Outlined -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     
     <style>
@@ -79,14 +77,22 @@
             padding: 0 40px;
         }
         
+        /* NEW: Search Wrapper to handle Dropdown Positioning */
+        #search-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 550px;
+            z-index: 2000;
+        }
+
         #search-container {
             display: flex;
             align-items: center;
             border: 1px solid var(--grey-300);
             border-radius: 4px;
             width: 100%;
-            max-width: 550px;
             overflow: hidden;
+            background: var(--white);
         }
         
         #search-icon-btn {
@@ -120,6 +126,84 @@
         
         #search-input::placeholder {
             color: var(--grey-400);
+        }
+
+        /* NEW: Spinner style */
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--grey-100);
+            border-top: 2px solid var(--grey-600);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 12px;
+            display: none; /* Hidden by default */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* NEW: Search Dropdown */
+        #search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border: 1px solid var(--grey-300);
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-height: 500px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        #search-results.active {
+            display: block;
+        }
+
+        .search-section-header {
+            background: var(--accent-panel);
+            color: white;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .search-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--grey-100);
+            transition: background 0.15s;
+        }
+
+        .search-item:hover {
+            background: var(--grey-100);
+        }
+
+        .search-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-item-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--grey-900);
+        }
+
+        .search-item-title b {
+            color: var(--primary-red);
+        }
+
+        .search-item-subtitle {
+            font-size: 12px;
+            color: var(--grey-600);
+            margin-top: 2px;
         }
         
         .view-toggle {
@@ -1099,7 +1183,6 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header id="header">
         <div id="logo-area">
             <img id="logo-flag" src="https://www.swisstopo.admin.ch/images/swiss-logo-flag.svg" alt="Schweizer Flagge">
@@ -1107,11 +1190,15 @@
         </div>
         
         <div id="search-area">
-            <div id="search-container">
-                <button id="search-icon-btn">
-                    <span class="material-symbols-outlined">search</span>
-                </button>
-                <input type="text" id="search-input" placeholder="Suche nach Objekten, Grundstücken, Adressen oder Karten" disabled>
+            <div id="search-wrapper">
+                <div id="search-container">
+                    <button id="search-icon-btn">
+                        <span class="material-symbols-outlined">search</span>
+                    </button>
+                    <input type="text" id="search-input" placeholder="Suche nach Objekten, Orten oder Karten">
+                    <div id="search-spinner" class="spinner"></div>
+                </div>
+                <div id="search-results"></div>
             </div>
             
             <div class="view-toggle">
@@ -1142,13 +1229,10 @@
         </div>
     </header>
     
-    <!-- Main Content -->
     <main id="main">
-        <!-- Map View -->
         <div id="map-view" class="active">
             <div id="map"></div>
             
-            <!-- Accordion Panel -->
             <nav id="accordion-panel">
                 <div class="accordion-item">
                     <div class="accordion-header">
@@ -1206,13 +1290,11 @@
                 </div>
             </nav>
             
-            <!-- Menu Toggle -->
             <div id="menu-toggle">
                 <span class="material-symbols-outlined">expand_less</span>
                 <span id="menu-toggle-text">Menü schliessen</span>
             </div>
             
-            <!-- Info Panel -->
             <aside id="info-panel">
                 <div id="info-preview-image"></div>
                 <div id="info-header">
@@ -1227,7 +1309,6 @@
             </aside>
         </div>
         
-        <!-- List View -->
         <div id="list-view">
             <div class="list-header">
                 <div class="list-header-cell col-id">ID <span class="material-symbols-outlined">unfold_more</span></div>
@@ -1242,12 +1323,10 @@
             <div class="list-body" id="list-body"></div>
         </div>
         
-        <!-- Gallery View -->
         <div id="gallery-view">
             <div class="gallery-grid" id="gallery-grid"></div>
         </div>
         
-        <!-- Detail View -->
         <div id="detail-view">
             <div class="detail-header">
                 <div class="detail-header-inner">
@@ -1284,9 +1363,7 @@
             
             <div class="detail-content">
                 <div class="detail-grid">
-                    <!-- Left Column -->
                     <div class="detail-left">
-                        <!-- Bilder Section -->
                         <div class="detail-section">
                             <div class="detail-section-title">Bilder</div>
                             <div class="carousel" id="detail-carousel">
@@ -1301,7 +1378,6 @@
                             </div>
                         </div>
                         
-                        <!-- Zusätzliche Informationen -->
                         <div class="detail-section">
                             <div class="detail-section-title">Zusätzliche Informationen</div>
                             <div class="detail-section-content">
@@ -1338,7 +1414,6 @@
                             </div>
                         </div>
                         
-                        <!-- Energiestatistik -->
                         <div class="detail-section">
                             <div class="detail-section-title">Energiestatistik</div>
                             <div class="detail-section-content">
@@ -1364,9 +1439,7 @@
                         </div>
                     </div>
                     
-                    <!-- Right Column -->
                     <div class="detail-right">
-                        <!-- Objekt Stammdaten -->
                         <div class="detail-section">
                             <div class="detail-section-title">Objekt Stammdaten</div>
                             <div class="detail-section-content">
@@ -1427,7 +1500,6 @@
                             </div>
                         </div>
                         
-                        <!-- Adresse -->
                         <div class="detail-section">
                             <div class="detail-section-title">Adresse</div>
                             <div class="detail-section-content">
@@ -1468,7 +1540,6 @@
         </div>
     </main>
     
-    <!-- Footer -->
     <footer id="footer">
         <div id="coordinates">WGS 84 | Koordinaten: --</div>
         <div id="footer-links">
@@ -1951,41 +2022,7 @@
             
             map.on('click', 'portfolio-points', function(e) {
                 var props = e.features[0].properties;
-                var flaeche = Number(props.flaeche_ngf).toLocaleString('de-CH');
-                var statusColor = statusColors[props.status] || '#999999';
-                
-                // Update selected building
-                selectedBuildingId = props.id;
-                updateSelectedBuilding();
-                
-                // Find building index for placeholder image
-                var buildingIndex = portfolioData.features.findIndex(function(f) {
-                    return f.properties.id === props.id;
-                });
-                var imageUrl = placeholderImages[buildingIndex % placeholderImages.length];
-                
-                // Set preview image
-                document.getElementById('info-preview-image').style.backgroundImage = 'url(' + imageUrl + ')';
-                
-                var infoHtml = 
-                    '<div class="info-section-title">' + props.teilportfolio + '</div>' +
-                    '<div class="info-location">' + props.ort + ', ' + props.land + '</div>' +
-                    '<div class="info-row"><span class="info-label">Objekt-ID</span><span class="info-value">' + props.id + '</span></div>' +
-                    '<div class="info-row"><span class="info-label">Name</span><span class="info-value">' + props.name + '</span></div>' +
-                    '<div class="info-row"><span class="info-label">Adresse</span><span class="info-value">' + props.adresse + '</span></div>' +
-                    '<div class="info-row"><span class="info-label">Fläche NGF</span><span class="info-value">' + flaeche + ' m²</span></div>' +
-                    '<div class="info-row"><span class="info-label">Baujahr</span><span class="info-value">' + props.baujahr + '</span></div>' +
-                    '<div class="info-row"><span class="info-label">Verantwortlich</span><span class="info-value">' + props.verantwortlich + '</span></div>' +
-                    '<div class="info-row"><span class="info-label">Status</span><span class="info-value" style="color:' + statusColor + '; font-weight: 600;">' + props.status + '</span></div>' +
-                    '<div class="info-footer">' +
-                        '<button class="info-detail-link" onclick="showDetailView(\'' + props.id + '\')">' +
-                            '<span class="material-symbols-outlined">open_in_new</span>' +
-                            'Details anzeigen' +
-                        '</button>' +
-                    '</div>';
-                
-                document.getElementById('info-body').innerHTML = infoHtml;
-                document.getElementById('info-panel').classList.add('show');
+                selectBuilding(props.id);
             });
             
             // Click on map (not on a point) to deselect
@@ -1999,11 +2036,220 @@
             });
         }
         
+        // NEW: Reusable function to select a building
+        function selectBuilding(buildingId) {
+            // Find feature props
+            var building = portfolioData.features.find(function(f) { return f.properties.id === buildingId; });
+            if (!building) return;
+            
+            var props = building.properties;
+            var flaeche = Number(props.flaeche_ngf).toLocaleString('de-CH');
+            var statusColor = statusColors[props.status] || '#999999';
+            
+            // Update selected ID
+            selectedBuildingId = buildingId;
+            updateSelectedBuilding();
+            
+            // Find building index for placeholder image
+            var buildingIndex = portfolioData.features.findIndex(function(f) {
+                return f.properties.id === buildingId;
+            });
+            var imageUrl = placeholderImages[buildingIndex % placeholderImages.length];
+            
+            // Set preview image
+            document.getElementById('info-preview-image').style.backgroundImage = 'url(' + imageUrl + ')';
+            
+            var infoHtml = 
+                '<div class="info-section-title">' + props.teilportfolio + '</div>' +
+                '<div class="info-location">' + props.ort + ', ' + props.land + '</div>' +
+                '<div class="info-row"><span class="info-label">Objekt-ID</span><span class="info-value">' + props.id + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Name</span><span class="info-value">' + props.name + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Adresse</span><span class="info-value">' + props.adresse + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Fläche NGF</span><span class="info-value">' + flaeche + ' m²</span></div>' +
+                '<div class="info-row"><span class="info-label">Baujahr</span><span class="info-value">' + props.baujahr + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Verantwortlich</span><span class="info-value">' + props.verantwortlich + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Status</span><span class="info-value" style="color:' + statusColor + '; font-weight: 600;">' + props.status + '</span></div>' +
+                '<div class="info-footer">' +
+                    '<button class="info-detail-link" onclick="showDetailView(\'' + props.id + '\')">' +
+                        '<span class="material-symbols-outlined">open_in_new</span>' +
+                        'Details anzeigen' +
+                    '</button>' +
+                '</div>';
+            
+            document.getElementById('info-body').innerHTML = infoHtml;
+            document.getElementById('info-panel').classList.add('show');
+            
+            // Fly to location
+            if (map) {
+                map.flyTo({
+                    center: building.geometry.coordinates,
+                    zoom: 16
+                });
+            }
+        }
+        
         function updateSelectedBuilding() {
-            if (map.getLayer('portfolio-selected')) {
+            if (map && map.getLayer('portfolio-selected')) {
                 map.setFilter('portfolio-selected', ['==', ['get', 'id'], selectedBuildingId || '']);
             }
         }
+        
+        // ===== SEARCH FUNCTIONALITY =====
+        var searchInput = document.getElementById('search-input');
+        var searchResults = document.getElementById('search-results');
+        var searchSpinner = document.getElementById('search-spinner');
+        var searchDebounceTimer;
+        
+        // Listen for input
+        searchInput.addEventListener('input', function(e) {
+            clearTimeout(searchDebounceTimer);
+            var val = e.target.value.trim();
+            
+            if (val.length < 2) {
+                searchResults.classList.remove('active');
+                searchSpinner.style.display = 'none';
+                return;
+            }
+            
+            searchSpinner.style.display = 'block';
+            
+            // Debounce
+            searchDebounceTimer = setTimeout(function() {
+                performSearch(val);
+            }, 300);
+        });
+        
+        // Close search on click outside
+        document.addEventListener('click', function(e) {
+            if (!document.getElementById('search-wrapper').contains(e.target)) {
+                searchResults.classList.remove('active');
+            }
+        });
+
+        // Close search on Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                searchResults.classList.remove('active');
+            }
+        });
+        
+        function performSearch(term) {
+            var promises = [];
+            
+            // 1. Local Search (Synchronous but wrapped in promise for consistency)
+            promises.push(new Promise(function(resolve) {
+                var matches = [];
+                if (portfolioData) {
+                    var lowerTerm = term.toLowerCase();
+                    matches = portfolioData.features.filter(function(f) {
+                        var p = f.properties;
+                        return (p.name && p.name.toLowerCase().includes(lowerTerm)) ||
+                               (p.adresse && p.adresse.toLowerCase().includes(lowerTerm)) ||
+                               (p.ort && p.ort.toLowerCase().includes(lowerTerm));
+                    });
+                }
+                resolve({ type: 'local', data: matches });
+            }));
+            
+            // 2. Swisstopo Locations
+            promises.push(fetch('https://api3.geo.admin.ch/rest/services/ech/SearchServer?type=locations&limit=5&sr=4326&searchText=' + encodeURIComponent(term))
+                .then(r => r.json())
+                .then(data => ({ type: 'locations', data: data.results }))
+                .catch(e => ({ type: 'locations', data: [] })));
+                
+            // 3. Swisstopo Layers
+            promises.push(fetch('https://api3.geo.admin.ch/rest/services/ech/SearchServer?type=layers&limit=5&lang=de&searchText=' + encodeURIComponent(term))
+                .then(r => r.json())
+                .then(data => ({ type: 'layers', data: data.results }))
+                .catch(e => ({ type: 'layers', data: [] })));
+                
+            Promise.all(promises).then(function(results) {
+                renderSearchResults(results);
+                searchSpinner.style.display = 'none';
+            });
+        }
+        
+        function renderSearchResults(results) {
+            var localResults = results.find(function(r) { return r.type === 'local'; }).data;
+            var locResults = results.find(function(r) { return r.type === 'locations'; }).data;
+            var layerResults = results.find(function(r) { return r.type === 'layers'; }).data;
+            
+            var html = '';
+            
+            // Section: Objekte (Local)
+            if (localResults.length > 0) {
+                html += '<div class="search-section-header">Objekte</div>';
+                localResults.forEach(function(f) {
+                    html += '<div class="search-item" onclick="handleSearchClick(\'local\', \'' + f.properties.id + '\')">' +
+                            '<div class="search-item-title">' + f.properties.name + '</div>' +
+                            '<div class="search-item-subtitle">' + f.properties.adresse + ', ' + f.properties.ort + '</div>' +
+                            '</div>';
+                });
+            }
+            
+            // Section: Orte (API)
+            if (locResults.length > 0) {
+                html += '<div class="search-section-header">Orte</div>';
+                locResults.forEach(function(r, index) {
+                    // We store data in a way we can retrieve it. Using data attributes or a global temp store.
+                    // Simple approach: encode data in attribute
+                    var lat = r.attrs.lat;
+                    var lon = r.attrs.lon;
+                    var zoom = r.attrs.zoomlevel || 14;
+                    // Note: label contains HTML (<b>), we keep it
+                    html += '<div class="search-item" onclick="handleSearchClick(\'location\', null, ' + lat + ', ' + lon + ', ' + zoom + ')">' +
+                            '<div class="search-item-title">' + r.attrs.label + '</div>' +
+                            '</div>';
+                });
+            }
+            
+            // Section: Karten (API)
+            if (layerResults.length > 0) {
+                html += '<div class="search-section-header">Karten hinzufügen...</div>';
+                layerResults.forEach(function(r) {
+                    html += '<div class="search-item" onclick="handleSearchClick(\'layer\', \'' + r.attrs.label.replace(/'/g, "\\'") + '\')">' +
+                            '<div class="search-item-title">' + r.attrs.label + '</div>' +
+                            '</div>';
+                });
+            }
+            
+            if (html === '') {
+                html = '<div class="search-item" style="cursor:default;"><div class="search-item-subtitle">Keine Resultate gefunden</div></div>';
+            }
+            
+            searchResults.innerHTML = html;
+            searchResults.classList.add('active');
+        }
+        
+        // Make this function global so onclick in HTML string works
+        window.handleSearchClick = function(type, id, lat, lon, zoom) {
+            searchResults.classList.remove('active');
+            
+            // Switch to map view if not there
+            if (currentView !== 'map') {
+                switchView('map');
+            }
+            
+            if (type === 'local') {
+                selectBuilding(id);
+                // Set input value
+                var b = portfolioData.features.find(f => f.properties.id === id);
+                if(b) searchInput.value = b.properties.name;
+            } else if (type === 'location') {
+                // Fly to location
+                map.flyTo({
+                    center: [lon, lat], // Mapbox takes [lng, lat]
+                    zoom: zoom
+                });
+                // Clear selected building
+                selectedBuildingId = null;
+                updateSelectedBuilding();
+                document.getElementById('info-panel').classList.remove('show');
+            } else if (type === 'layer') {
+                // Toast / Alert
+                alert('Layer "' + id + '" wird bald verfügbar sein.');
+            }
+        };
         
         // ===== ACCORDION =====
         document.querySelectorAll('.accordion-header').forEach(function(header) {
