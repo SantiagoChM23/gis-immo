@@ -150,4 +150,4 @@ The Mapbox access token is configured in `index.html`. To use your own token:
 
 ## License
 
-This project is a proof of concept for BBL (Bundesamt für Bauten und Logistik).
+This project is a proof of concept for BBL (Bundesamt für Bauten und Logistik). Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
