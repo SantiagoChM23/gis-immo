@@ -77,7 +77,6 @@
             padding: 0 40px;
         }
         
-        /* Search Wrapper */
         #search-wrapper {
             position: relative;
             width: 100%;
@@ -171,7 +170,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Search Dropdown */
         #search-results {
             position: absolute;
             top: 100%;
@@ -1589,7 +1587,7 @@
             'Ausser Betrieb': '#757575'
         };
         
-        // Placeholder images for carousel and gallery
+        // Placeholder images
         var placeholderImages = [
             'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop',
             'https://images.unsplash.com/photo-1554435493-93422e8220c8?w=800&h=600&fit=crop',
@@ -1597,14 +1595,14 @@
             'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop'
         ];
         
-        // GeoJSON Daten
+        // Variables
         var portfolioData = null;
         var currentDetailBuilding = null;
         var currentCarouselIndex = 0;
         var miniMap = null;
         var previousView = 'gallery';
         var selectedBuildingId = null;
-        var searchMarker = null; // NEW: Track the search result marker
+        var searchMarker = null; 
         
         // Daten laden
         fetch('data/buildings.geojson')
@@ -1949,7 +1947,7 @@
             portfolioData.features.forEach(function(feature, index) {
                 var props = feature.properties;
                 var flaeche = Number(props.flaeche_ngf).toLocaleString('de-CH');
-                // Use placeholder images, cycling through them
+                // Use placeholder images
                 var imageUrl = placeholderImages[index % placeholderImages.length];
                 
                 html += '<div class="gallery-card" data-id="' + props.id + '">' +
@@ -1983,16 +1981,49 @@
         }
         
         // ===== INITIALIZE MAP =====
+        
+        // 1. Parse URL parameters for map state
+        var urlParams = new URLSearchParams(window.location.search);
+        var initialLat = parseFloat(urlParams.get('lat'));
+        var initialLng = parseFloat(urlParams.get('lng'));
+        var initialZoom = parseFloat(urlParams.get('zoom'));
+
+        // Defaults (Switzerland)
+        var startCenter = [8.2275, 46.8182];
+        var startZoom = 2;
+
+        // Override defaults if URL params exist
+        if (!isNaN(initialLat) && !isNaN(initialLng) && !isNaN(initialZoom)) {
+            startCenter = [initialLng, initialLat];
+            startZoom = initialZoom;
+        }
+
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/light-v11',
-            center: [8.2275, 46.8182],
-            zoom: 2
+            center: startCenter,
+            zoom: startZoom
         });
         
         map.addControl(new mapboxgl.NavigationControl(), 'top-right');
         map.addControl(new mapboxgl.ScaleControl({ maxWidth: 200 }), 'bottom-left');
         
+        // 2. Update URL on map move/zoom
+        map.on('moveend', function() {
+            if (currentView !== 'map') return; // Don't update if not in map view
+            
+            var center = map.getCenter();
+            var zoom = map.getZoom();
+            
+            var url = new URL(window.location);
+            url.searchParams.set('lng', center.lng.toFixed(5));
+            url.searchParams.set('lat', center.lat.toFixed(5));
+            url.searchParams.set('zoom', zoom.toFixed(2));
+            
+            // Use replaceState to update URL without adding to history stack
+            window.history.replaceState({}, '', url);
+        });
+
         map.on('mousemove', function(e) {
             var lng = e.lngLat.lng.toFixed(5);
             var lat = e.lngLat.lat.toFixed(5);
@@ -2050,9 +2081,11 @@
                 map.getCanvas().style.cursor = '';
             });
             
+            // CLICK HANDLER
             map.on('click', 'portfolio-points', function(e) {
                 var props = e.features[0].properties;
-                selectBuilding(props.id);
+                // UPDATED: Pass 'false' so map does NOT zoom on click
+                selectBuilding(props.id, false);
             });
             
             // Click on map (not on a point) to deselect
@@ -2067,7 +2100,8 @@
         }
         
         // Reusable function to select a building
-        function selectBuilding(buildingId) {
+        // UPDATED: Added flyToBuilding parameter (default false)
+        function selectBuilding(buildingId, flyToBuilding = false) {
             // Find feature props
             var building = portfolioData.features.find(function(f) { return f.properties.id === buildingId; });
             if (!building) return;
@@ -2109,8 +2143,8 @@
             document.getElementById('info-body').innerHTML = infoHtml;
             document.getElementById('info-panel').classList.add('show');
             
-            // Fly to location
-            if (map) {
+            // UPDATED: Only fly to building if explicitly requested (e.g. from Search)
+            if (map && flyToBuilding) {
                 map.flyTo({
                     center: building.geometry.coordinates,
                     zoom: 16
@@ -2128,7 +2162,7 @@
         var searchInput = document.getElementById('search-input');
         var searchResults = document.getElementById('search-results');
         var searchSpinner = document.getElementById('search-spinner');
-        var searchClearBtn = document.getElementById('search-clear-btn'); // NEW
+        var searchClearBtn = document.getElementById('search-clear-btn');
         var searchDebounceTimer;
         
         // Listen for input
@@ -2136,7 +2170,7 @@
             clearTimeout(searchDebounceTimer);
             var val = e.target.value.trim();
             
-            // NEW: Toggle clear button visibility
+            // Toggle clear button visibility
             if (val.length > 0) {
                 searchClearBtn.classList.add('visible');
             } else {
@@ -2155,7 +2189,7 @@
             }, 300);
         });
 
-        // NEW: Clear Button Click Listener
+        // Clear Button Click Listener
         searchClearBtn.addEventListener('click', function() {
             searchInput.value = '';
             searchClearBtn.classList.remove('visible');
@@ -2186,7 +2220,7 @@
         function performSearch(term) {
             var promises = [];
             
-            // 1. Local Search (Synchronous but wrapped in promise for consistency)
+            // 1. Local Search
             promises.push(new Promise(function(resolve) {
                 var matches = [];
                 if (portfolioData) {
@@ -2272,13 +2306,13 @@
         window.handleSearchClick = function(type, id, lat, lon, zoom) {
             searchResults.classList.remove('active');
             
-            // Switch to map view if not there
             if (currentView !== 'map') {
                 switchView('map');
             }
             
             if (type === 'local') {
-                selectBuilding(id);
+                // Pass true to fly to the building when searching
+                selectBuilding(id, true);
                 
                 // Remove generic search marker if we select a specific building
                 if (searchMarker) {
@@ -2289,7 +2323,7 @@
                 var b = portfolioData.features.find(f => f.properties.id === id);
                 if(b) {
                     searchInput.value = b.properties.name;
-                    searchClearBtn.classList.add('visible'); // Ensure X is visible
+                    searchClearBtn.classList.add('visible');
                 }
 
             } else if (type === 'location') {
@@ -2304,17 +2338,16 @@
                     zoom: zoom
                 });
 
-                // 3. NEW: Add Red Marker
+                // 3. Add Red Marker
                 searchMarker = new mapboxgl.Marker({ color: '#c00' })
                     .setLngLat([lon, lat])
                     .addTo(map);
 
-                // Clear selected building info panel to avoid confusion
+                // Clear selected building info panel
                 selectedBuildingId = null;
                 updateSelectedBuilding();
                 document.getElementById('info-panel').classList.remove('show');
                 
-                // Ensure X button stays visible since input still has text
                 searchClearBtn.classList.add('visible');
 
             } else if (type === 'layer') {
@@ -2391,16 +2424,13 @@
         // ===== DETAIL TABS =====
         document.querySelectorAll('.detail-tab').forEach(function(tab) {
             tab.addEventListener('click', function() {
-                // Ignore disabled tabs
                 if (this.classList.contains('disabled')) {
                     return;
                 }
-                
                 document.querySelectorAll('.detail-tab').forEach(function(t) {
                     t.classList.remove('active');
                 });
                 this.classList.add('active');
-                // Tab content switching would go here for future implementation
             });
         });
     </script>
