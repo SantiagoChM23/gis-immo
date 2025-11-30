@@ -77,7 +77,7 @@
             padding: 0 40px;
         }
         
-        /* NEW: Search Wrapper to handle Dropdown Positioning */
+        /* Search Wrapper */
         #search-wrapper {
             position: relative;
             width: 100%;
@@ -128,7 +128,33 @@
             color: var(--grey-400);
         }
 
-        /* NEW: Spinner style */
+        /* NEW: Search Clear Button */
+        #search-clear-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0 10px;
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            color: var(--grey-400);
+            height: 100%;
+        }
+
+        #search-clear-btn:hover {
+            color: var(--grey-900);
+            background: var(--grey-50);
+        }
+
+        #search-clear-btn .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        #search-clear-btn.visible {
+            display: flex;
+        }
+
+        /* Spinner style */
         .spinner {
             width: 18px;
             height: 18px;
@@ -145,7 +171,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* NEW: Search Dropdown */
+        /* Search Dropdown */
         #search-results {
             position: absolute;
             top: 100%;
@@ -1196,6 +1222,9 @@
                         <span class="material-symbols-outlined">search</span>
                     </button>
                     <input type="text" id="search-input" placeholder="Suche nach Objekten, Orten oder Karten">
+                    <button id="search-clear-btn" title="Suche löschen">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
                     <div id="search-spinner" class="spinner"></div>
                 </div>
                 <div id="search-results"></div>
@@ -1575,6 +1604,7 @@
         var miniMap = null;
         var previousView = 'gallery';
         var selectedBuildingId = null;
+        var searchMarker = null; // NEW: Track the search result marker
         
         // Daten laden
         fetch('data/buildings.geojson')
@@ -2036,7 +2066,7 @@
             });
         }
         
-        // NEW: Reusable function to select a building
+        // Reusable function to select a building
         function selectBuilding(buildingId) {
             // Find feature props
             var building = portfolioData.features.find(function(f) { return f.properties.id === buildingId; });
@@ -2098,12 +2128,20 @@
         var searchInput = document.getElementById('search-input');
         var searchResults = document.getElementById('search-results');
         var searchSpinner = document.getElementById('search-spinner');
+        var searchClearBtn = document.getElementById('search-clear-btn'); // NEW
         var searchDebounceTimer;
         
         // Listen for input
         searchInput.addEventListener('input', function(e) {
             clearTimeout(searchDebounceTimer);
             var val = e.target.value.trim();
+            
+            // NEW: Toggle clear button visibility
+            if (val.length > 0) {
+                searchClearBtn.classList.add('visible');
+            } else {
+                searchClearBtn.classList.remove('visible');
+            }
             
             if (val.length < 2) {
                 searchResults.classList.remove('active');
@@ -2112,11 +2150,23 @@
             }
             
             searchSpinner.style.display = 'block';
-            
-            // Debounce
             searchDebounceTimer = setTimeout(function() {
                 performSearch(val);
             }, 300);
+        });
+
+        // NEW: Clear Button Click Listener
+        searchClearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            searchClearBtn.classList.remove('visible');
+            searchResults.classList.remove('active');
+            searchInput.focus();
+            
+            // Remove the search marker if it exists
+            if (searchMarker) {
+                searchMarker.remove();
+                searchMarker = null;
+            }
         });
         
         // Close search on click outside
@@ -2191,12 +2241,9 @@
             if (locResults.length > 0) {
                 html += '<div class="search-section-header">Orte</div>';
                 locResults.forEach(function(r, index) {
-                    // We store data in a way we can retrieve it. Using data attributes or a global temp store.
-                    // Simple approach: encode data in attribute
                     var lat = r.attrs.lat;
                     var lon = r.attrs.lon;
                     var zoom = r.attrs.zoomlevel || 14;
-                    // Note: label contains HTML (<b>), we keep it
                     html += '<div class="search-item" onclick="handleSearchClick(\'location\', null, ' + lat + ', ' + lon + ', ' + zoom + ')">' +
                             '<div class="search-item-title">' + r.attrs.label + '</div>' +
                             '</div>';
@@ -2232,21 +2279,45 @@
             
             if (type === 'local') {
                 selectBuilding(id);
-                // Set input value
+                
+                // Remove generic search marker if we select a specific building
+                if (searchMarker) {
+                    searchMarker.remove();
+                    searchMarker = null;
+                }
+
                 var b = portfolioData.features.find(f => f.properties.id === id);
-                if(b) searchInput.value = b.properties.name;
+                if(b) {
+                    searchInput.value = b.properties.name;
+                    searchClearBtn.classList.add('visible'); // Ensure X is visible
+                }
+
             } else if (type === 'location') {
-                // Fly to location
+                // 1. Remove existing marker
+                if (searchMarker) {
+                    searchMarker.remove();
+                }
+
+                // 2. Fly to location
                 map.flyTo({
-                    center: [lon, lat], // Mapbox takes [lng, lat]
+                    center: [lon, lat],
                     zoom: zoom
                 });
-                // Clear selected building
+
+                // 3. NEW: Add Red Marker
+                searchMarker = new mapboxgl.Marker({ color: '#c00' })
+                    .setLngLat([lon, lat])
+                    .addTo(map);
+
+                // Clear selected building info panel to avoid confusion
                 selectedBuildingId = null;
                 updateSelectedBuilding();
                 document.getElementById('info-panel').classList.remove('show');
+                
+                // Ensure X button stays visible since input still has text
+                searchClearBtn.classList.add('visible');
+
             } else if (type === 'layer') {
-                // Toast / Alert
                 alert('Layer "' + id + '" wird bald verfügbar sein.');
             }
         };
@@ -2332,15 +2403,6 @@
                 // Tab content switching would go here for future implementation
             });
         });
-        
-        // ===== INITIALIZE =====
-        var initialView = getViewFromURL();
-        var initialBuildingId = getBuildingIdFromURL();
-        if (initialView === 'detail' && initialBuildingId) {
-            // Will be handled after data loads
-        } else if (initialView !== 'map') {
-            switchView(initialView);
-        }
     </script>
 </body>
 </html>
