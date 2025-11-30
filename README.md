@@ -1,6 +1,7 @@
 # BBL Immobilienportfolio - GIS POC
 
 A single-page web application for geographic information systems (GIS) designed to visualize and manage the real estate portfolio of BBL (Bundesamt für Bauten und Logistik - Swiss Federal Office of Buildings and Logistics).
+- Deployed: [davras5.github.io/gis-immo/](https://davras5.github.io/gis-immo/)
 
 <p align="center">
   <img src="assets/images/preview3.jpg" width="90%"/>
