@@ -1527,6 +1527,9 @@
                 var buildingId = getBuildingIdFromURL();
                 if (initialView === 'detail' && buildingId) {
                     showDetailView(buildingId);
+                } else if (initialView === 'map' && buildingId) {
+                    // Select building on map view from URL
+                    selectBuildingFromURL(buildingId);
                 } else if (initialView !== 'map') {
                     switchView(initialView);
                 }
@@ -1537,6 +1540,7 @@
         
         // ===== VIEW MANAGEMENT =====
         var currentView = 'map';
+        var urlUpdateTimeout = null;
         
         function getViewFromURL() {
             var params = new URLSearchParams(window.location.search);
@@ -1548,15 +1552,74 @@
             return params.get('id');
         }
         
-        function setViewInURL(view, buildingId) {
+        function getMapStateFromURL() {
+            var params = new URLSearchParams(window.location.search);
+            var state = {
+                lng: parseFloat(params.get('lng')),
+                lat: parseFloat(params.get('lat')),
+                zoom: parseFloat(params.get('zoom'))
+            };
+            
+            // Validate values
+            if (isNaN(state.lng) || state.lng < -180 || state.lng > 180) state.lng = null;
+            if (isNaN(state.lat) || state.lat < -90 || state.lat > 90) state.lat = null;
+            if (isNaN(state.zoom) || state.zoom < 0 || state.zoom > 24) state.zoom = null;
+            
+            return state;
+        }
+        
+        function updateURLParams(params, useReplaceState) {
             var url = new URL(window.location);
-            url.searchParams.set('view', view);
-            if (buildingId) {
-                url.searchParams.set('id', buildingId);
+            
+            // Update or remove each parameter
+            Object.keys(params).forEach(function(key) {
+                if (params[key] !== null && params[key] !== undefined && params[key] !== '') {
+                    url.searchParams.set(key, params[key]);
+                } else {
+                    url.searchParams.delete(key);
+                }
+            });
+            
+            if (useReplaceState) {
+                window.history.replaceState({}, '', url);
             } else {
-                url.searchParams.delete('id');
+                window.history.pushState({}, '', url);
             }
-            window.history.pushState({}, '', url);
+        }
+        
+        function setViewInURL(view, buildingId) {
+            var params = { view: view };
+            
+            if (buildingId) {
+                params.id = buildingId;
+            } else if (view !== 'map') {
+                // Clear building ID when leaving map view (unless going to detail)
+                params.id = null;
+            }
+            
+            updateURLParams(params, false);
+        }
+        
+        function updateMapStateInURL() {
+            // Debounce URL updates during map movement
+            if (urlUpdateTimeout) {
+                clearTimeout(urlUpdateTimeout);
+            }
+            
+            urlUpdateTimeout = setTimeout(function() {
+                var center = map.getCenter();
+                var zoom = map.getZoom();
+                
+                updateURLParams({
+                    lng: center.lng.toFixed(5),
+                    lat: center.lat.toFixed(5),
+                    zoom: zoom.toFixed(2)
+                }, true); // Use replaceState to avoid history pollution
+            }, 300);
+        }
+        
+        function updateSelectedBuildingInURL(buildingId) {
+            updateURLParams({ id: buildingId }, true);
         }
         
         function switchView(view) {
@@ -1794,10 +1857,32 @@
         window.addEventListener('popstate', function() {
             var view = getViewFromURL();
             var buildingId = getBuildingIdFromURL();
+            var mapState = getMapStateFromURL();
+            
             if (view === 'detail' && buildingId) {
                 showDetailView(buildingId);
             } else {
                 switchView(view);
+                
+                // Restore map state if on map view
+                if (view === 'map') {
+                    // Restore map position if available
+                    if (mapState.lng !== null && mapState.lat !== null) {
+                        map.setCenter([mapState.lng, mapState.lat]);
+                    }
+                    if (mapState.zoom !== null) {
+                        map.setZoom(mapState.zoom);
+                    }
+                    
+                    // Restore building selection
+                    if (buildingId) {
+                        selectBuildingFromURL(buildingId);
+                    } else {
+                        selectedBuildingId = null;
+                        updateSelectedBuilding();
+                        document.getElementById('info-panel').classList.remove('show');
+                    }
+                }
             }
         });
         
@@ -1882,11 +1967,18 @@
         }
         
         // ===== INITIALIZE MAP =====
+        // Get initial map state from URL or use defaults
+        var initialMapState = getMapStateFromURL();
+        var defaultCenter = [8.2275, 46.8182];
+        var defaultZoom = 2;
+        
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/light-v11',
-            center: [8.2275, 46.8182],
-            zoom: 2
+            center: (initialMapState.lng !== null && initialMapState.lat !== null) 
+                ? [initialMapState.lng, initialMapState.lat] 
+                : defaultCenter,
+            zoom: initialMapState.zoom !== null ? initialMapState.zoom : defaultZoom
         });
         
         map.addControl(new mapboxgl.NavigationControl(), 'top-right');
@@ -1957,6 +2049,7 @@
                 // Update selected building
                 selectedBuildingId = props.id;
                 updateSelectedBuilding();
+                updateSelectedBuildingInURL(selectedBuildingId);
                 
                 // Find building index for placeholder image
                 var buildingIndex = portfolioData.features.findIndex(function(f) {
@@ -1994,7 +2087,15 @@
                 if (features.length === 0) {
                     selectedBuildingId = null;
                     updateSelectedBuilding();
+                    updateSelectedBuildingInURL(null);
                     document.getElementById('info-panel').classList.remove('show');
+                }
+            });
+            
+            // Update URL on map move (debounced)
+            map.on('moveend', function() {
+                if (currentView === 'map') {
+                    updateMapStateInURL();
                 }
             });
         }
@@ -2003,6 +2104,50 @@
             if (map.getLayer('portfolio-selected')) {
                 map.setFilter('portfolio-selected', ['==', ['get', 'id'], selectedBuildingId || '']);
             }
+        }
+        
+        function selectBuildingFromURL(buildingId) {
+            if (!buildingId || !portfolioData) return;
+            
+            // Find building by ID
+            var buildingIndex = portfolioData.features.findIndex(function(f) {
+                return f.properties.id === buildingId;
+            });
+            
+            if (buildingIndex === -1) return;
+            
+            var building = portfolioData.features[buildingIndex];
+            var props = building.properties;
+            var flaeche = Number(props.flaeche_ngf).toLocaleString('de-CH');
+            var statusColor = statusColors[props.status] || '#999999';
+            
+            // Update selected building
+            selectedBuildingId = props.id;
+            updateSelectedBuilding();
+            
+            // Set preview image
+            var imageUrl = placeholderImages[buildingIndex % placeholderImages.length];
+            document.getElementById('info-preview-image').style.backgroundImage = 'url(' + imageUrl + ')';
+            
+            var infoHtml = 
+                '<div class="info-section-title">' + props.teilportfolio + '</div>' +
+                '<div class="info-location">' + props.ort + ', ' + props.land + '</div>' +
+                '<div class="info-row"><span class="info-label">Objekt-ID</span><span class="info-value">' + props.id + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Name</span><span class="info-value">' + props.name + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Adresse</span><span class="info-value">' + props.adresse + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Fläche NGF</span><span class="info-value">' + flaeche + ' m²</span></div>' +
+                '<div class="info-row"><span class="info-label">Baujahr</span><span class="info-value">' + props.baujahr + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Verantwortlich</span><span class="info-value">' + props.verantwortlich + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Status</span><span class="info-value" style="color:' + statusColor + '; font-weight: 600;">' + props.status + '</span></div>' +
+                '<div class="info-footer">' +
+                    '<button class="info-detail-link" onclick="showDetailView(\'' + props.id + '\')">' +
+                        '<span class="material-symbols-outlined">open_in_new</span>' +
+                        'Details anzeigen' +
+                    '</button>' +
+                '</div>';
+            
+            document.getElementById('info-body').innerHTML = infoHtml;
+            document.getElementById('info-panel').classList.add('show');
         }
         
         // ===== ACCORDION =====
@@ -2069,6 +2214,7 @@
             document.getElementById('info-panel').classList.remove('show');
             selectedBuildingId = null;
             updateSelectedBuilding();
+            updateSelectedBuildingInURL(null);
         });
         
         // ===== DETAIL TABS =====
