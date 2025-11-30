@@ -152,7 +152,7 @@
         }
         
         .view-toggle-btn.active {
-            background: var(--grey-100);
+            background: var(--accent-panel);
         }
         
         .view-toggle-btn .material-symbols-outlined {
@@ -161,7 +161,7 @@
         }
         
         .view-toggle-btn.active .material-symbols-outlined {
-            color: var(--grey-900);
+            color: var(--white);
         }
         
         .view-toggle-btn .view-label {
@@ -173,6 +173,7 @@
         
         .view-toggle-btn.active .view-label {
             display: inline;
+            color: var(--white);
         }
         
         #header-right {
@@ -623,6 +624,16 @@
             font-weight: 500;
         }
         
+        .detail-tab.disabled {
+            color: var(--grey-400);
+            cursor: not-allowed;
+        }
+        
+        .detail-tab.disabled:hover {
+            color: var(--grey-400);
+            background: transparent;
+        }
+        
         .detail-content {
             flex: 1;
             overflow-y: auto;
@@ -941,6 +952,13 @@
             display: block;
         }
         
+        #info-preview-image {
+            height: 140px;
+            background-size: cover;
+            background-position: center;
+            background-color: var(--grey-100);
+        }
+        
         #info-header {
             background: var(--grey-100);
             padding: 12px 16px;
@@ -948,7 +966,6 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--grey-300);
-            border-radius: 4px 4px 0 0;
         }
         
         #info-header-title {
@@ -1197,6 +1214,7 @@
             
             <!-- Info Panel -->
             <aside id="info-panel">
+                <div id="info-preview-image"></div>
                 <div id="info-header">
                     <span id="info-header-title">Objekt-Information</span>
                     <div id="info-header-actions">
@@ -1255,12 +1273,12 @@
             <div class="detail-tabs">
                 <div class="detail-tabs-inner">
                     <div class="detail-tab active" data-tab="uebersicht">Übersicht</div>
-                    <div class="detail-tab" data-tab="bemessungen">Bemessungen</div>
-                    <div class="detail-tab" data-tab="belegung">Belegung</div>
-                    <div class="detail-tab" data-tab="kosten">Kosten</div>
-                    <div class="detail-tab" data-tab="vertraege">Verträge</div>
-                    <div class="detail-tab" data-tab="ausstattung">Ausstattung</div>
-                    <div class="detail-tab" data-tab="dokumente">Dokumente</div>
+                    <div class="detail-tab disabled" data-tab="bemessungen">Bemessungen</div>
+                    <div class="detail-tab disabled" data-tab="belegung">Belegung</div>
+                    <div class="detail-tab disabled" data-tab="kosten">Kosten</div>
+                    <div class="detail-tab disabled" data-tab="vertraege">Verträge</div>
+                    <div class="detail-tab disabled" data-tab="ausstattung">Ausstattung</div>
+                    <div class="detail-tab disabled" data-tab="dokumente">Dokumente</div>
                 </div>
             </div>
             
@@ -1940,6 +1958,15 @@
                 selectedBuildingId = props.id;
                 updateSelectedBuilding();
                 
+                // Find building index for placeholder image
+                var buildingIndex = portfolioData.features.findIndex(function(f) {
+                    return f.properties.id === props.id;
+                });
+                var imageUrl = placeholderImages[buildingIndex % placeholderImages.length];
+                
+                // Set preview image
+                document.getElementById('info-preview-image').style.backgroundImage = 'url(' + imageUrl + ')';
+                
                 var infoHtml = 
                     '<div class="info-section-title">' + props.teilportfolio + '</div>' +
                     '<div class="info-location">' + props.ort + ', ' + props.land + '</div>' +
@@ -2047,6 +2074,11 @@
         // ===== DETAIL TABS =====
         document.querySelectorAll('.detail-tab').forEach(function(tab) {
             tab.addEventListener('click', function() {
+                // Ignore disabled tabs
+                if (this.classList.contains('disabled')) {
+                    return;
+                }
+                
                 document.querySelectorAll('.detail-tab').forEach(function(t) {
                     t.classList.remove('active');
                 });
