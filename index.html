@@ -383,72 +383,202 @@
             background: var(--white);
             overflow: hidden;
         }
-        
+
         #list-view.active {
             display: flex;
         }
-        
-        .list-header {
+
+        /* List View Toolbar */
+        .list-toolbar {
             display: flex;
-            background: var(--grey-100);
-            border-bottom: 2px solid var(--grey-300);
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--grey-100);
+            background: var(--grey-50);
+        }
+
+        .list-toolbar-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--white);
+            border: 1px solid var(--grey-300);
+            border-radius: 4px;
+            padding: 8px 12px;
+            min-width: 280px;
+        }
+
+        .list-toolbar-search .material-symbols-outlined {
+            font-size: 20px;
+            color: var(--grey-400);
+        }
+
+        .list-toolbar-search input {
+            border: none;
+            outline: none;
+            font-size: 14px;
+            width: 100%;
+            background: transparent;
+        }
+
+        .list-toolbar-search input::placeholder {
+            color: var(--grey-400);
+        }
+
+        .list-toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Dropdown Button Styles */
+        .dropdown-container {
+            position: relative;
+        }
+
+        .dropdown-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: var(--white);
+            border: 1px solid var(--grey-300);
+            border-radius: 4px;
+            font-size: 13px;
+            color: var(--grey-700);
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .dropdown-btn:hover {
+            background: var(--grey-50);
+            border-color: var(--grey-400);
+        }
+
+        .dropdown-btn .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: var(--white);
+            border: 1px solid var(--grey-200);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-menu-header {
+            padding: 10px 14px;
+            font-size: 11px;
             font-weight: 600;
-            font-size: 12px;
-            color: var(--grey-600);
+            color: var(--grey-500);
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--grey-100);
         }
-        
+
+        .dropdown-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: var(--grey-700);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .dropdown-menu-item:hover {
+            background: var(--grey-50);
+        }
+
+        .dropdown-menu-item .material-symbols-outlined {
+            font-size: 18px;
+            color: var(--grey-500);
+        }
+
+        .dropdown-menu-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .dropdown-menu-divider {
+            height: 1px;
+            background: var(--grey-100);
+            margin: 4px 0;
+        }
+
+        /* List Table Container */
+        .list-table-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .list-header {
+            display: flex;
+            background: var(--white);
+            border-bottom: 1px solid var(--grey-300);
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--grey-600);
+        }
+
         .list-header-cell {
             padding: 12px 16px;
             display: flex;
             align-items: center;
             gap: 4px;
             cursor: pointer;
-            border-right: 1px solid var(--grey-300);
+            white-space: nowrap;
         }
-        
+
         .list-header-cell:hover {
-            background: var(--grey-100);
+            background: var(--grey-50);
         }
-        
+
         .list-header-cell .material-symbols-outlined {
             font-size: 16px;
-            color: var(--grey-600);
+            color: var(--grey-400);
         }
-        
+
         .list-body {
             flex: 1;
             overflow-y: auto;
         }
-        
+
         .list-row {
             display: flex;
             border-bottom: 1px solid var(--grey-100);
             transition: background 0.15s;
             cursor: pointer;
         }
-        
+
         .list-row:hover {
-            background: var(--grey-100);
-        }
-        
-        .list-row:nth-child(even) {
             background: var(--grey-50);
         }
-        
-        .list-row:nth-child(even):hover {
-            background: var(--grey-100);
-        }
-        
+
         .list-cell {
             padding: 14px 16px;
             font-size: 13px;
-            border-right: 1px solid var(--grey-100);
             display: flex;
             align-items: center;
+            color: var(--grey-900);
         }
-        
+
         .col-id { width: 120px; flex-shrink: 0; }
         .col-name { width: 200px; flex-shrink: 0; font-weight: 500; }
         .col-land { width: 80px; flex-shrink: 0; }
@@ -1656,17 +1786,87 @@
         </div>
         
         <div id="list-view">
-            <div class="list-header">
-                <div class="list-header-cell col-id">ID <span class="material-symbols-outlined">unfold_more</span></div>
-                <div class="list-header-cell col-name">Bezeichnung <span class="material-symbols-outlined">unfold_more</span></div>
-                <div class="list-header-cell col-land">Land <span class="material-symbols-outlined">unfold_more</span></div>
-                <div class="list-header-cell col-ort">Ort <span class="material-symbols-outlined">unfold_more</span></div>
-                <div class="list-header-cell col-adresse">Adresse <span class="material-symbols-outlined">unfold_more</span></div>
-                <div class="list-header-cell col-portfolio">Teilportfolio <span class="material-symbols-outlined">unfold_more</span></div>
-                <div class="list-header-cell col-flaeche">Fläche NGF <span class="material-symbols-outlined">unfold_more</span></div>
-                <div class="list-header-cell col-status">Status <span class="material-symbols-outlined">unfold_more</span></div>
+            <!-- Toolbar -->
+            <div class="list-toolbar">
+                <div class="list-toolbar-search">
+                    <span class="material-symbols-outlined">search</span>
+                    <input type="text" id="list-search-input" placeholder="Tabelle durchsuchen...">
+                </div>
+                <div class="list-toolbar-actions">
+                    <!-- Export Dropdown -->
+                    <div class="dropdown-container">
+                        <button class="dropdown-btn" id="export-dropdown-btn">
+                            <span class="material-symbols-outlined">download</span>
+                            Export
+                            <span class="material-symbols-outlined">expand_more</span>
+                        </button>
+                        <div class="dropdown-menu" id="export-dropdown-menu">
+                            <div class="dropdown-menu-header">Exportieren als</div>
+                            <div class="dropdown-menu-item" onclick="handleExport('csv')">
+                                <span class="material-symbols-outlined">table_view</span>
+                                CSV (.csv)
+                            </div>
+                            <div class="dropdown-menu-item" onclick="handleExport('excel')">
+                                <span class="material-symbols-outlined">grid_on</span>
+                                Excel (.xlsx)
+                            </div>
+                            <div class="dropdown-menu-item" onclick="handleExport('geojson')">
+                                <span class="material-symbols-outlined">map</span>
+                                GeoJSON (.geojson)
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Columns Dropdown -->
+                    <div class="dropdown-container">
+                        <button class="dropdown-btn" id="columns-dropdown-btn">
+                            <span class="material-symbols-outlined">view_column</span>
+                            Spalten
+                            <span class="material-symbols-outlined">expand_more</span>
+                        </button>
+                        <div class="dropdown-menu" id="columns-dropdown-menu">
+                            <div class="dropdown-menu-header">Spalten anzeigen</div>
+                            <label class="dropdown-menu-item">
+                                <input type="checkbox" checked data-column="col-id"> ID
+                            </label>
+                            <label class="dropdown-menu-item">
+                                <input type="checkbox" checked data-column="col-name"> Bezeichnung
+                            </label>
+                            <label class="dropdown-menu-item">
+                                <input type="checkbox" checked data-column="col-land"> Land
+                            </label>
+                            <label class="dropdown-menu-item">
+                                <input type="checkbox" checked data-column="col-ort"> Ort
+                            </label>
+                            <label class="dropdown-menu-item">
+                                <input type="checkbox" checked data-column="col-adresse"> Adresse
+                            </label>
+                            <label class="dropdown-menu-item">
+                                <input type="checkbox" checked data-column="col-portfolio"> Teilportfolio
+                            </label>
+                            <label class="dropdown-menu-item">
+                                <input type="checkbox" checked data-column="col-flaeche"> Fläche NGF
+                            </label>
+                            <label class="dropdown-menu-item">
+                                <input type="checkbox" checked data-column="col-status"> Status
+                            </label>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="list-body" id="list-body"></div>
+            <!-- Table Container -->
+            <div class="list-table-container">
+                <div class="list-header">
+                    <div class="list-header-cell col-id">ID <span class="material-symbols-outlined">unfold_more</span></div>
+                    <div class="list-header-cell col-name">Bezeichnung <span class="material-symbols-outlined">unfold_more</span></div>
+                    <div class="list-header-cell col-land">Land <span class="material-symbols-outlined">unfold_more</span></div>
+                    <div class="list-header-cell col-ort">Ort <span class="material-symbols-outlined">unfold_more</span></div>
+                    <div class="list-header-cell col-adresse">Adresse <span class="material-symbols-outlined">unfold_more</span></div>
+                    <div class="list-header-cell col-portfolio">Teilportfolio <span class="material-symbols-outlined">unfold_more</span></div>
+                    <div class="list-header-cell col-flaeche">Fläche NGF <span class="material-symbols-outlined">unfold_more</span></div>
+                    <div class="list-header-cell col-status">Status <span class="material-symbols-outlined">unfold_more</span></div>
+                </div>
+                <div class="list-body" id="list-body"></div>
+            </div>
         </div>
         
         <div id="gallery-view">
@@ -2072,8 +2272,108 @@
         var miniMap = null;
         var previousView = 'gallery';
         var selectedBuildingId = null;
-        var searchMarker = null; 
-        
+        var searchMarker = null;
+
+        // ===== LIST VIEW TOOLBAR FUNCTIONS =====
+
+        // Dropdown Toggle Function
+        function toggleDropdown(dropdownId) {
+            var menu = document.getElementById(dropdownId);
+            var isOpen = menu.classList.contains('show');
+
+            // Close all dropdowns first
+            document.querySelectorAll('.dropdown-menu').forEach(function(dropdown) {
+                dropdown.classList.remove('show');
+            });
+
+            // Toggle the clicked one
+            if (!isOpen) {
+                menu.classList.add('show');
+            }
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown-container')) {
+                document.querySelectorAll('.dropdown-menu').forEach(function(dropdown) {
+                    dropdown.classList.remove('show');
+                });
+            }
+        });
+
+        // Export Handler (Platzhalter/Demo)
+        function handleExport(format) {
+            var formatNames = {
+                'csv': 'CSV (.csv)',
+                'excel': 'Excel (.xlsx)',
+                'geojson': 'GeoJSON (.geojson)'
+            };
+            alert('Export als ' + formatNames[format] + '\n\nDiese Funktion ist ein Platzhalter und wird in einer zukünftigen Version implementiert.');
+
+            // Close dropdown
+            document.querySelectorAll('.dropdown-menu').forEach(function(dropdown) {
+                dropdown.classList.remove('show');
+            });
+        }
+
+        // Column Toggle Handler (Platzhalter/Demo)
+        function handleColumnToggle(checkbox) {
+            var columnClass = checkbox.getAttribute('data-column');
+            var isVisible = checkbox.checked;
+
+            // Toggle visibility of header and body cells
+            document.querySelectorAll('.' + columnClass).forEach(function(cell) {
+                cell.style.display = isVisible ? '' : 'none';
+            });
+        }
+
+        // List Search Handler (Platzhalter/Demo)
+        function handleListSearch(query) {
+            var searchTerm = query.toLowerCase().trim();
+            var rows = document.querySelectorAll('.list-row');
+
+            rows.forEach(function(row) {
+                var text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Initialize List View Toolbar Event Listeners
+        function initListToolbar() {
+            // Dropdown buttons
+            var exportBtn = document.getElementById('export-dropdown-btn');
+            var columnsBtn = document.getElementById('columns-dropdown-btn');
+
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleDropdown('export-dropdown-menu');
+                });
+            }
+
+            if (columnsBtn) {
+                columnsBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleDropdown('columns-dropdown-menu');
+                });
+            }
+
+            // Column checkboxes
+            document.querySelectorAll('#columns-dropdown-menu input[type="checkbox"]').forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    handleColumnToggle(this);
+                });
+            });
+
+            // Search input
+            var searchInput = document.getElementById('list-search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    handleListSearch(this.value);
+                });
+            }
+        }
+
         // Daten laden
         fetch('data/buildings.geojson')
             .then(function(response) {
@@ -2084,6 +2384,7 @@
                 document.getElementById('object-count').textContent = portfolioData.features.length + ' Objekte';
                 renderListView();
                 renderGalleryView();
+                initListToolbar();
                 
                 if (map.loaded()) {
                     addMapLayers();
