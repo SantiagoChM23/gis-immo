@@ -1469,8 +1469,8 @@
             text-align: center;
         }
 
-        .measurements-table .col-asset {
-            width: 100px;
+        .measurements-table .col-id {
+            width: 120px;
         }
 
         .measurements-table .col-type {
@@ -1484,6 +1484,10 @@
 
         .measurements-table .col-unit {
             width: 60px;
+        }
+
+        .measurements-table .col-source {
+            width: 100px;
         }
 
         .measurements-table .col-accuracy {
@@ -1936,13 +1940,14 @@
                                             <th class="col-checkbox">
                                                 <input type="checkbox" id="select-all-measurements">
                                             </th>
-                                            <th class="col-asset sortable" data-sort="asset">
-                                                Objekt
+                                            <th class="col-id sortable" data-sort="id">
+                                                ID
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
                                             <th class="col-type">Bemessungsart</th>
                                             <th class="col-area">Wert</th>
                                             <th class="col-unit">Einheit</th>
+                                            <th class="col-source">Herkunft</th>
                                             <th class="col-accuracy">Genauigkeit</th>
                                             <th class="col-standard">Standard</th>
                                             <th class="col-from">Gültig von</th>
@@ -3003,14 +3008,14 @@
 
         function loadMeasurementsForBuilding(building) {
             if (building && building.properties && building.properties.bemessungen) {
-                // Map bemessungen to measurementsData format with asset field
+                // Map bemessungen to measurementsData format
                 measurementsData = building.properties.bemessungen.map(function(m) {
                     return {
                         id: m.id,
-                        asset: building.properties.id,
                         areaType: m.areaType,
                         value: m.value,
                         unit: m.unit,
+                        source: m.source || 'Manuell',
                         accuracy: m.accuracy,
                         standard: m.standard,
                         validFrom: m.validFrom,
@@ -3023,7 +3028,7 @@
             filteredMeasurements = measurementsData.slice();
         }
         var measurementsSortDirection = 'asc';
-        var measurementsSortColumn = 'asset';
+        var measurementsSortColumn = 'id';
 
         function renderMeasurementsTable() {
             var tbody = document.getElementById('measurements-tbody');
@@ -3035,10 +3040,11 @@
 
                 html += '<tr data-id="' + m.id + '">' +
                     '<td class="col-checkbox"><input type="checkbox" class="measurement-checkbox"></td>' +
-                    '<td class="col-asset">' + m.asset + '</td>' +
+                    '<td class="col-id">' + m.id + '</td>' +
                     '<td class="col-type">' + m.areaType + '</td>' +
                     '<td class="col-area">' + formattedValue + '</td>' +
                     '<td class="col-unit">' + m.unit + '</td>' +
+                    '<td class="col-source">' + m.source + '</td>' +
                     '<td class="col-accuracy">' + m.accuracy + '</td>' +
                     '<td class="col-standard">' + m.standard + '</td>' +
                     '<td class="col-from">' + m.validFrom + '</td>' +
