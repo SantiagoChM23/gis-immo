@@ -1474,21 +1474,22 @@
             text-align: center;
         }
 
-        /* ===== MEASUREMENTS TABLE: 10 columns = 100% ===== */
-        /* checkbox:4% + id:10% + type:20% + area:8% + unit:5% + source:11% + accuracy:11% + standard:8% + from:11.5% + until:11.5% = 100% */
-        #measurements-table .col-id       { max-width: 10%; }
-        #measurements-table .col-type     { width: 20%; }
-        #measurements-table .col-area     { width: 8%; text-align: right; }
-        #measurements-table .col-unit     { width: auto; }
+        /* ===== SHARED DETAIL TABLE STYLES ===== */
+        #measurements-table .col-id,
+        #documents-table .col-id { width: 20%; }
+
+        /* ===== MEASUREMENTS TABLE: 9 columns = 100% ===== */
+        /* checkbox:4% + id:20% + type:18% + area:10% + source:10% + accuracy:10% + standard:10% + from:9% + until:9% = 100% */
+        #measurements-table .col-type     { width: 18%; }
+        #measurements-table .col-area     { width: 10%; text-align: right; }
         #measurements-table .col-source   { max-width: 10%; }
         #measurements-table .col-accuracy { max-width: 10%; }
         #measurements-table .col-standard { max-width: 10%; }
-        #measurements-table .col-from     { max-width: 10%; }
-        #measurements-table .col-until    { max-width: 10%; }
+        #measurements-table .col-from     { max-width: 9%; }
+        #measurements-table .col-until    { max-width: 9%; }
 
         /* ===== DOCUMENTS TABLE: 7 columns = 100% ===== */
-        /* checkbox:4% + id:10% + title:34% + type:18% + format:10% + date:12% + size:12% = 100% */
-        #documents-table .col-id     { max-width: 10%; }
+        /* checkbox:4% + id:20% + title:30% + type:16% + format:10% + date:10% + size:10% = 100% */
         #documents-table .col-title  { width: 34%; }
         #documents-table .col-type   { width: 18%; }
         #documents-table .col-format { max-width: 10%; }
@@ -1943,7 +1944,6 @@
                                                 Wert
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-unit">Einheit</th>
                                             <th class="col-source">Herkunft</th>
                                             <th class="col-accuracy sortable" data-sort="accuracy">
                                                 Genauigkeit
@@ -3154,8 +3154,7 @@
                     '<td class="col-checkbox"><input type="checkbox" class="measurement-checkbox"></td>' +
                     '<td class="col-id">' + m.id + '</td>' +
                     '<td class="col-type">' + m.areaType + '</td>' +
-                    '<td class="col-area">' + formattedValue + '</td>' +
-                    '<td class="col-unit">' + m.unit + '</td>' +
+                    '<td class="col-area">' + formattedValue + ' ' + m.unit + '</td>' +
                     '<td class="col-source">' + m.source + '</td>' +
                     '<td class="col-accuracy">' + m.accuracy + '</td>' +
                     '<td class="col-standard">' + m.standard + '</td>' +
