@@ -1365,6 +1365,29 @@
             right: 10px;
         }
 
+        /* Home Button Control */
+        .map-home-btn {
+            background: var(--white);
+            border: none;
+            border-radius: 4px;
+            width: 29px;
+            height: 29px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+        }
+
+        .map-home-btn:hover {
+            background: var(--grey-100);
+        }
+
+        .map-home-btn .material-symbols-outlined {
+            font-size: 18px;
+            color: var(--grey-600);
+        }
+
         /* ===== STYLE SWITCHER ===== */
         .style-switcher {
             position: absolute;
@@ -1781,6 +1804,15 @@
 
         #filter-btn.pane-open .material-symbols-outlined {
             color: var(--white);
+        }
+
+        /* Filter button - active filters state */
+        #filter-btn.has-active-filters {
+            background: rgba(204, 0, 0, 0.1);
+        }
+
+        #filter-btn.has-active-filters.pane-open {
+            background: var(--accent-panel);
         }
 
         /* Filter count badge */
@@ -2692,6 +2724,36 @@
             if (map.getLayer('portfolio-labels')) {
                 map.setFilter('portfolio-labels', ['in', ['get', 'id'], ['literal', filteredIds]]);
             }
+
+            // Zoom to fit filtered points
+            zoomToFilteredPoints();
+        }
+
+        function zoomToFilteredPoints() {
+            if (!filteredData || filteredData.features.length === 0) return;
+
+            var features = filteredData.features;
+
+            if (features.length === 1) {
+                // Single point - fly to it with a reasonable zoom level
+                var coords = features[0].geometry.coordinates;
+                map.flyTo({
+                    center: coords,
+                    zoom: 14,
+                    duration: 1000
+                });
+            } else {
+                // Multiple points - fit bounds
+                var bounds = new mapboxgl.LngLatBounds();
+                features.forEach(function(feature) {
+                    bounds.extend(feature.geometry.coordinates);
+                });
+                map.fitBounds(bounds, {
+                    padding: 80,
+                    duration: 1000,
+                    maxZoom: 16
+                });
+            }
         }
 
         function resetFilters() {
@@ -2764,6 +2826,8 @@
             var count = getActiveFilterCount();
 
             if (count > 0) {
+                // Add active filters highlight
+                filterBtn.classList.add('has-active-filters');
                 // Add or update count badge
                 var badge = filterBtn.querySelector('.filter-count');
                 if (!badge) {
@@ -2773,6 +2837,8 @@
                 }
                 badge.textContent = count;
             } else {
+                // Remove active filters highlight
+                filterBtn.classList.remove('has-active-filters');
                 // Remove count badge
                 var badge = filterBtn.querySelector('.filter-count');
                 if (badge) {
@@ -3536,7 +3602,37 @@
         
         map.addControl(new mapboxgl.NavigationControl(), 'top-right');
         map.addControl(new mapboxgl.ScaleControl({ maxWidth: 200 }), 'bottom-left');
-        
+
+        // Home button control
+        var HomeControl = function() {};
+        HomeControl.prototype.onAdd = function(map) {
+            this._map = map;
+            this._container = document.createElement('div');
+            this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group';
+
+            var button = document.createElement('button');
+            button.className = 'map-home-btn';
+            button.type = 'button';
+            button.title = 'Zur Startansicht';
+            button.innerHTML = '<span class="material-symbols-outlined">home</span>';
+            button.onclick = function() {
+                map.flyTo({
+                    center: [8.2275, 46.8182],
+                    zoom: 2,
+                    duration: 1000
+                });
+            };
+
+            this._container.appendChild(button);
+            return this._container;
+        };
+        HomeControl.prototype.onRemove = function() {
+            this._container.parentNode.removeChild(this._container);
+            this._map = undefined;
+        };
+
+        map.addControl(new HomeControl(), 'top-right');
+
         // 2. Update URL on map move/zoom
         map.on('moveend', function() {
             if (currentView !== 'map') return; // Don't update if not in map view
