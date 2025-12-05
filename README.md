@@ -58,7 +58,7 @@ gis-immo/
 
 ## License
 
-[MIT](https://opensource.org/licenses/MIT)
+Licensed under [MIT](https://opensource.org/licenses/MIT)
 
 ---
 
