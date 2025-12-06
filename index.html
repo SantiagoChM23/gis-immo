@@ -1966,6 +1966,25 @@
         #documents-table .col-date   { max-width: 10%; }
         #documents-table .col-size   { width: auto;}
 
+        /* ===== KONTAKTE TABLE: 7 columns = 100% ===== */
+        /* checkbox:4% + id:12% + name:20% + rolle:16% + org:18% + telefon:15% + email:15% = 100% */
+        #kontakte-table .col-kontakt-id      { width: 12%; }
+        #kontakte-table .col-kontakt-name    { width: 20%; }
+        #kontakte-table .col-kontakt-rolle   { width: 16%; }
+        #kontakte-table .col-kontakt-org     { width: 18%; }
+        #kontakte-table .col-kontakt-telefon { width: 15%; }
+        #kontakte-table .col-kontakt-email   { width: auto; }
+
+        #kontakte-table .col-kontakt-telefon a,
+        #kontakte-table .col-kontakt-email a {
+            color: var(--primary-red);
+            text-decoration: none;
+        }
+        #kontakte-table .col-kontakt-telefon a:hover,
+        #kontakte-table .col-kontakt-email a:hover {
+            text-decoration: underline;
+        }
+
         /* ===== FILTER PANE ===== */
         #filter-pane {
             width: 0;
@@ -3114,6 +3133,7 @@
                     <div class="detail-tab disabled" data-tab="vertraege">Verträge</div>
                     <div class="detail-tab disabled" data-tab="ausstattung">Ausstattung</div>
                     <div class="detail-tab" data-tab="dokumente">Dokumente</div>
+                    <div class="detail-tab" data-tab="kontakte">Kontakte</div>
                 </div>
             </div>
             
@@ -3432,6 +3452,73 @@
                                         </tr>
                                     </thead>
                                     <tbody id="documents-tbody">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Kontakte -->
+                <div class="tab-content" data-content="kontakte">
+                    <div class="detail-table-container">
+                        <div class="detail-section">
+                            <div class="detail-section-title">Kontakte</div>
+
+                            <div class="toolbar">
+                                <div class="toolbar-search">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <input type="text" id="kontakte-filter" placeholder="Alle Spalten filtern">
+                                </div>
+                                <div class="toolbar-actions detail-table-actions">
+                                    <button class="btn-action kontakte-action" disabled>
+                                        <span class="material-symbols-outlined">edit</span>
+                                        Bearbeiten
+                                    </button>
+                                    <button class="btn-action kontakte-action" disabled>
+                                        <span class="material-symbols-outlined">delete</span>
+                                        Löschen
+                                    </button>
+                                    <button class="btn-action kontakte-action" disabled>
+                                        <span class="material-symbols-outlined">mail</span>
+                                        Kontaktieren
+                                    </button>
+                                    <button class="btn-back" id="btn-add-kontakt">
+                                        <span class="material-symbols-outlined">add</span>
+                                        Hinzufügen
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="detail-table-wrapper">
+                                <table class="detail-table" id="kontakte-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-checkbox">
+                                                <input type="checkbox" id="select-all-kontakte">
+                                            </th>
+                                            <th class="col-kontakt-id sortable" data-sort="id">
+                                                ID
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-kontakt-name sortable" data-sort="name">
+                                                Name
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-kontakt-rolle sortable" data-sort="rolle">
+                                                Rolle
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-kontakt-org sortable" data-sort="organisation">
+                                                Organisation
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-kontakt-telefon">Telefon</th>
+                                            <th class="col-kontakt-email">E-Mail</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="kontakte-tbody">
                                         <!-- Populated by JavaScript -->
                                     </tbody>
                                 </table>
@@ -4391,6 +4478,9 @@
 
             // Load documents for this building
             loadDocumentsForBuilding(building);
+
+            // Load kontakte for this building
+            loadKontakteForBuilding(building);
 
             // Initialize carousel
             initCarousel();
@@ -5388,6 +5478,11 @@
                 if (targetTab === 'dokumente') {
                     renderDocumentsTable();
                 }
+
+                // Render kontakte table when switching to Kontakte tab
+                if (targetTab === 'kontakte') {
+                    renderKontakteTable();
+                }
             });
         });
 
@@ -5762,6 +5857,97 @@
         if (addDocumentBtn) {
             addDocumentBtn.addEventListener('click', function() {
                 alert('Dokument hinzufügen - kommt bald...');
+            });
+        }
+
+        // ===== KONTAKTE TAB =====
+        var kontakteData = [];
+        var filteredKontakte = [];
+        var kontakteSort = { column: 'name', direction: 'asc' };
+
+        var kontakteConfig = {
+            tableId: 'kontakte-table',
+            checkboxClass: 'kontakt-checkbox',
+            selectAllId: 'select-all-kontakte',
+            actionClass: 'kontakte-action',
+            state: kontakteSort,
+            onSort: function() {
+                sortTableData(filteredKontakte, kontakteSort.column, kontakteSort.direction);
+                renderKontakteTable();
+            },
+            onUpdate: function() { updateTableSelection(kontakteConfig); }
+        };
+
+        function loadKontakteForBuilding(building) {
+            if (building && building.properties && building.properties.kontakte) {
+                kontakteData = building.properties.kontakte.map(function(k) {
+                    return {
+                        id: k.id,
+                        name: k.name,
+                        rolle: k.rolle,
+                        organisation: k.organisation,
+                        telefon: k.telefon,
+                        email: k.email
+                    };
+                });
+            } else {
+                kontakteData = [];
+            }
+            filteredKontakte = kontakteData.slice();
+        }
+
+        function renderKontakteTable() {
+            var tbody = document.getElementById('kontakte-tbody');
+            if (!tbody) return;
+
+            var html = '';
+            filteredKontakte.forEach(function(k) {
+                html += '<tr data-id="' + k.id + '">' +
+                    '<td class="col-checkbox"><input type="checkbox" class="kontakt-checkbox"></td>' +
+                    '<td class="col-kontakt-id">' + k.id + '</td>' +
+                    '<td class="col-kontakt-name">' + k.name + '</td>' +
+                    '<td class="col-kontakt-rolle">' + k.rolle + '</td>' +
+                    '<td class="col-kontakt-org">' + k.organisation + '</td>' +
+                    '<td class="col-kontakt-telefon"><a href="tel:' + k.telefon + '">' + k.telefon + '</a></td>' +
+                    '<td class="col-kontakt-email"><a href="mailto:' + k.email + '">' + k.email + '</a></td>' +
+                '</tr>';
+            });
+            tbody.innerHTML = html;
+
+            document.querySelectorAll('.kontakt-checkbox').forEach(function(cb) {
+                cb.addEventListener('change', function() { updateTableSelection(kontakteConfig); });
+            });
+        }
+
+        // Kontakte filter
+        var kontakteFilter = document.getElementById('kontakte-filter');
+        if (kontakteFilter) {
+            kontakteFilter.addEventListener('input', function() {
+                var term = this.value.toLowerCase().trim();
+                if (term === '') {
+                    filteredKontakte = kontakteData.slice();
+                } else {
+                    filteredKontakte = kontakteData.filter(function(k) {
+                        return k.id.toLowerCase().includes(term) ||
+                               k.name.toLowerCase().includes(term) ||
+                               k.rolle.toLowerCase().includes(term) ||
+                               k.organisation.toLowerCase().includes(term) ||
+                               k.telefon.toLowerCase().includes(term) ||
+                               k.email.toLowerCase().includes(term);
+                    });
+                }
+                sortTableData(filteredKontakte, kontakteSort.column, kontakteSort.direction);
+                renderKontakteTable();
+            });
+        }
+
+        initTableSorting(kontakteConfig);
+        initSelectAll(kontakteConfig);
+
+        var addKontaktBtn = document.getElementById('btn-add-kontakt');
+        if (addKontaktBtn) {
+            addKontaktBtn.addEventListener('click', function() {
+                alert('Kontakt hinzufügen - kommt bald...');
             });
         }
     </script>
