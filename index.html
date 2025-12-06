@@ -14,14 +14,22 @@
         /* ===== CSS CUSTOM PROPERTIES ===== */
         :root {
             --grey-900: #333;
+            --grey-700: #555;
             --grey-600: #666;
-            --grey-400: #999;
+            --grey-500: #767676; /* WCAG AA compliant on white */
+            --grey-400: #767676; /* Updated for WCAG AA compliance (was #999) */
             --grey-300: #ccc;
+            --grey-200: #e0e0e0;
             --grey-100: #f5f5f5;
             --grey-50: #fafafa;
             --accent-panel: #6B747C;
             --primary-red: #c00;
+            --primary-red-dark: #a00;
             --white: #ffffff;
+            --focus-ring: #005ea8;
+            --success-green: #2e7d32;
+            --warning-orange: #e65100;
+            --info-blue: #1565c0;
         }
         
         * {
@@ -2079,57 +2087,665 @@
             margin-left: 6px;
         }
 
+        /* ===== FOCUS VISIBLE STYLES (Accessibility) ===== */
+        *:focus {
+            outline: none;
+        }
+
+        *:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
+
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        [tabindex]:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
+
+        .view-toggle-btn:focus-visible,
+        .dropdown-btn:focus-visible,
+        .header-btn:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+            z-index: 1;
+        }
+
+        /* Skip link for keyboard navigation */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--grey-900);
+            color: var(--white);
+            padding: 8px 16px;
+            z-index: 10000;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* ===== UNIFIED BUTTON STYLES ===== */
+        /* Primary Button */
+        .btn-primary {
+            background: var(--grey-900);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--grey-700);
+        }
+
+        .btn-primary:active {
+            background: var(--grey-900);
+        }
+
+        /* Secondary Button */
+        .btn-secondary {
+            background: var(--white);
+            color: var(--grey-900);
+            border: 1px solid var(--grey-300);
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--grey-100);
+            border-color: var(--grey-400);
+        }
+
+        /* Tertiary Button (text-only) */
+        .btn-tertiary {
+            background: transparent;
+            color: var(--grey-700);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .btn-tertiary:hover {
+            background: var(--grey-100);
+            color: var(--grey-900);
+        }
+
+        /* ===== EMPTY & LOADING STATES ===== */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--grey-600);
+        }
+
+        .empty-state .material-symbols-outlined {
+            font-size: 64px;
+            color: var(--grey-300);
+            margin-bottom: 16px;
+        }
+
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--grey-900);
+            margin-bottom: 8px;
+        }
+
+        .empty-state-description {
+            font-size: 14px;
+            color: var(--grey-600);
+            max-width: 400px;
+            line-height: 1.5;
+        }
+
+        .empty-state-action {
+            margin-top: 20px;
+        }
+
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--grey-200);
+            border-top-color: var(--primary-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--grey-600);
+        }
+
+        /* ===== STATUS BADGES WITH ICONS (Accessibility for colorblind users) ===== */
+        .status-badge .status-icon {
+            font-size: 12px;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+
+        .status-badge.in-betrieb .status-icon::before {
+            content: "\e876"; /* check_circle */
+            font-family: 'Material Symbols Outlined';
+        }
+
+        .status-badge.in-renovation .status-icon::before {
+            content: "\e8b8"; /* build */
+            font-family: 'Material Symbols Outlined';
+        }
+
+        .status-badge.in-planung .status-icon::before {
+            content: "\e873"; /* schedule */
+            font-family: 'Material Symbols Outlined';
+        }
+
+        .status-badge.ausser-betrieb .status-icon::before {
+            content: "\e5c9"; /* close */
+            font-family: 'Material Symbols Outlined';
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+
+        /* Tablet breakpoint (768px - 1024px) */
+        @media screen and (max-width: 1024px) {
+            #header {
+                padding: 0 16px;
+                height: 70px;
+            }
+
+            #logo-text-img {
+                height: 40px;
+            }
+
+            #search-area {
+                padding: 0 16px;
+                gap: 12px;
+            }
+
+            #search-wrapper {
+                max-width: 400px;
+            }
+
+            #header-right {
+                min-width: auto;
+                gap: 16px;
+            }
+
+            #accordion-panel {
+                width: 320px;
+            }
+
+            #menu-toggle {
+                margin-left: calc((320px - 160px) / 2);
+            }
+
+            #info-panel {
+                width: 300px;
+                right: 10px;
+            }
+
+            .detail-grid {
+                gap: 16px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 16px;
+                padding: 16px;
+            }
+
+            #gallery-view {
+                padding: 16px;
+            }
+        }
+
+        /* Mobile breakpoint (< 768px) */
+        @media screen and (max-width: 767px) {
+            #header {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 12px 16px;
+                gap: 12px;
+            }
+
+            #logo-area {
+                order: 1;
+            }
+
+            #logo-text-img {
+                height: 32px;
+            }
+
+            #header-right {
+                order: 2;
+                margin-left: auto;
+            }
+
+            #filter-controls {
+                gap: 4px;
+            }
+
+            #object-count {
+                display: none;
+            }
+
+            .header-btn span:not(.material-symbols-outlined) {
+                display: none;
+            }
+
+            .header-btn {
+                padding: 8px;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                justify-content: center;
+            }
+
+            #search-area {
+                order: 3;
+                width: 100%;
+                padding: 0;
+                flex-wrap: wrap;
+            }
+
+            #search-wrapper {
+                max-width: 100%;
+                flex: 1;
+                min-width: 200px;
+            }
+
+            .view-toggle {
+                flex-shrink: 0;
+            }
+
+            .view-toggle-btn {
+                padding: 8px 10px;
+            }
+
+            .view-toggle-btn .view-label {
+                display: none !important;
+            }
+
+            /* Accordion panel - full width bottom sheet on mobile */
+            #accordion-panel {
+                position: fixed;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                max-height: 60vh;
+                margin: 0;
+                border-radius: 16px 16px 0 0;
+            }
+
+            #menu-toggle {
+                position: fixed;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                margin-left: 0;
+                width: auto;
+                padding: 10px 20px;
+            }
+
+            #accordion-panel.collapsed + #menu-toggle {
+                bottom: 10px;
+            }
+
+            /* Info panel - full width bottom sheet on mobile */
+            #info-panel {
+                position: fixed;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                max-height: 70vh;
+                border-radius: 16px 16px 0 0;
+                overflow-y: auto;
+            }
+
+            /* Style switcher position on mobile */
+            .style-switcher {
+                bottom: 80px;
+                right: 10px;
+            }
+
+            .style-switcher-panel {
+                right: 0;
+                bottom: 100%;
+                margin-bottom: 10px;
+                margin-right: 0;
+                flex-direction: column;
+            }
+
+            /* List view adjustments */
+            .toolbar {
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px 16px;
+            }
+
+            .toolbar-search {
+                width: 100%;
+                min-width: auto;
+            }
+
+            .toolbar-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .list-table {
+                font-size: 12px;
+            }
+
+            .list-table th,
+            .list-table td {
+                padding: 10px 8px;
+            }
+
+            /* Hide some columns on mobile */
+            .list-table .col-adresse,
+            .list-table .col-portfolio {
+                display: none;
+            }
+
+            /* Gallery view adjustments */
+            #gallery-view {
+                padding: 12px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .gallery-card {
+                display: flex;
+                flex-direction: row;
+            }
+
+            .gallery-image {
+                width: 120px;
+                height: auto;
+                min-height: 120px;
+                flex-shrink: 0;
+            }
+
+            .gallery-content {
+                flex: 1;
+                padding: 12px;
+            }
+
+            .gallery-title {
+                font-size: 14px;
+            }
+
+            .gallery-subtitle {
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+
+            .gallery-meta {
+                margin-bottom: 8px;
+            }
+
+            .gallery-tag {
+                font-size: 10px;
+                padding: 2px 6px;
+            }
+
+            /* Detail view adjustments */
+            .detail-header {
+                padding: 12px 16px;
+            }
+
+            .detail-header-inner {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .breadcrumb {
+                font-size: 12px;
+                flex-wrap: wrap;
+            }
+
+            .detail-header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .detail-tabs {
+                padding: 0 16px;
+                overflow-x: auto;
+            }
+
+            .detail-tabs-inner {
+                min-width: max-content;
+            }
+
+            .detail-tab {
+                padding: 12px 14px;
+                font-size: 13px;
+                white-space: nowrap;
+            }
+
+            .detail-content {
+                padding: 16px;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .data-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .carousel {
+                height: 200px;
+            }
+
+            .mini-map-container {
+                height: 200px;
+            }
+
+            .address-table {
+                font-size: 11px;
+            }
+
+            .address-table th,
+            .address-table td {
+                padding: 6px 4px;
+            }
+
+            /* Filter pane - full screen overlay on mobile */
+            #filter-pane {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100% !important;
+                min-width: 100% !important;
+                z-index: 2000;
+                border-left: none;
+            }
+
+            #filter-pane:not(.open) {
+                display: none;
+            }
+
+            /* Footer adjustments */
+            #footer {
+                padding: 8px 12px;
+                font-size: 11px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            #coordinates {
+                font-size: 10px;
+            }
+
+            #footer-links a {
+                margin-left: 12px;
+            }
+        }
+
+        /* Small mobile (< 480px) */
+        @media screen and (max-width: 479px) {
+            #logo-text-img {
+                display: none;
+            }
+
+            .view-toggle-btn {
+                padding: 8px;
+            }
+
+            #info-panel {
+                max-height: 80vh;
+            }
+
+            #info-preview-image {
+                height: 100px;
+            }
+
+            .gallery-image {
+                width: 100px;
+                min-height: 100px;
+            }
+
+            .detail-tab {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            #header,
+            #footer,
+            #accordion-panel,
+            #info-panel,
+            .style-switcher,
+            #menu-toggle,
+            .btn-back,
+            .btn-edit,
+            #filter-pane {
+                display: none !important;
+            }
+
+            #main {
+                height: auto;
+                overflow: visible;
+            }
+
+            .detail-view {
+                overflow: visible;
+            }
+
+            .detail-content {
+                overflow: visible;
+            }
+        }
+
     </style>
 </head>
 <body>
-    <header id="header">
+    <!-- Skip link for keyboard navigation -->
+    <a href="#main" class="skip-link">Zum Hauptinhalt springen</a>
+
+    <header id="header" role="banner">
         <div id="logo-area">
             <img id="logo-flag" src="https://www.swisstopo.admin.ch/images/swiss-logo-flag.svg" alt="Schweizer Flagge">
             <img id="logo-text-img" src="https://prod-swisstopoch-hcms-sdweb.imgix.net/2023/12/16/26d017bc-3987-4322-aa29-18052c11eac5.png" alt="Schweizerische Eidgenossenschaft">
         </div>
         
-        <div id="search-area">
+        <div id="search-area" role="search">
             <div id="search-wrapper">
                 <div id="search-container">
-                    <button id="search-icon-btn">
-                        <span class="material-symbols-outlined">search</span>
+                    <button id="search-icon-btn" aria-label="Suche starten" type="button">
+                        <span class="material-symbols-outlined" aria-hidden="true">search</span>
                     </button>
-                    <input type="text" id="search-input" placeholder="Suche nach Objekten, Orten oder Karten">
-                    <button id="search-clear-btn" title="Suche löschen">
-                        <span class="material-symbols-outlined">close</span>
+                    <input type="search" id="search-input" placeholder="Suche nach Objekten, Orten oder Karten" aria-label="Suchbegriff eingeben" autocomplete="off">
+                    <button id="search-clear-btn" title="Suche löschen" aria-label="Suche löschen" type="button">
+                        <span class="material-symbols-outlined" aria-hidden="true">close</span>
                     </button>
-                    <div id="search-spinner" class="spinner"></div>
+                    <div id="search-spinner" class="spinner" role="status" aria-label="Suche läuft"></div>
                 </div>
-                <div id="search-results"></div>
+                <div id="search-results" role="listbox" aria-label="Suchergebnisse"></div>
             </div>
-            
-            <div class="view-toggle">
-                <button class="view-toggle-btn active" data-view="map" title="Karte">
-                    <span class="material-symbols-outlined">map</span>
+
+            <div class="view-toggle" role="tablist" aria-label="Ansicht wählen">
+                <button class="view-toggle-btn active" data-view="map" title="Karte" aria-label="Kartenansicht" role="tab" aria-selected="true">
+                    <span class="material-symbols-outlined" aria-hidden="true">map</span>
                     <span class="view-label">Karte</span>
                 </button>
-                <button class="view-toggle-btn" data-view="list" title="Tabelle">
-                    <span class="material-symbols-outlined">view_list</span>
+                <button class="view-toggle-btn" data-view="list" title="Tabelle" aria-label="Tabellenansicht" role="tab" aria-selected="false">
+                    <span class="material-symbols-outlined" aria-hidden="true">view_list</span>
                     <span class="view-label">Tabelle</span>
                 </button>
-                <button class="view-toggle-btn" data-view="gallery" title="Galerie">
-                    <span class="material-symbols-outlined">grid_view</span>
+                <button class="view-toggle-btn" data-view="gallery" title="Galerie" aria-label="Galerieansicht" role="tab" aria-selected="false">
+                    <span class="material-symbols-outlined" aria-hidden="true">grid_view</span>
                     <span class="view-label">Galerie</span>
                 </button>
             </div>
         </div>
-        
+
         <div id="header-right">
             <div id="filter-controls">
-                <span id="object-count">10 Objekte</span>
-                <button class="header-btn" id="filter-btn">
-                    <span class="material-symbols-outlined">filter_list</span>
+                <span id="object-count" aria-live="polite">10 Objekte</span>
+                <button class="header-btn" id="filter-btn" aria-label="Filter öffnen" aria-expanded="false" aria-controls="filter-pane">
+                    <span class="material-symbols-outlined" aria-hidden="true">filter_list</span>
                     Filter
                 </button>
             </div>
             <div id="login-area">
-                <button id="login-btn" title="Anmelden">
-                    <span class="material-symbols-outlined">person</span>
+                <button id="login-btn" title="Anmelden" aria-label="Anmelden">
+                    <span class="material-symbols-outlined" aria-hidden="true">person</span>
                 </button>
             </div>
         </div>
@@ -2147,37 +2763,37 @@
                     </div>
                     <div class="accordion-content">
                         <div class="share-panel">
-                            <div class="share-icons">
+                            <div class="share-icons" role="group" aria-label="Teilen über soziale Medien">
                                 <!-- Email -->
-                                <button class="share-icon-btn" onclick="shareViaEmail()" title="Per E-Mail teilen">
-                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <button class="share-icon-btn" onclick="shareViaEmail()" title="Per E-Mail teilen" aria-label="Per E-Mail teilen">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                         <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                                     </svg>
                                 </button>
                                 <!-- Facebook -->
-                                <button class="share-icon-btn" onclick="shareViaFacebook()" title="Auf Facebook teilen">
-                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <button class="share-icon-btn" onclick="shareViaFacebook()" title="Auf Facebook teilen" aria-label="Auf Facebook teilen">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                         <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/>
                                     </svg>
                                 </button>
                                 <!-- LinkedIn -->
-                                <button class="share-icon-btn" onclick="shareViaLinkedIn()" title="Auf LinkedIn teilen">
-                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <button class="share-icon-btn" onclick="shareViaLinkedIn()" title="Auf LinkedIn teilen" aria-label="Auf LinkedIn teilen">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                         <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
                                     </svg>
                                 </button>
                                 <!-- X (Twitter) -->
-                                <button class="share-icon-btn" onclick="shareViaX()" title="Auf X teilen">
-                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <button class="share-icon-btn" onclick="shareViaX()" title="Auf X teilen" aria-label="Auf X teilen">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                                     </svg>
                                 </button>
                             </div>
                             <div class="share-link-section">
-                                <span class="share-link-label">Share link:</span>
+                                <span class="share-link-label">Link zum Teilen:</span>
                                 <div class="share-link-row">
-                                    <input type="text" id="share-link-input" class="share-link-input" readonly>
-                                    <button class="share-copy-btn" onclick="copyShareLink()">Link kopieren</button>
+                                    <input type="text" id="share-link-input" class="share-link-input" readonly aria-label="Link zum Teilen">
+                                    <button class="share-copy-btn" onclick="copyShareLink()" aria-label="Link in die Zwischenablage kopieren">Link kopieren</button>
                                 </div>
                             </div>
                         </div>
@@ -2233,14 +2849,14 @@
                 <span id="menu-toggle-text">Menü schliessen</span>
             </div>
             
-            <aside id="info-panel">
-                <div id="info-preview-image"></div>
+            <aside id="info-panel" role="complementary" aria-label="Objektinformation">
+                <div id="info-preview-image" role="img" aria-label="Vorschaubild des Objekts"></div>
                 <div id="info-header">
                     <span id="info-header-title">Objekt-Information</span>
                     <div id="info-header-actions">
-                        <button title="Drucken"><span class="material-symbols-outlined">print</span></button>
-                        <button title="Link kopieren"><span class="material-symbols-outlined">link</span></button>
-                        <button id="info-close" title="Schliessen"><span class="material-symbols-outlined">close</span></button>
+                        <button title="Drucken" aria-label="Objektinformation drucken"><span class="material-symbols-outlined" aria-hidden="true">print</span></button>
+                        <button title="Link kopieren" aria-label="Link zum Objekt kopieren"><span class="material-symbols-outlined" aria-hidden="true">link</span></button>
+                        <button id="info-close" title="Schliessen" aria-label="Informationspanel schliessen"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
                     </div>
                 </div>
                 <div id="info-body"></div>
@@ -3055,6 +3671,9 @@
             applyFilters();
         }
 
+        // Global alias for empty state buttons
+        window.resetAllFilters = resetFilters;
+
         function navigateToAllObjects() {
             resetFilters();
             switchView(previousView || 'gallery');
@@ -3159,9 +3778,11 @@
             if (open) {
                 pane.classList.add('open');
                 filterBtn.classList.add('pane-open');
+                filterBtn.setAttribute('aria-expanded', 'true');
             } else {
                 pane.classList.remove('open');
                 filterBtn.classList.remove('pane-open');
+                filterBtn.setAttribute('aria-expanded', 'false');
             }
 
             // Resize map after transition completes
@@ -3536,11 +4157,13 @@
             currentView = view;
             setViewInURL(view);
             
-            // Update toggle buttons
+            // Update toggle buttons and ARIA attributes
             document.querySelectorAll('.view-toggle-btn').forEach(function(btn) {
                 btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
                 if (btn.dataset.view === view) {
                     btn.classList.add('active');
+                    btn.setAttribute('aria-selected', 'true');
                 }
             });
             
@@ -3860,7 +4483,29 @@
 
             var dataToRender = filteredData || portfolioData;
             var listBody = document.getElementById('list-body');
+            var tableWrapper = document.querySelector('#list-view .list-table-wrapper');
             var html = '';
+
+            // Handle empty state
+            if (dataToRender.features.length === 0) {
+                listBody.innerHTML = '';
+                // Check if empty state already exists
+                var existingEmpty = document.querySelector('#list-view .empty-state');
+                if (!existingEmpty) {
+                    var emptyHtml = '<div class="empty-state">' +
+                        '<span class="material-symbols-outlined">search_off</span>' +
+                        '<div class="empty-state-title">Keine Objekte gefunden</div>' +
+                        '<div class="empty-state-description">Die aktuellen Filter ergeben keine Treffer. Passen Sie die Filterkriterien an oder setzen Sie die Filter zurück.</div>' +
+                        '<div class="empty-state-action"><button class="btn-secondary" onclick="resetAllFilters()">Filter zurücksetzen</button></div>' +
+                    '</div>';
+                    tableWrapper.insertAdjacentHTML('afterend', emptyHtml);
+                }
+                return;
+            } else {
+                // Remove empty state if it exists
+                var existingEmpty = document.querySelector('#list-view .empty-state');
+                if (existingEmpty) existingEmpty.remove();
+            }
 
             dataToRender.features.forEach(function(feature) {
                 var props = feature.properties;
@@ -3869,7 +4514,7 @@
                                   props.status === 'In Planung' ? 'in-planung' : 'ausser-betrieb';
                 var flaeche = Number(props.flaeche_ngf).toLocaleString('de-CH');
 
-                html += '<tr data-id="' + props.id + '">' +
+                html += '<tr data-id="' + props.id + '" tabindex="0" role="row">' +
                     '<td class="col-id">' + props.id + '</td>' +
                     '<td class="col-name">' + props.name + '</td>' +
                     '<td class="col-land">' + props.land + '</td>' +
@@ -3877,17 +4522,24 @@
                     '<td class="col-adresse">' + props.adresse + '</td>' +
                     '<td class="col-portfolio">' + props.teilportfolio + '</td>' +
                     '<td class="col-flaeche">' + flaeche + ' m²</td>' +
-                    '<td class="col-status"><span class="status-badge ' + statusClass + '">' + props.status + '</span></td>' +
+                    '<td class="col-status"><span class="status-badge ' + statusClass + '"><span class="status-icon" aria-hidden="true"></span>' + props.status + '</span></td>' +
                 '</tr>';
             });
 
             listBody.innerHTML = html;
 
-            // Add click handlers
+            // Add click and keyboard handlers
             document.querySelectorAll('#list-body tr').forEach(function(row) {
                 row.addEventListener('click', function() {
                     var buildingId = this.dataset.id;
                     showDetailView(buildingId);
+                });
+                row.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        var buildingId = this.dataset.id;
+                        showDetailView(buildingId);
+                    }
                 });
             });
         }
@@ -3900,14 +4552,25 @@
             var galleryGrid = document.getElementById('gallery-grid');
             var html = '';
 
+            // Handle empty state
+            if (dataToRender.features.length === 0) {
+                galleryGrid.innerHTML = '<div class="empty-state">' +
+                    '<span class="material-symbols-outlined">search_off</span>' +
+                    '<div class="empty-state-title">Keine Objekte gefunden</div>' +
+                    '<div class="empty-state-description">Die aktuellen Filter ergeben keine Treffer. Passen Sie die Filterkriterien an oder setzen Sie die Filter zurück.</div>' +
+                    '<div class="empty-state-action"><button class="btn-secondary" onclick="resetAllFilters()">Filter zurücksetzen</button></div>' +
+                '</div>';
+                return;
+            }
+
             dataToRender.features.forEach(function(feature, index) {
                 var props = feature.properties;
                 var flaeche = Number(props.flaeche_ngf).toLocaleString('de-CH');
                 // Use placeholder images
                 var imageUrl = placeholderImages[index % placeholderImages.length];
-                
-                html += '<div class="gallery-card" data-id="' + props.id + '">' +
-                    '<div class="gallery-image" style="background-image: url(' + imageUrl + ')">' +
+
+                html += '<div class="gallery-card" data-id="' + props.id + '" tabindex="0" role="article" aria-label="' + props.name + '">' +
+                    '<div class="gallery-image" style="background-image: url(' + imageUrl + ')" role="img" aria-label="Bild von ' + props.name + '">' +
                         '<div class="gallery-image-label">' + props.land + '</div>' +
                     '</div>' +
                     '<div class="gallery-content">' +
@@ -3919,19 +4582,26 @@
                         '</div>' +
                         '<div class="gallery-footer">' +
                             '<span>Baujahr ' + props.baujahr + '</span>' +
-                            '<a href="#" class="gallery-link" onclick="event.stopPropagation();">Details <span class="material-symbols-outlined">arrow_forward</span></a>' +
+                            '<a href="#" class="gallery-link" onclick="event.stopPropagation();" aria-label="Details zu ' + props.name + ' anzeigen">Details <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>' +
                         '</div>' +
                     '</div>' +
                 '</div>';
             });
-            
+
             galleryGrid.innerHTML = html;
-            
-            // Add click handlers
+
+            // Add click and keyboard handlers
             document.querySelectorAll('.gallery-card').forEach(function(card) {
                 card.addEventListener('click', function() {
                     var buildingId = this.dataset.id;
                     showDetailView(buildingId);
+                });
+                card.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        var buildingId = this.dataset.id;
+                        showDetailView(buildingId);
+                    }
                 });
             });
         }
@@ -4045,19 +4715,60 @@
                 }
             });
             
-            // Selected point highlight layer
+            // Selected point highlight layer - outer ring
             map.addLayer({
                 id: 'portfolio-selected',
                 type: 'circle',
                 source: 'portfolio',
                 filter: ['==', ['get', 'id'], ''],
                 paint: {
-                    'circle-radius': 16,
+                    'circle-radius': 18,
                     'circle-color': 'transparent',
                     'circle-stroke-width': 3,
-                    'circle-stroke-color': '#c00'
+                    'circle-stroke-color': '#c00',
+                    'circle-stroke-opacity': 0.9
                 }
             });
+
+            // Selected point pulse animation layer
+            map.addLayer({
+                id: 'portfolio-selected-pulse',
+                type: 'circle',
+                source: 'portfolio',
+                filter: ['==', ['get', 'id'], ''],
+                paint: {
+                    'circle-radius': 24,
+                    'circle-color': 'transparent',
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#c00',
+                    'circle-stroke-opacity': 0.4
+                }
+            });
+
+            // Animate the pulse layer
+            var pulseRadius = 24;
+            var pulseOpacity = 0.4;
+            var pulseDirection = 1;
+
+            function animatePulse() {
+                pulseRadius += 0.3 * pulseDirection;
+                pulseOpacity -= 0.01 * pulseDirection;
+
+                if (pulseRadius >= 32) {
+                    pulseDirection = -1;
+                } else if (pulseRadius <= 24) {
+                    pulseDirection = 1;
+                }
+
+                if (map.getLayer('portfolio-selected-pulse')) {
+                    map.setPaintProperty('portfolio-selected-pulse', 'circle-radius', pulseRadius);
+                    map.setPaintProperty('portfolio-selected-pulse', 'circle-stroke-opacity', Math.max(0.1, pulseOpacity));
+                }
+
+                requestAnimationFrame(animatePulse);
+            }
+
+            animatePulse();
             
             map.on('mouseenter', 'portfolio-points', function() {
                 map.getCanvas().style.cursor = 'pointer';
@@ -4159,6 +4870,9 @@
         function updateSelectedBuilding() {
             if (map && map.getLayer('portfolio-selected')) {
                 map.setFilter('portfolio-selected', ['==', ['get', 'id'], selectedBuildingId || '']);
+            }
+            if (map && map.getLayer('portfolio-selected-pulse')) {
+                map.setFilter('portfolio-selected-pulse', ['==', ['get', 'id'], selectedBuildingId || '']);
             }
         }
 
