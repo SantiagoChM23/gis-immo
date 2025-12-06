@@ -4357,8 +4357,9 @@
                     content.classList.add('show');
 
                     // Update share link when Teilen accordion is opened
-                    var headerText = this.querySelector('span:not(.accordion-arrow)');
-                    if (headerText && headerText.textContent.trim() === 'Teilen') {
+                    var headerSpans = this.querySelectorAll(':scope > span');
+                    var lastSpan = headerSpans[headerSpans.length - 1];
+                    if (lastSpan && lastSpan.textContent.trim() === 'Teilen') {
                         updateShareLink();
                     }
 
