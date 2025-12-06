@@ -1132,34 +1132,34 @@
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 8px;
             font-size: 14px;
             transition: background 0.2s;
         }
-        
+
         .accordion-header:hover {
             background: rgba(255,255,255,0.1);
         }
-        
+
         .accordion-header.active {
             background: var(--grey-100);
             color: var(--grey-900);
         }
-        
+
         .accordion-arrow {
             transition: transform 0.3s;
             display: flex;
             align-items: center;
         }
-        
+
         .accordion-arrow .material-symbols-outlined {
             font-size: 18px;
         }
-        
+
         .accordion-header.active .accordion-arrow {
             transform: rotate(180deg);
         }
-        
+
         .accordion-header.active .accordion-arrow .material-symbols-outlined {
             color: var(--grey-900);
         }
@@ -1177,30 +1177,11 @@
         }
 
         /* ===== GEOKATALOG TREE ===== */
-        .geokatalog-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .geokatalog-header .geokatalog-title {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .geokatalog-header .accordion-arrow {
-            transition: transform 0.2s;
-        }
-
-        .geokatalog-header.active .accordion-arrow {
-            transform: rotate(180deg);
-        }
-
         .geokatalog-header .geokatalog-theme-switch {
             font-size: 12px;
             color: rgba(255,255,255,0.7);
             font-weight: normal;
+            margin-left: auto;
         }
 
         .geokatalog-header.active .geokatalog-theme-switch {
@@ -2077,50 +2058,48 @@
             <nav id="accordion-panel">
                 <div class="accordion-item">
                     <div class="accordion-header">
-                        <span>Teilen</span>
                         <span class="accordion-arrow"><span class="material-symbols-outlined">expand_more</span></span>
+                        <span>Teilen</span>
                     </div>
                     <div class="accordion-content">
                         Teilen Sie die aktuelle Kartenansicht inkl. Position und Zoom-Stufe per URL-Link mit Kollegen oder externen Partnern.
                     </div>
                 </div>
-                
+
                 <div class="accordion-item">
                     <div class="accordion-header">
-                        <span>Drucken</span>
                         <span class="accordion-arrow"><span class="material-symbols-outlined">expand_more</span></span>
+                        <span>Drucken</span>
                     </div>
                     <div class="accordion-content">
                         Exportieren Sie den aktuellen Kartenausschnitt als PDF-Dokument mit Legende, Massstab und Nordpfeil für Berichte und Präsentationen.
                     </div>
                 </div>
-                
+
                 <div class="accordion-item">
                     <div class="accordion-header">
-                        <span>Zeichnen & Messen auf der Karte</span>
                         <span class="accordion-arrow"><span class="material-symbols-outlined">expand_more</span></span>
+                        <span>Zeichnen & Messen auf der Karte</span>
                     </div>
                     <div class="accordion-content">
                         Zeichnen Sie Punkte, Linien und Polygone direkt auf der Karte. Messen Sie Distanzen in Metern oder Kilometern und berechnen Sie Flächen in Quadratmetern.
                     </div>
                 </div>
-                
+
                 <div class="accordion-item">
                     <div class="accordion-header">
-                        <span>Export</span>
                         <span class="accordion-arrow"><span class="material-symbols-outlined">expand_more</span></span>
+                        <span>Export</span>
                     </div>
                     <div class="accordion-content">
                         Exportieren Sie Portfolio-Daten in verschiedenen Formaten: GeoJSON für Web-Anwendungen, CSV für Excel, KML für Google Earth oder Shapefile für GIS-Software.
                     </div>
                 </div>
-                
+
                 <div class="accordion-item" id="geokatalog-accordion">
                     <div class="accordion-header geokatalog-header">
-                        <span class="geokatalog-title">
-                            <span class="accordion-arrow"><span class="material-symbols-outlined">expand_more</span></span>
-                            <span>Geokatalog</span>
-                        </span>
+                        <span class="accordion-arrow"><span class="material-symbols-outlined">expand_more</span></span>
+                        <span>Geokatalog</span>
                         <span class="geokatalog-theme-switch">Thema wechseln</span>
                     </div>
                     <div class="accordion-content geokatalog-content">
