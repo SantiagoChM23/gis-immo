@@ -1739,7 +1739,7 @@
         .style-switcher {
             position: absolute;
             bottom: 40px;
-            right: 20px;
+            right: 130px;
             z-index: 500;
         }
 
@@ -1839,6 +1839,212 @@
         .style-option.active span {
             color: var(--primary-red);
             font-weight: var(--font-semibold);
+        }
+
+        /* ===== AI ASSISTANT TOGGLE ===== */
+        .ai-assistant-toggle {
+            position: fixed;
+            bottom: 40px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .ai-assistant-btn {
+            background: var(--white);
+            border: 2px solid var(--grey-300);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+            min-width: 88px;
+        }
+
+        .ai-assistant-btn:hover {
+            border-color: var(--grey-500);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+
+        .ai-assistant-btn.active {
+            border-color: var(--primary-red);
+            background: var(--grey-100);
+        }
+
+        .ai-assistant-btn .material-symbols-outlined {
+            font-size: 32px;
+            color: var(--grey-700);
+        }
+
+        .ai-assistant-btn.active .material-symbols-outlined {
+            color: var(--primary-red);
+        }
+
+        .ai-assistant-btn span:not(.material-symbols-outlined) {
+            font-size: var(--text-xs);
+            color: var(--grey-600);
+            font-weight: var(--font-medium);
+            white-space: nowrap;
+        }
+
+        /* ===== AI ASSISTANT PANEL ===== */
+        #ai-assistant-panel {
+            position: fixed;
+            top: 60px;
+            right: 0;
+            bottom: 0;
+            width: 400px;
+            background: var(--white);
+            box-shadow: -4px 0 16px rgba(0,0,0,0.15);
+            z-index: 900;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        #ai-assistant-panel.show {
+            transform: translateX(0);
+        }
+
+        .ai-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--grey-200);
+            background: var(--grey-50);
+        }
+
+        .ai-panel-header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: var(--text-base);
+            font-weight: var(--font-semibold);
+            color: var(--grey-900);
+        }
+
+        .ai-panel-header-title .material-symbols-outlined {
+            font-size: 24px;
+            color: var(--grey-600);
+        }
+
+        .ai-panel-close {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .ai-panel-close:hover {
+            background: var(--grey-200);
+        }
+
+        .ai-panel-close .material-symbols-outlined {
+            font-size: 20px;
+            color: var(--grey-600);
+        }
+
+        .ai-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .ai-chat-message {
+            margin-bottom: 20px;
+        }
+
+        .ai-chat-message-label {
+            font-size: var(--text-sm);
+            font-weight: var(--font-semibold);
+            color: var(--grey-700);
+            margin-bottom: 8px;
+        }
+
+        .ai-chat-message-content {
+            font-size: var(--text-sm);
+            color: var(--grey-800);
+            line-height: 1.6;
+        }
+
+        .ai-chat-message-content ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .ai-chat-message-content li {
+            margin-bottom: 4px;
+        }
+
+        .ai-panel-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            border-top: 1px solid var(--grey-200);
+            background: var(--grey-50);
+        }
+
+        .ai-panel-input-field {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--white);
+            border: 1px solid var(--grey-300);
+            border-radius: 24px;
+            padding: 10px 16px;
+        }
+
+        .ai-panel-input-field .material-symbols-outlined {
+            font-size: 20px;
+            color: var(--grey-400);
+        }
+
+        .ai-panel-input-field input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: var(--text-sm);
+            color: var(--grey-800);
+            background: transparent;
+        }
+
+        .ai-panel-input-field input::placeholder {
+            color: var(--grey-400);
+        }
+
+        .ai-panel-send-btn {
+            background: var(--grey-200);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .ai-panel-send-btn:hover {
+            background: var(--grey-300);
+        }
+
+        .ai-panel-send-btn .material-symbols-outlined {
+            font-size: 18px;
+            color: var(--grey-600);
         }
 
         /* ===== TAB CONTENT SWITCHING ===== */
@@ -3911,6 +4117,68 @@
                 </div>
             </div>
         </aside>
+
+        <!-- AI Assistant Toggle Button -->
+        <div class="ai-assistant-toggle">
+            <button class="ai-assistant-btn" id="ai-assistant-btn" title="Datenassistent">
+                <span class="material-symbols-outlined">smart_toy</span>
+                <span>Datenassistent</span>
+            </button>
+        </div>
+
+        <!-- AI Assistant Panel -->
+        <aside id="ai-assistant-panel" role="complementary" aria-label="Datenassistent">
+            <div class="ai-panel-header">
+                <div class="ai-panel-header-title">
+                    <span class="material-symbols-outlined">smart_toy</span>
+                    Datenassistent
+                </div>
+                <button class="ai-panel-close" id="ai-panel-close" title="Schliessen">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="ai-panel-content" id="ai-panel-content">
+                <div class="ai-chat-message">
+                    <div class="ai-chat-message-label">Benutzer:</div>
+                    <div class="ai-chat-message-content">
+                        Hallo, ich möchte gerne die aktuellen Vermietungszahlen unserer Immobilien sehen.
+                    </div>
+                </div>
+                <div class="ai-chat-message">
+                    <div class="ai-chat-message-label">Datenassistent:</div>
+                    <div class="ai-chat-message-content">
+                        Hallo! Natürlich, ich kann Ihnen dabei helfen. Möchten Sie die Vermietungszahlen für ein bestimmtes Quartal oder das gesamte Jahr sehen?
+                    </div>
+                </div>
+                <div class="ai-chat-message">
+                    <div class="ai-chat-message-label">Benutzer:</div>
+                    <div class="ai-chat-message-content">
+                        Zeigen Sie mir bitte die Vermietungszahlen für das zweite Quartal 2024.
+                    </div>
+                </div>
+                <div class="ai-chat-message">
+                    <div class="ai-chat-message-label">Datenassistent:</div>
+                    <div class="ai-chat-message-content">
+                        Hier sind die Vermietungszahlen für das zweite Quartal 2024:
+                        <ul>
+                            <li>Anzahl der vermieteten Einheiten: 120</li>
+                            <li>Durchschnittliche Vermietungsdauer: 6 Monate</li>
+                            <li>Durchschnittliche Mieteinnahmen pro Einheit: 1.200 CHF</li>
+                        </ul>
+                        Ich erstelle auch einen Chart zur besseren Visualisierung der Daten.
+                    </div>
+                </div>
+            </div>
+            <div class="ai-panel-input">
+                <div class="ai-panel-input-field">
+                    <span class="material-symbols-outlined">attach_file</span>
+                    <input type="text" placeholder="Eine Frage an Datenassistent stellen" id="ai-panel-input">
+                </div>
+                <button class="ai-panel-send-btn" id="ai-panel-send" title="Senden">
+                    <span class="material-symbols-outlined">arrow_upward</span>
+                </button>
+            </div>
+        </aside>
     </main>
 
     <footer id="footer">
@@ -5755,7 +6023,32 @@
             selectedBuildingId = null;
             updateSelectedBuilding();
         });
-        
+
+        // ===== AI ASSISTANT PANEL =====
+        var aiAssistantBtn = document.getElementById('ai-assistant-btn');
+        var aiAssistantPanel = document.getElementById('ai-assistant-panel');
+        var aiPanelClose = document.getElementById('ai-panel-close');
+        var aiPanelOpen = false;
+
+        function toggleAiPanel() {
+            aiPanelOpen = !aiPanelOpen;
+            if (aiPanelOpen) {
+                aiAssistantPanel.classList.add('show');
+                aiAssistantBtn.classList.add('active');
+            } else {
+                aiAssistantPanel.classList.remove('show');
+                aiAssistantBtn.classList.remove('active');
+            }
+        }
+
+        aiAssistantBtn.addEventListener('click', toggleAiPanel);
+
+        aiPanelClose.addEventListener('click', function() {
+            aiPanelOpen = false;
+            aiAssistantPanel.classList.remove('show');
+            aiAssistantBtn.classList.remove('active');
+        });
+
         // ===== DETAIL TABS =====
         document.querySelectorAll('.detail-tab').forEach(function(tab) {
             tab.addEventListener('click', function() {
