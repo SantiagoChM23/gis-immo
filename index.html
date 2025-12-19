@@ -1742,12 +1742,30 @@
             color: var(--grey-600);
         }
 
-        /* ===== STYLE SWITCHER ===== */
-        .style-switcher {
+        /* ===== FLOATING CONTROLS (bottom-right) ===== */
+        .floating-controls {
             position: absolute;
             bottom: 40px;
-            right: 130px;
+            right: 20px;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
             z-index: 500;
+        }
+
+        /* Hide floating controls when AI panel is open (controlled via JS) */
+        .floating-controls.hidden {
+            display: none;
+        }
+
+        /* ===== STYLE SWITCHER ===== */
+        .style-switcher {
+            position: relative;
+            display: none;
+        }
+
+        .style-switcher.visible {
+            display: block;
         }
 
         .style-switcher-btn {
@@ -1848,33 +1866,24 @@
             font-weight: var(--font-semibold);
         }
 
-        /* ===== AI ASSISTANT TOGGLE ===== */
-        .ai-assistant-toggle {
-            position: fixed;
-            bottom: 40px;
-            right: 20px;
-            z-index: 1000;
-        }
-
+        /* ===== AI ASSISTANT BUTTON ===== */
         .ai-assistant-btn {
             background: var(--white);
             border: 2px solid var(--grey-300);
-            border-radius: 8px;
-            padding: 12px;
+            border-radius: 4px;
+            padding: 4px;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-            min-width: 88px;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .ai-assistant-btn:hover {
             border-color: var(--grey-500);
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transform: translateY(-2px);
         }
 
         .ai-assistant-btn.active {
@@ -1882,16 +1891,26 @@
             background: var(--grey-100);
         }
 
+        .ai-assistant-btn .ai-btn-icon {
+            width: 80px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--grey-100);
+            border-radius: 2px;
+        }
+
         .ai-assistant-btn .material-symbols-outlined {
-            font-size: 32px;
-            color: var(--grey-700);
+            font-size: 36px;
+            color: var(--grey-600);
         }
 
         .ai-assistant-btn.active .material-symbols-outlined {
             color: var(--primary-red);
         }
 
-        .ai-assistant-btn span:not(.material-symbols-outlined) {
+        .ai-assistant-btn span:not(.material-symbols-outlined):not(.ai-btn-icon) {
             font-size: var(--text-xs);
             color: var(--grey-600);
             font-weight: var(--font-medium);
@@ -3264,34 +3283,8 @@
                 </div>
                 <div id="info-body"></div>
             </aside>
-
-            <!-- Style Switcher -->
-            <div class="style-switcher">
-                <div class="style-switcher-panel" id="style-panel">
-                    <button class="style-option active" data-style="light-v11" title="Light">
-                        <img id="thumb-light-v11" src="" alt="Light">
-                        <span>Light</span>
-                    </button>
-                    <button class="style-option" data-style="streets-v12" title="Standard">
-                        <img id="thumb-streets-v12" src="" alt="Standard">
-                        <span>Standard</span>
-                    </button>
-                    <button class="style-option" data-style="satellite-v9" title="Luftbild">
-                        <img id="thumb-satellite-v9" src="" alt="Luftbild">
-                        <span>Luftbild</span>
-                    </button>
-                    <button class="style-option" data-style="satellite-streets-v12" title="Luftbild + Strassen">
-                        <img id="thumb-satellite-streets-v12" src="" alt="Luftbild + Strassen">
-                        <span>Hybrid</span>
-                    </button>
-                </div>
-                <button class="style-switcher-btn" id="style-switcher-btn" title="Hintergrund wechseln">
-                    <img id="current-style-thumb" src="" alt="Aktueller Stil">
-                    <span>Hintergrund</span>
-                </button>
-            </div>
         </div>
-        
+
         <div id="list-view">
             <!-- Table Container -->
             <div class="list-table-container">
@@ -4125,6 +4118,42 @@
                 </div>
             </div>
         </aside>
+
+        <!-- Floating Controls (bottom-right) -->
+        <div class="floating-controls" id="floating-controls">
+            <!-- Style Switcher (visible only in map view) -->
+            <div class="style-switcher" id="style-switcher">
+                <div class="style-switcher-panel" id="style-panel">
+                    <button class="style-option active" data-style="light-v11" title="Light">
+                        <img id="thumb-light-v11" src="" alt="Light">
+                        <span>Light</span>
+                    </button>
+                    <button class="style-option" data-style="streets-v12" title="Standard">
+                        <img id="thumb-streets-v12" src="" alt="Standard">
+                        <span>Standard</span>
+                    </button>
+                    <button class="style-option" data-style="satellite-v9" title="Luftbild">
+                        <img id="thumb-satellite-v9" src="" alt="Luftbild">
+                        <span>Luftbild</span>
+                    </button>
+                    <button class="style-option" data-style="satellite-streets-v12" title="Luftbild + Strassen">
+                        <img id="thumb-satellite-streets-v12" src="" alt="Luftbild + Strassen">
+                        <span>Hybrid</span>
+                    </button>
+                </div>
+                <button class="style-switcher-btn" id="style-switcher-btn" title="Hintergrund wechseln">
+                    <img id="current-style-thumb" src="" alt="Aktueller Stil">
+                    <span>Hintergrund</span>
+                </button>
+            </div>
+            <!-- AI Assistant Toggle -->
+            <button class="ai-assistant-btn" id="ai-assistant-btn" title="Datenassistent">
+                <span class="ai-btn-icon">
+                    <span class="material-symbols-outlined">smart_toy</span>
+                </span>
+                <span>Datenassistent</span>
+            </button>
+        </div>
         </div><!-- /.main-content -->
 
         <!-- AI Assistant Panel -->
@@ -4180,14 +4209,6 @@
                 </button>
             </div>
         </aside>
-
-        <!-- AI Assistant Toggle Button -->
-        <div class="ai-assistant-toggle">
-            <button class="ai-assistant-btn" id="ai-assistant-btn" title="Datenassistent">
-                <span class="material-symbols-outlined">smart_toy</span>
-                <span>Datenassistent</span>
-            </button>
-        </div>
     </main>
 
     <footer id="footer">
@@ -4876,6 +4897,12 @@
                     showDetailView(buildingId);
                 } else if (initialView !== 'map') {
                     switchView(initialView);
+                } else {
+                    // Map view is default - show style switcher
+                    var styleSwitcher = document.getElementById('style-switcher');
+                    if (styleSwitcher) {
+                        styleSwitcher.classList.add('visible');
+                    }
                 }
             })
             .catch(function(error) {
@@ -4933,7 +4960,13 @@
             if (viewElement) {
                 viewElement.classList.add('active');
             }
-            
+
+            // Show/hide style switcher based on view (only visible in map view)
+            var styleSwitcher = document.getElementById('style-switcher');
+            if (styleSwitcher) {
+                styleSwitcher.classList.toggle('visible', view === 'map');
+            }
+
             // Resize map if switching to map view
             if (view === 'map' && window.map) {
                 setTimeout(function() {
@@ -6037,25 +6070,38 @@
         var aiAssistantBtn = document.getElementById('ai-assistant-btn');
         var aiAssistantPanel = document.getElementById('ai-assistant-panel');
         var aiPanelClose = document.getElementById('ai-panel-close');
+        var floatingControls = document.getElementById('floating-controls');
         var aiPanelOpen = false;
 
-        function toggleAiPanel() {
-            aiPanelOpen = !aiPanelOpen;
+        function toggleAiPanel(forceClose) {
+            if (forceClose === true) {
+                aiPanelOpen = false;
+            } else {
+                aiPanelOpen = !aiPanelOpen;
+            }
+
             if (aiPanelOpen) {
                 aiAssistantPanel.classList.add('show');
-                aiAssistantBtn.classList.add('active');
+                floatingControls.classList.add('hidden');
             } else {
                 aiAssistantPanel.classList.remove('show');
-                aiAssistantBtn.classList.remove('active');
+                floatingControls.classList.remove('hidden');
+            }
+
+            // Resize map after transition completes
+            if (window.map) {
+                setTimeout(function() {
+                    map.resize();
+                }, 350);
             }
         }
 
-        aiAssistantBtn.addEventListener('click', toggleAiPanel);
+        aiAssistantBtn.addEventListener('click', function() {
+            toggleAiPanel();
+        });
 
         aiPanelClose.addEventListener('click', function() {
-            aiPanelOpen = false;
-            aiAssistantPanel.classList.remove('show');
-            aiAssistantBtn.classList.remove('active');
+            toggleAiPanel(true);
         });
 
         // ===== DETAIL TABS =====
