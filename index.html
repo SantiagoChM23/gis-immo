@@ -1798,6 +1798,11 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
+        .style-switcher-btn.active {
+            border-color: var(--primary-red);
+            background: var(--grey-100);
+        }
+
         .style-switcher-btn img {
             width: 80px;
             height: 60px;
@@ -2331,16 +2336,23 @@
             align-items: center;
             justify-content: space-between;
             padding: 16px 20px;
-            border-bottom: 1px solid var(--grey-300);
-            background: var(--white);
+            border-bottom: 1px solid var(--grey-200);
+            background: var(--grey-50);
             flex-shrink: 0;
         }
 
-        #filter-pane-header h3 {
-            font-size: 16px;
-            font-weight: 600;
+        .filter-pane-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: var(--text-base);
+            font-weight: var(--font-semibold);
             color: var(--grey-900);
-            margin: 0;
+        }
+
+        .filter-pane-title .material-symbols-outlined {
+            font-size: 24px;
+            color: var(--grey-600);
         }
 
         #filter-pane-actions {
@@ -4051,7 +4063,10 @@
         <!-- Filter Pane -->
         <aside id="filter-pane">
             <div id="filter-pane-header">
-                <h3>Suchfilter</h3>
+                <div class="filter-pane-title">
+                    <span class="material-symbols-outlined">filter_alt</span>
+                    Suchfilter
+                </div>
                 <div id="filter-pane-actions">
                     <button class="filter-pane-btn" id="filter-reset-btn" title="Filter zurücksetzen">
                         <span class="material-symbols-outlined">replay</span>
@@ -4158,21 +4173,21 @@
                 </button>
             </div>
             <!-- AI Assistant Toggle -->
-            <button class="ai-assistant-btn" id="ai-assistant-btn" title="Datenassistent">
+            <button class="ai-assistant-btn" id="ai-assistant-btn" title="KI Assistent">
                 <span class="ai-btn-icon">
                     <span class="material-symbols-outlined">smart_toy</span>
                 </span>
-                <span>Datenassistent</span>
+                <span>KI Assistent</span>
             </button>
         </div>
         </div><!-- /.main-content -->
 
         <!-- AI Assistant Panel -->
-        <aside id="ai-assistant-panel" role="complementary" aria-label="Datenassistent">
+        <aside id="ai-assistant-panel" role="complementary" aria-label="KI Assistent">
             <div class="ai-panel-header">
                 <div class="ai-panel-header-title">
                     <span class="material-symbols-outlined">smart_toy</span>
-                    Datenassistent
+                    KI Assistent
                 </div>
                 <button class="ai-panel-close" id="ai-panel-close" title="Schliessen">
                     <span class="material-symbols-outlined">close</span>
@@ -4186,7 +4201,7 @@
                     </div>
                 </div>
                 <div class="ai-chat-message">
-                    <div class="ai-chat-message-label">Datenassistent:</div>
+                    <div class="ai-chat-message-label">KI Assistent:</div>
                     <div class="ai-chat-message-content">
                         Hallo! Natürlich, ich kann Ihnen dabei helfen. Möchten Sie die Vermietungszahlen für ein bestimmtes Quartal oder das gesamte Jahr sehen?
                     </div>
@@ -4198,7 +4213,7 @@
                     </div>
                 </div>
                 <div class="ai-chat-message">
-                    <div class="ai-chat-message-label">Datenassistent:</div>
+                    <div class="ai-chat-message-label">KI Assistent:</div>
                     <div class="ai-chat-message-content">
                         Hier sind die Vermietungszahlen für das zweite Quartal 2024:
                         <ul>
@@ -4213,7 +4228,7 @@
             <div class="ai-panel-input">
                 <div class="ai-panel-input-field">
                     <span class="material-symbols-outlined">attach_file</span>
-                    <input type="text" placeholder="Eine Frage an Datenassistent stellen" id="ai-panel-input">
+                    <input type="text" placeholder="Eine Frage an KI Assistent stellen" id="ai-panel-input">
                 </div>
                 <button class="ai-panel-send-btn" id="ai-panel-send" title="Senden">
                     <span class="material-symbols-outlined">arrow_upward</span>
@@ -5031,7 +5046,13 @@
             document.getElementById('list-view').classList.remove('active');
             document.getElementById('gallery-view').classList.remove('active');
             document.getElementById('detail-view').classList.add('active');
-            
+
+            // Hide style switcher in detail view
+            var styleSwitcher = document.getElementById('style-switcher');
+            if (styleSwitcher) {
+                styleSwitcher.classList.remove('visible');
+            }
+
             // Clear active state from view toggle buttons
             document.querySelectorAll('.view-toggle-btn').forEach(function(btn) {
                 btn.classList.remove('active');
