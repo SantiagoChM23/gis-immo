@@ -242,6 +242,115 @@ Addresses represent the physical location of a building. A building can have mul
 
 ---
 
+## Entity: Area Measurement (Bemessung)
+
+Area measurements capture floor areas, volumes, and other quantitative measurements for buildings, floors, spaces, or sites. In the current demo, measurements are embedded in the `bemessungen` array within each building.
+
+### Schema Definition
+
+| Field | Type | Description | Constraints | Comment |
+|-------|------|-------------|-------------|---------|
+| **areaMeasurementId** | string | Unique identifier; must either originate from the previous system or be explicitly defined. | **mandatory**, minLength: 1, maxLength: 50 | Source: `bemessungen[].id` |
+| **type** | string, enum | Type of the standard area. See [Area Types](#area-types). | **mandatory** | Source: `bemessungen[].areaType`, needs value mapping |
+| **value** | number | Value of measurement. | **mandatory** | Source: `bemessungen[].value` |
+| **unit** | string, enum | Unit area is measured with. Options: `sqm`, `sqft`, `acr` | **mandatory** | Source: `bemessungen[].unit`. "m²" → sqm |
+| **validFrom** | string | The record can be used from this date onwards. ISO 8601 format: `yyyy-mm-ddThh:mm:ssZ` | **mandatory**, minLength: 20 | Source: `bemessungen[].validFrom`, convert to ISO 8601 |
+| **validUntil** | string | The record is valid until this date. ISO 8601 format: `yyyy-mm-ddThh:mm:ssZ` | **mandatory**, minLength: 20, null allowed | Source: `bemessungen[].validUntil`, convert to ISO 8601 |
+| **bmEstimation** | boolean | Is the data estimated by BuildingMinds? | **mandatory** | Default: false for imported data |
+| accuracy | string, enum | Accuracy of area measurement. Options: `Estimated`, `Measured`, `Aggregated`, `Unknown` | | Source: `bemessungen[].accuracy`. "Gemessen" → Measured, "Geschätzt" → Estimated, "Berechnet" → Estimated, "Aggregiert" → Aggregated |
+| buildingIds | array[string] | Array of building IDs this measurement belongs to. | minLength: 1, maxLength: 50 per ID | Derived from parent building |
+| eventType | string, enum | Type of the event as domain event. Options: `AreaMeasurementAdded`, `AreaMeasurementUpdated`, `AreaMeasurementDeleted` | | |
+| extensionData | object | Extension data for storing any custom data. | JSON object | Container for Swiss-specific fields |
+| floorIds | array[string] | Array of floor IDs. | minLength: 1, maxLength: 50 per ID | |
+| landIds | array[string] | Array of land IDs. | minLength: 1, maxLength: 50 per ID | |
+| rentalUnit | array[string] | Array of rental unit IDs. | minLength: 1, maxLength: 50 per ID | |
+| siteIds | array[string] | Array of site IDs. | minLength: 1, maxLength: 50 per ID | |
+| spaceIds | array[string] | Array of space IDs. | minLength: 1, maxLength: 50 per ID | |
+| standard | string, enum | Area measurement standard. Options: `DIN 277-1`, `MFG`, `IPMS`, `RICS`, `BOMA`, `NA` | | Source: `bemessungen[].standard`. "SIA 416" → extensionData, "DIN 277" → DIN 277-1 |
+| extensionData.siaStandard | string | Swiss SIA standard reference (e.g., "SIA 416", "SIA 380/1") | | Swiss extension. Source: `bemessungen[].standard` |
+| extensionData.source | string | Data source (e.g., "CAD/BIM", "Vermessung", "Schätzmodell", "Manuell") | | Swiss extension. Source: `bemessungen[].source` |
+| extensionData.originalUnit | string | Original unit before conversion (e.g., "m²", "m³", "Stk") | | Swiss extension. Source: `bemessungen[].unit` |
+| extensionData.originalType | string | Original German area type name | | Swiss extension. Source: `bemessungen[].areaType` |
+
+### Area Types
+
+Options for the `type` field, grouped by standard:
+
+| Category | Values |
+|----------|--------|
+| DIN 277 / General | `Gross floor area`, `Construction area`, `Net room area`, `Circulation area`, `Net usable area`, `Technical area` |
+| Usage-specific | `Living/residence area`, `Office area`, `Production/laboratory area`, `Storage/distribution/selling area`, `Education/teaching/culture area`, `Healing/care area`, `Other uses` |
+| IPMS | `Gross external area`, `External Wall area`, `Gross internal area`, `A-Vertical penetrations`, `B-Structural elements`, `C-Technical services`, `D-Hygiene areas`, `E-Circulation areas`, `F-Amenities`, `G-Workspace`, `H-Other areas` |
+| BOMA / Rental | `Rentable area`, `Rentable exclusion`, `Boundary area`, `Rentable area common occupancy`, `Rentable area exclusive occupancy`, `Building amenity area`, `Building service area`, `Floor service area`, `Tenant ancillary area`, `Tenant area`, `Landlord area` |
+| Site / Land | `Land area`, `Total surface area`, `Vegetated area`, `Non-vegetated area`, `Green ground area`, `Green roof area`, `Green wall area`, `Green terrace area` |
+| Other | `Major vertical penetrations`, `Occupant Storage area`, `Parking area`, `Unenclosed Building Feature: Covered Gallery`, `Vacant area`, `Energy reference area`, `NA` |
+
+### Type Mapping: Current GeoJSON → Target
+
+| Current `areaType` (German) | Target `type` | Comment |
+|-----------------------------|---------------|---------|
+| Bruttogeschossfläche | `Gross floor area` | SIA 416: BGF |
+| Nettogeschossfläche | `Net room area` | SIA 416: NGF |
+| Energiebezugsfläche | `Energy reference area` | SIA 380/1: EBF |
+| Nutzfläche | `Net usable area` | SIA 416: NF |
+| Verkehrsfläche | `Circulation area` | SIA 416: VF |
+| Funktionsfläche | `Technical area` | SIA 416: FF |
+| Konstruktionsfläche | `Construction area` | SIA 416: KF |
+| Volumen | `NA` | Store as extensionData (not an area) |
+| Arbeitsplätze | `NA` | Store as extensionData (count, not area) |
+| Reinigungsfläche | `NA` | Store as extensionData (Swiss-specific) |
+
+### Example: Area Measurement Object
+
+```json
+{
+  "areaMeasurementId": "BBL-001-M1",
+  "type": "Gross floor area",
+  "value": 15000,
+  "unit": "sqm",
+  "validFrom": "2019-03-15T00:00:00Z",
+  "validUntil": null,
+  "bmEstimation": false,
+  "accuracy": "Measured",
+  "standard": "NA",
+  "buildingIds": ["BBL-001"],
+  "extensionData": {
+    "siaStandard": "SIA 416",
+    "source": "CAD/BIM",
+    "originalUnit": "m²",
+    "originalType": "Bruttogeschossfläche"
+  }
+}
+```
+
+### Example: Volume Measurement (Swiss Extension)
+
+For measurements that don't fit the standard area types (volumes, counts):
+
+```json
+{
+  "areaMeasurementId": "BBL-001-M4",
+  "type": "NA",
+  "value": 52500,
+  "unit": "sqm",
+  "validFrom": "2019-03-15T00:00:00Z",
+  "validUntil": null,
+  "bmEstimation": false,
+  "accuracy": "Measured",
+  "standard": "NA",
+  "buildingIds": ["BBL-001"],
+  "extensionData": {
+    "siaStandard": "SIA 416",
+    "source": "CAD/BIM",
+    "originalUnit": "m³",
+    "originalType": "Volumen",
+    "measurementCategory": "volume"
+  }
+}
+```
+
+---
+
 ## Enumerations
 
 ### Building Types
@@ -283,7 +392,7 @@ The following entities are related to buildings and will be documented in separa
 |--------|-------------|--------------|
 | ~~**Site**~~ | ~~A logical grouping of buildings~~ | *(documented above)* |
 | ~~**Address**~~ | ~~Physical address of a building~~ | *(documented above)* |
-| **Bemessung (Area Measurement)** | Area and volume measurements | 1 Building → n Measurements |
+| ~~**Bemessung (Area Measurement)**~~ | ~~Area and volume measurements~~ | *(documented above)* |
 | **Dokument (Document)** | Related documents (plans, certificates) | 1 Building → n Documents |
 | **Kontakt (Contact)** | Contact persons for the building | 1 Building → n Contacts |
 | **Vertrag (Contract)** | Service and maintenance contracts | 1 Building → n Contracts |
@@ -301,6 +410,7 @@ The following entities are related to buildings and will be documented in separa
 | 0.2.0 | 2024-XX-XX | - | Added Address entity with Swiss extensions |
 | 0.3.0 | 2024-XX-XX | - | Added Site entity with Swiss extensions |
 | 0.4.0 | 2024-XX-XX | - | Consolidated to single schema table per entity with Comment column |
+| 0.5.0 | 2024-XX-XX | - | Added Area Measurement (Bemessung) entity with SIA type mappings |
 
 ---
 
