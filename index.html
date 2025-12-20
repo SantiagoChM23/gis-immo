@@ -5678,7 +5678,7 @@
             map.on('click', 'portfolio-points', function(e) {
                 var props = e.features[0].properties;
                 // UPDATED: Pass 'false' so map does NOT zoom on click
-                selectBuilding(props.id, false);
+                selectBuilding(props.buildingId, false);
             });
             
             // Click on map (not on a point) to deselect
