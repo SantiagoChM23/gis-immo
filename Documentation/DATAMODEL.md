@@ -42,6 +42,91 @@ Related entities (Bemessungen, Dokumente, Kontakte, Verträge) are embedded as a
 
 ---
 
+## Entity: Site
+
+A site represents a logical grouping of buildings, such as a campus, property, or land parcel. Buildings belong to exactly one site.
+
+### Schema Definition
+
+| Field | Type | Description | Constraints |
+|-------|------|-------------|-------------|
+| **siteId** | string | Unique identifier; must either originate from the previous system or be explicitly defined. | **mandatory**, minLength: 1, maxLength: 50 |
+| **name** | string | Name of the site. | **mandatory**, minLength: 1, maxLength: 50 |
+| **type** | string, enum | Type of site. See [Site Types](#site-types). | **mandatory** |
+| **addressIds** | array[string] | Array of address IDs linked to this site. | **mandatory**, minLength: 1, maxLength: 50 per ID |
+| **validFrom** | string | The record can be used from this date onwards. ISO 8601 format: `yyyy-mm-ddThh:mm:ssZ` | **mandatory**, minLength: 20 |
+| **validUntil** | string | The record is valid until this date. ISO 8601 format: `yyyy-mm-ddThh:mm:ssZ` | **mandatory**, minLength: 20 (null allowed for currently valid records) |
+| energyRatingIds | array[string] | Array of energy rating IDs. | minLength: 1, maxLength: 50 per ID |
+| eventType | string, enum | Type of the event as domain event. Options: `SiteAdded`, `SiteUpdated`, `SiteDeleted` | |
+| extensionData | object | Extension data for storing any custom data. | JSON object |
+| siteCode | string | User specific site code. | minLength: 1, maxLength: 70 |
+| status | string | Status of site. | minLength: 1, maxLength: 50 |
+
+### Site Types
+
+Options for the `type` field:
+
+- `Education`
+- `Health Care`
+- `Hotel`
+- `Industrial`
+- `Lodging`
+- `Leisure & Recreation`
+- `Mixed Use`
+- `Office`
+- `Residential`
+- `Retail`
+- `Technology/Science`
+- `Other`
+
+### Swiss-Specific Fields (BBL Extension)
+
+These fields are specific to the Swiss context and stored in `extensionData`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| egrid | string | Eidgenössischer Grundstücksidentifikator (Federal Property Identifier) |
+| parzellenNummer | string | Official parcel number |
+| grundbuchKreis | string | Land registry district |
+| katasterNummer | string | Cadastral number |
+| teilportfolioGruppe | string | Sub-portfolio group (e.g., "Bundesverwaltung") |
+
+### Mapping: Current GeoJSON → Target Schema
+
+| Current Field (GeoJSON) | Target Field | Notes |
+|------------------------|--------------|-------|
+| `grundstueck_id` | `siteId` | Direct mapping |
+| `grundstueck_name` | `name` | Direct mapping |
+| (derived) | `type` | Derive from `teilportfolio` or `objektart1` |
+| (from building addresses) | `addressIds` | Collect from linked buildings |
+| `gueltig_von` | `validFrom` | Convert to ISO 8601 |
+| `gueltig_bis` | `validUntil` | Convert to ISO 8601 |
+| `teilportfolio_gruppe` | `extensionData.teilportfolioGruppe` | Swiss-specific |
+| `egrid` | `extensionData.egrid` | Swiss-specific |
+
+### Example: Site Object
+
+```json
+{
+  "siteId": "BE-3003-1001",
+  "name": "Bundesplatz Parzelle A",
+  "type": "Office",
+  "addressIds": ["BBL-001-ADDR-1"],
+  "validFrom": "1900-01-01T00:00:00Z",
+  "validUntil": null,
+  "siteCode": "BPL-A",
+  "status": "Aktiv",
+  "extensionData": {
+    "egrid": "CH123456789012",
+    "teilportfolioGruppe": "Bundesverwaltung",
+    "grundbuchKreis": "Bern",
+    "parzellenNummer": "1001"
+  }
+}
+```
+
+---
+
 ## Entity: Building
 
 The building is the core entity representing a physical structure in the portfolio.
@@ -293,14 +378,120 @@ Options for `secondaryHeatingType`:
 
 ---
 
+## Entity: Address
+
+Addresses represent the physical location of a building. A building can have multiple addresses (e.g., corner buildings with entrances on different streets).
+
+### Schema Definition
+
+| Field | Type | Description | Constraints |
+|-------|------|-------------|-------------|
+| **addressId** | string | Unique identifier; must either originate from the previous system or be explicitly defined. | **mandatory**, minLength: 1, maxLength: 50 |
+| **city** | string | Any official settlement including cities, towns, villages, hamlets, localities, etc. | **mandatory**, minLength: 1, maxLength: 100 |
+| **country** | string, enum | Sovereign nations with ISO-3166 code. See [Country Codes](#country-codes). | **mandatory** |
+| **type** | string, enum | Type of address. Options: `Primary`, `Other` | **mandatory** |
+| **geoCoordinates** | object | Geographic coordinate information. See [GeoCoordinates](#geocoordinates-sub-object). | contains mandatory fields |
+| additionalInformation | string | Additional information (building name, door number, etc.). | minLength: 1, maxLength: 500 |
+| apartmentOrUnit | string | Unit or apartment number. | minLength: 1, maxLength: 50 |
+| district | string | Borough or district within a city. | minLength: 1, maxLength: 50 |
+| eventType | string, enum | Type of the event as domain event. Options: `AddressAdded`, `AddressUpdated` | |
+| extensionData | object | Extension data for storing any custom data. | JSON object |
+| houseNumber | string | House number of the street. | minLength: 1, maxLength: 50 |
+| postalCode | string | Postal code for mail sorting. | minLength: 1, maxLength: 15 |
+| stateProvincePrefecture | string | First-level administrative division (canton, state, province). | minLength: 1, maxLength: 50 |
+| streetName | string | Name of the street. | minLength: 1, maxLength: 150 |
+
+### GeoCoordinates Sub-Object
+
+| Field | Type | Description | Constraints |
+|-------|------|-------------|-------------|
+| **geoCoordinateId** | string | Unique identifier for the coordinate set. | **mandatory**, minLength: 1, maxLength: 50 |
+| coordinateReferenceSystem | string | Specific coordinate reference system used (e.g., "WGS84", "LV95"). | minLength: 1, maxLength: 50 |
+| latitude | number | Latitude coordinate (WGS84: -90 to 90). | |
+| longitude | number | Longitude coordinate (WGS84: -180 to 180). | |
+
+### Swiss-Specific Fields (BBL Extension)
+
+These fields are specific to the Swiss context and stored in `extensionData`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| formattedAddress | string | Pre-formatted full address string (e.g., "Bundesplatz 3, 3003 Bern") |
+| canton | string | Swiss canton code (e.g., "BE", "ZH", "GE") |
+| gemeinde | string | Municipality name |
+| gemeindeNummer | string | Official municipality number (BFS-Nr.) |
+| lv95East | number | Swiss LV95 East coordinate (E) |
+| lv95North | number | Swiss LV95 North coordinate (N) |
+
+### Mapping: Current GeoJSON → Target Schema
+
+| Current Field (GeoJSON) | Target Field | Notes |
+|------------------------|--------------|-------|
+| (generated) | `addressId` | Generate from building ID + suffix (e.g., "BBL-001-ADDR-1") |
+| `ort` | `city` | Direct mapping |
+| `land` | `country` | Direct mapping (already ISO-3166) |
+| (default) | `type` | Default to "Primary" for main address |
+| `geometry.coordinates[0]` | `geoCoordinates.longitude` | From GeoJSON geometry |
+| `geometry.coordinates[1]` | `geoCoordinates.latitude` | From GeoJSON geometry |
+| `hausnummer` | `houseNumber` | Direct mapping |
+| `plz` | `postalCode` | Direct mapping |
+| `region` | `stateProvincePrefecture` | Direct mapping |
+| `adresse` | `extensionData.formattedAddress` | Full address string |
+| (extracted from region) | `extensionData.canton` | Extract canton code |
+
+### Country Codes
+
+The `country` field uses ISO-3166 alpha-2 codes. Common codes for BBL portfolio:
+
+| Code | Country |
+|------|---------|
+| `CH` | Switzerland |
+| `DE` | Germany |
+| `FR` | France |
+| `IT` | Italy |
+| `AT` | Austria |
+| `BE` | Belgium |
+| `US` | United States |
+
+Full list: All ISO-3166 alpha-2 codes (AF, AL, DZ, ... ZW)
+
+### Example: Address Object
+
+```json
+{
+  "addressId": "BBL-001-ADDR-1",
+  "type": "Primary",
+  "streetName": "Bundesplatz",
+  "houseNumber": "3",
+  "postalCode": "3003",
+  "city": "Bern",
+  "stateProvincePrefecture": "Kanton Bern",
+  "country": "CH",
+  "geoCoordinates": {
+    "geoCoordinateId": "BBL-001-GEO-1",
+    "coordinateReferenceSystem": "WGS84",
+    "latitude": 46.9466,
+    "longitude": 7.4448
+  },
+  "extensionData": {
+    "formattedAddress": "Bundesplatz 3, 3003 Bern",
+    "canton": "BE",
+    "lv95East": 2600000,
+    "lv95North": 1200000
+  }
+}
+```
+
+---
+
 ## Related Entities (Preview)
 
 The following entities are related to buildings and will be documented in separate sections:
 
 | Entity | Description | Relationship |
 |--------|-------------|--------------|
-| **Site** | A logical grouping of buildings (e.g., campus, property) | 1 Site → n Buildings |
-| **Address** | Physical address of a building | 1 Building → n Addresses |
+| ~~**Site**~~ | ~~A logical grouping of buildings (e.g., campus, property)~~ | ~~1 Site → n Buildings~~ *(documented above)* |
+| ~~**Address**~~ | ~~Physical address of a building~~ | ~~1 Building → n Addresses~~ *(documented above)* |
 | **Bemessung (Area Measurement)** | Area and volume measurements | 1 Building → n Measurements |
 | **Dokument (Document)** | Related documents (plans, certificates) | 1 Building → n Documents |
 | **Kontakt (Contact)** | Contact persons for the building | 1 Building → n Contacts |
@@ -316,6 +507,8 @@ The following entities are related to buildings and will be documented in separa
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 0.1.0 | 2024-XX-XX | - | Initial draft - Building entity |
+| 0.2.0 | 2024-XX-XX | - | Added Address entity with Swiss extensions |
+| 0.3.0 | 2024-XX-XX | - | Added Site entity with Swiss extensions |
 
 ---
 
@@ -323,5 +516,7 @@ The following entities are related to buildings and will be documented in separa
 
 - [SIA 416](https://www.sia.ch/) - Swiss Standard for areas in building construction
 - [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) - Date and time format
+- [ISO 3166](https://www.iso.org/iso-3166-country-codes.html) - Country codes
 - [GeoJSON Specification](https://geojson.org/) - Geographic JSON format
+- [LV95](https://www.swisstopo.admin.ch/en/knowledge-facts/surveying-geodesy/reference-frames/local/lv95.html) - Swiss coordinate reference system
 - EGID/EGRID - Swiss Federal Building/Property Identifiers
