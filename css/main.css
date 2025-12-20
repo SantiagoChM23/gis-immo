@@ -154,12 +154,16 @@
             height: 90px;
             border-bottom: 1px solid var(--grey-300);
             box-shadow: var(--shadow-md);
+            position: relative;
+            z-index: 1; /* Shadow appears above header-detail */
         }
 
         .header-detail {
             display: none;
             flex-direction: column;
             border-bottom: 1px solid var(--grey-200);
+            position: relative;
+            z-index: 0;
         }
 
         body.detail-active .header-detail {
