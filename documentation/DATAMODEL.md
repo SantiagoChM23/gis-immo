@@ -13,6 +13,9 @@ This document describes the data model for the BBL Immobilienportfolio applicati
 - [Entity: Land (Grundstück)](#entity-land-grundstück)
 - [Entity: Building (Gebäude)](#entity-building-gebäude)
 - [Entity: Area Measurement (Bemessung)](#entity-area-measurement-bemessung)
+- [Entity: Document (Dokument)](#entity-document-dokument)
+- [Entity: Contact (Kontakt)](#entity-contact-kontakt)
+- [Entity: Asset (Ausstattung)](#entity-asset-ausstattung)
 - [Enumerations](#enumerations)
   - [Building Types](#building-types)
   - [Energy Types](#energy-types)
@@ -36,6 +39,7 @@ erDiagram
     Building ||--o{ Vertrag : "has"
     Building ||--o{ Certificate : "has"
     Building ||--o{ EnergyRating : "has"
+    Building ||--o{ Ausstattung : "has"
 
     Site {
         string siteId PK
@@ -104,6 +108,13 @@ erDiagram
         string energyRatingId PK
         string class
         date validFrom
+    }
+
+    Ausstattung {
+        string assetId PK
+        string name
+        string category
+        string manufacturer
     }
 ```
 
@@ -494,6 +505,171 @@ For measurements that don't fit the standard area types (volumes, counts):
 
 ---
 
+## Entity: Document (Dokument)
+
+Documents represent files and records associated with a building, such as floor plans, certificates, permits, and technical documentation.
+
+### Schema Definition
+
+| Field | Type | Description | Constraints | Comment |
+|-------|------|-------------|-------------|---------|
+| **documentId** | string | Unique identifier for the document. | **mandatory**, minLength: 1, maxLength: 50 | Source: `dokumente[].id` |
+| **name** | string | Title or name of the document. | **mandatory**, minLength: 1, maxLength: 200 | Source: `dokumente[].titel` |
+| **type** | string, enum | Type of document. See [Document Types](#document-types). | **mandatory** | Source: `dokumente[].dokumentTyp` |
+| **buildingIds** | array[string] | Array of building IDs this document belongs to. | **mandatory**, minLength: 1 | Derived from parent building |
+| **validFrom** | string | Document date or effective date. ISO 8601 format. | **mandatory**, minLength: 20 | Source: `dokumente[].datum`, convert to ISO 8601 |
+| eventType | string, enum | Type of the event as domain event. Options: `DocumentAdded`, `DocumentUpdated`, `DocumentDeleted` | | |
+| extensionData | object | Extension data for storing any custom data. | JSON object | Container for Swiss-specific fields |
+| fileFormat | string | File format (e.g., "PDF", "DWG", "IFC"). | minLength: 1, maxLength: 20 | Source: `dokumente[].dateiformat` |
+| fileSize | string | File size as string (e.g., "2.4 MB"). | minLength: 1, maxLength: 20 | Source: `dokumente[].dateigroesse` |
+| url | string | URL or path to the document file. | minLength: 1, maxLength: 500 | Source: `dokumente[].url` |
+| description | string | Description or notes about the document. | minLength: 1, maxLength: 1000 | |
+| version | string | Document version identifier. | minLength: 1, maxLength: 20 | |
+| validUntil | string | Expiry date for time-limited documents. ISO 8601 format. | minLength: 20, null allowed | |
+
+### Document Types
+
+Common document types for buildings:
+
+| Type | Description |
+|------|-------------|
+| `Grundriss` | Floor plan |
+| `Bauplan` | Construction/building plan |
+| `Energieausweis` | Energy certificate (GEAK, etc.) |
+| `Baubewilligung` | Building permit |
+| `Brandschutzkonzept` | Fire protection concept |
+| `Mietvertrag` | Lease agreement |
+| `Wartungsprotokoll` | Maintenance protocol |
+| `Foto` | Photograph |
+| `Sonstige` | Other |
+
+### Example: Document Object
+
+```json
+{
+  "documentId": "BBL-001-D1",
+  "name": "Grundriss Erdgeschoss",
+  "type": "Grundriss",
+  "buildingIds": ["BBL-001"],
+  "validFrom": "2019-03-15T00:00:00Z",
+  "fileFormat": "PDF",
+  "fileSize": "2.4 MB",
+  "url": "/documents/BBL-001/grundriss-eg.pdf"
+}
+```
+
+---
+
+## Entity: Contact (Kontakt)
+
+Contacts represent persons associated with a building, such as property managers, caretakers, or portfolio managers.
+
+### Schema Definition
+
+| Field | Type | Description | Constraints | Comment |
+|-------|------|-------------|-------------|---------|
+| **contactId** | string | Unique identifier for the contact. | **mandatory**, minLength: 1, maxLength: 50 | Source: `kontakte[].id` |
+| **name** | string | Full name of the contact person. | **mandatory**, minLength: 1, maxLength: 200 | Source: `kontakte[].name` |
+| **role** | string, enum | Role or function of the contact. See [Contact Roles](#contact-roles). | **mandatory** | Source: `kontakte[].rolle` |
+| **buildingIds** | array[string] | Array of building IDs this contact is associated with. | **mandatory**, minLength: 1 | Derived from parent building |
+| eventType | string, enum | Type of the event as domain event. Options: `ContactAdded`, `ContactUpdated`, `ContactDeleted` | | |
+| extensionData | object | Extension data for storing any custom data. | JSON object | Container for Swiss-specific fields |
+| organisation | string | Organisation or department. | minLength: 1, maxLength: 200 | Source: `kontakte[].organisation` |
+| phone | string | Phone number. | minLength: 1, maxLength: 30 | Source: `kontakte[].telefon` |
+| email | string | Email address. | minLength: 1, maxLength: 100, format: email | Source: `kontakte[].email` |
+| isPrimary | boolean | Is this the primary contact for the building? | | |
+| validFrom | string | Contact assignment start date. ISO 8601 format. | minLength: 20 | |
+| validUntil | string | Contact assignment end date. ISO 8601 format. | minLength: 20, null allowed | |
+
+### Contact Roles
+
+Common contact roles for buildings:
+
+| Role | Description |
+|------|-------------|
+| `Objektverantwortliche` | Property manager |
+| `Hauswart` | Caretaker/janitor |
+| `Portfolioverantwortliche` | Portfolio manager |
+| `Technischer Leiter` | Technical manager |
+| `Sicherheitsbeauftragter` | Security officer |
+| `Notfallkontakt` | Emergency contact |
+| `Mietervertreter` | Tenant representative |
+| `Sonstige` | Other |
+
+### Example: Contact Object
+
+```json
+{
+  "contactId": "BBL-001-K1",
+  "name": "Anna Müller",
+  "role": "Objektverantwortliche",
+  "buildingIds": ["BBL-001"],
+  "organisation": "BBL Immobilienmanagement",
+  "phone": "+41 58 462 12 34",
+  "email": "anna.mueller@bbl.admin.ch",
+  "isPrimary": true
+}
+```
+
+---
+
+## Entity: Asset (Ausstattung)
+
+Assets represent technical equipment, installations, and building components that require maintenance or tracking.
+
+### Schema Definition
+
+| Field | Type | Description | Constraints | Comment |
+|-------|------|-------------|-------------|---------|
+| **assetId** | string | Unique identifier for the asset. | **mandatory**, minLength: 1, maxLength: 50 | Source: `ausstattung[].id` |
+| **name** | string | Name or designation of the asset. | **mandatory**, minLength: 1, maxLength: 200 | Source: `ausstattung[].bezeichnung` |
+| **category** | string, enum | Category of the asset. See [Asset Categories](#asset-categories). | **mandatory** | Source: `ausstattung[].kategorie` |
+| **buildingIds** | array[string] | Array of building IDs this asset belongs to. | **mandatory**, minLength: 1 | Derived from parent building |
+| eventType | string, enum | Type of the event as domain event. Options: `AssetAdded`, `AssetUpdated`, `AssetDeleted` | | |
+| extensionData | object | Extension data for storing any custom data. | JSON object | Container for Swiss-specific fields |
+| manufacturer | string | Manufacturer or vendor. | minLength: 1, maxLength: 200 | Source: `ausstattung[].hersteller` |
+| installationYear | number | Year of installation. | minimum: 1800, maximum: 2100 | Source: `ausstattung[].baujahr` |
+| location | string | Location within the building. | minLength: 1, maxLength: 200 | Source: `ausstattung[].standort` |
+| serialNumber | string | Serial number or asset tag. | minLength: 1, maxLength: 100 | |
+| status | string | Current status (e.g., "In Betrieb", "Ausser Betrieb"). | minLength: 1, maxLength: 50 | |
+| maintenanceInterval | string | Maintenance interval (e.g., "Jährlich", "Monatlich"). | minLength: 1, maxLength: 50 | |
+| lastMaintenanceDate | string | Date of last maintenance. ISO 8601 format. | minLength: 20 | |
+| nextMaintenanceDate | string | Date of next scheduled maintenance. ISO 8601 format. | minLength: 20 | |
+
+### Asset Categories
+
+Common asset categories for buildings:
+
+| Category | Description |
+|----------|-------------|
+| `HVAC` | Heating, ventilation, and air conditioning |
+| `Aufzüge` | Elevators and lifts |
+| `Brandschutz` | Fire protection systems |
+| `Elektro` | Electrical systems |
+| `Sanitär` | Plumbing and sanitary |
+| `Sicherheit` | Security systems |
+| `IT/Kommunikation` | IT and communication infrastructure |
+| `Gebäudeautomation` | Building automation |
+| `Sonstige` | Other |
+
+### Example: Asset Object
+
+```json
+{
+  "assetId": "BBL-001-A1",
+  "name": "Fernwärmeübergabestation",
+  "category": "HVAC",
+  "buildingIds": ["BBL-001"],
+  "manufacturer": "Siemens AG",
+  "installationYear": 2019,
+  "location": "Untergeschoss Technikraum",
+  "status": "In Betrieb",
+  "maintenanceInterval": "Jährlich"
+}
+```
+
+---
+
 ## Enumerations
 
 ### Building Types
@@ -537,8 +713,9 @@ The following entities are related to buildings and will be documented in separa
 | ~~**Address**~~ | ~~Physical address of a building~~ | *(documented above)* |
 | ~~**Bemessung (Area Measurement)**~~ | ~~Area and volume measurements~~ | *(documented above)* |
 | ~~**Land (Grundstück)**~~ | ~~Land parcels belonging to a site~~ | *(documented above)* |
-| **Dokument (Document)** | Related documents (plans, certificates) | 1 Building → n Documents |
-| **Kontakt (Contact)** | Contact persons for the building | 1 Building → n Contacts |
+| ~~**Dokument (Document)**~~ | ~~Related documents (plans, certificates)~~ | *(documented above)* |
+| ~~**Kontakt (Contact)**~~ | ~~Contact persons for the building~~ | *(documented above)* |
+| ~~**Ausstattung (Asset)**~~ | ~~Technical equipment and installations~~ | *(documented above)* |
 | **Vertrag (Contract)** | Service and maintenance contracts | 1 Building → n Contracts |
 | **Certificate** | Building certifications (LEED, BREEAM, etc.) | 1 Building → n Certificates |
 | **EnergyRating** | Energy performance ratings | 1 Building → n Ratings |
