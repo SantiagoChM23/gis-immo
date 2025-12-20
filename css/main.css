@@ -949,7 +949,7 @@
         body.detail-active #detail-view {
             overflow: visible;
             align-self: flex-start;
-            /* No min-height - let content determine height */
+            min-height: calc(100vh - 90px); /* fill viewport below main header */
         }
 
         /* Fix smart-drawer height in detail view - fully collapse when closed */
@@ -960,14 +960,15 @@
             min-width: 0;
             padding: 0;
             border: none;
+            position: absolute; /* remove from flow when closed */
         }
 
-        /* When open, use fixed positioning to remove from flow */
+        /* When open, use fixed positioning below full header */
         body.detail-active #smart-drawer.open {
             position: fixed;
-            top: 90px; /* below header */
+            top: 200px; /* below header-main (90px) + detail-header (~56px) + detail-tabs (~54px) */
             right: 0;
-            height: calc(100vh - 90px); /* viewport minus header */
+            height: calc(100vh - 200px); /* viewport minus full header */
             z-index: 100;
         }
 
@@ -3042,10 +3043,15 @@
                 padding: var(--space-4);
             }
 
+            /* Detail-view min-height for tablet */
+            body.detail-active #detail-view {
+                min-height: calc(100vh - 70px);
+            }
+
             /* Smart-drawer fixed positioning for tablet */
             body.detail-active #smart-drawer.open {
-                top: 70px; /* tablet header height */
-                height: calc(100vh - 70px);
+                top: 170px; /* header-main (70px) + detail-header (~50px) + detail-tabs (~50px) */
+                height: calc(100vh - 170px);
             }
 
             /* Detail content padding for tablet drawer width */
