@@ -30,8 +30,8 @@ This document describes the data model for the BBL Immobilienportfolio applicati
    - 5.4 [Contract (Vertrag)](#54-contract-vertrag)
    - 5.5 [Cost (Kosten)](#55-cost-kosten)
 6. [Future Entities [Preview]](#6-future-entities-preview)
-   - 6.1 [Certificate](#61-certificate)
-   - 6.2 [Valuation](#62-valuation)
+   - 6.1 [Certificate (Zertifikat)](#61-certificate-zertifikat)
+   - 6.2 [Valuation (Bewertung)](#62-valuation-bewertung)
 7. [Appendix A: Reference Tables](#7-appendix-a-reference-tables)
    - A.1 [Shared Enumerations](#a1-shared-enumerations)
    - A.2 [Building Types](#a2-building-types)
@@ -70,6 +70,7 @@ The data model follows these core principles:
 | **Traceability** | All entities include `validFrom`/`validUntil` for temporal tracking and `eventType` for domain events |
 | **Standards Compliance** | Uses ISO 8601 for dates, ISO 3166 for countries, and aligns with Swiss SIA standards for measurements |
 | **Separation of Concerns** | Core building data is separate from operational measurements, documents, and contracts |
+| **Bilingual Support** | All enumerations provide both English (EN) and German (DE) values; the current demo uses German values |
 
 ### 1.3 Swiss Context
 
@@ -273,7 +274,7 @@ A site represents a logical grouping of buildings, such as a campus, property, o
 {
   "siteId": "BE-3003-1001",
   "name": "Bundesplatz Parzelle A",
-  "type": "Office",
+  "type": "Büro",
   "addressIds": ["BBL-001-ADDR-1"],
   "validFrom": "1900-01-01T00:00:00Z",
   "validUntil": null,
@@ -287,6 +288,8 @@ A site represents a logical grouping of buildings, such as a campus, property, o
   }
 }
 ```
+
+> **Note:** The demo uses German values (e.g., `"type": "Büro"`). For English implementations, use `"type": "Office"`.
 
 ---
 
@@ -327,7 +330,7 @@ Land represents a parcel of land or plot that belongs to a site. In the current 
 {
   "landId": "BE-3003-1001",
   "name": "Bundesplatz Parzelle A",
-  "typeOfOwnership": "Owner",
+  "typeOfOwnership": "Eigentümer",
   "validFrom": "1900-01-01T00:00:00Z",
   "validUntil": null,
   "addressIds": ["BBL-001-ADDR-1"],
@@ -337,6 +340,8 @@ Land represents a parcel of land or plot that belongs to a site. In the current 
   }
 }
 ```
+
+> **Note:** The demo uses German values (e.g., `"typeOfOwnership": "Eigentümer"`). For English implementations, use `"typeOfOwnership": "Owner"`.
 
 ---
 
@@ -403,9 +408,9 @@ The building is the core entity representing a physical structure in the portfol
 {
   "buildingId": "BBL-001",
   "name": "Bundeshaus West",
-  "primaryTypeOfBuilding": "Office Corporate",
-  "secondaryTypeOfBuilding": "Mixed Use Office/Retail",
-  "typeOfOwnership": "Owner",
+  "primaryTypeOfBuilding": "Büro Unternehmenssitz",
+  "secondaryTypeOfBuilding": "Mischnutzung Büro/Einzelhandel",
+  "typeOfOwnership": "Eigentümer",
   "validFrom": "1902-06-01T00:00:00Z",
   "validUntil": null,
   "addressIds": ["ADDR-001"],
@@ -428,6 +433,8 @@ The building is the core entity representing a physical structure in the portfol
   }
 }
 ```
+
+> **Note:** The demo uses German values (e.g., `"typeOfOwnership": "Eigentümer"`, `"primaryTypeOfBuilding": "Büro Unternehmenssitz"`). For English implementations, use `"typeOfOwnership": "Owner"`, `"primaryTypeOfBuilding": "Office Corporate"`.
 
 ---
 
@@ -468,7 +475,7 @@ Addresses represent the physical location of a building. A building can have mul
 ```json
 {
   "addressId": "BBL-001-ADDR-1",
-  "type": "Primary",
+  "type": "Primär",
   "streetName": "Bundesplatz",
   "houseNumber": "3",
   "postalCode": "3003",
@@ -486,6 +493,8 @@ Addresses represent the physical location of a building. A building can have mul
   }
 }
 ```
+
+> **Note:** The demo uses German values (e.g., `"type": "Primär"`). For English implementations, use `"type": "Primary"`.
 
 ---
 
@@ -530,13 +539,13 @@ Area measurements capture floor areas, volumes, and other quantitative measureme
 ```json
 {
   "areaMeasurementId": "BBL-001-M1",
-  "type": "Bruttogeschossfläche (BGF)",
+  "type": "Bruttogeschossfläche",
   "value": 15000,
-  "unit": "sqm",
+  "unit": "m²",
   "validFrom": "2019-03-15T00:00:00Z",
   "validUntil": null,
   "bmEstimation": false,
-  "accuracy": "Measured",
+  "accuracy": "Gemessen",
   "standard": "SIA 416",
   "buildingIds": ["BBL-001"],
   "extensionData": {
@@ -545,6 +554,8 @@ Area measurements capture floor areas, volumes, and other quantitative measureme
   }
 }
 ```
+
+> **Note:** The demo uses German values (e.g., `"type": "Bruttogeschossfläche"`, `"accuracy": "Gemessen"`). For English implementations, use `"type": "Gross floor area"`, `"accuracy": "Measured"`.
 
 #### Example: Volume Measurement (Swiss Extension)
 
@@ -555,11 +566,11 @@ For measurements that don't fit the standard area types (volumes, counts):
   "areaMeasurementId": "BBL-001-M4",
   "type": "Volumen",
   "value": 52500,
-  "unit": "sqm",
+  "unit": "m³",
   "validFrom": "2019-03-15T00:00:00Z",
   "validUntil": null,
   "bmEstimation": false,
-  "accuracy": "Measured",
+  "accuracy": "Gemessen",
   "standard": "SIA 416",
   "buildingIds": ["BBL-001"],
   "extensionData": {
@@ -613,22 +624,24 @@ Operational measurements track resource consumption (energy, water, waste) and e
 {
   "operationalMeasurementId": "BBL-001-OPM-001",
   "buildingId": "BBL-001",
-  "type": "Energy",
-  "subType": "District heating",
+  "type": "Energie",
+  "subType": "Fernwärme",
   "value": 125000,
   "unit": "kWh",
   "validFrom": "2024-01-01T00:00:00Z",
   "validUntil": "2024-12-31T00:00:00Z",
-  "procuredBy": "Procured by third party",
-  "purpose": "Space heating",
-  "spaceType": "Whole building",
-  "accuracy": "Metered",
-  "customerInfoSource": "Invoice",
+  "procuredBy": "Fremdbezug",
+  "purpose": "Raumheizung",
+  "spaceType": "Gesamtes Gebäude",
+  "accuracy": "Gemessen",
+  "customerInfoSource": "Rechnung",
   "dataProvider": "Energie Wasser Bern",
   "measurementDate": "2024-12-01T00:00:00Z",
   "lifeCycleAssessment": ["B6"]
 }
 ```
+
+> **Note:** The demo uses German values (e.g., `"type": "Energie"`, `"subType": "Fernwärme"`). For English implementations, use `"type": "Energy"`, `"subType": "District heating"`.
 
 ---
 
@@ -671,6 +684,8 @@ Documents represent files and records associated with a building, such as floor 
 }
 ```
 
+> **Note:** The demo uses German values (e.g., `"type": "Grundriss"`). For English implementations, use `"type": "Floor plan"`.
+
 ---
 
 ### 5.2 Contact (Kontakt)
@@ -709,6 +724,8 @@ Contacts represent persons associated with a building, such as property managers
 }
 ```
 
+> **Note:** The demo uses German values (e.g., `"role": "Objektverantwortliche"`). For English implementations, use `"role": "Property manager"`.
+
 ---
 
 ### 5.3 Asset (Ausstattung)
@@ -740,7 +757,7 @@ Assets represent technical equipment, installations, and building components tha
 {
   "assetId": "BBL-001-A1",
   "name": "Fernwärmeübergabestation",
-  "category": "HVAC",
+  "category": "HLK",
   "buildingIds": ["BBL-001"],
   "manufacturer": "Siemens AG",
   "installationYear": 2019,
@@ -749,6 +766,8 @@ Assets represent technical equipment, installations, and building components tha
   "maintenanceInterval": "Jährlich"
 }
 ```
+
+> **Note:** The demo uses German values (e.g., `"category": "HLK"`). For English implementations, use `"category": "HVAC"`.
 
 ---
 
@@ -788,6 +807,8 @@ Contracts represent service agreements, maintenance contracts, and other contrac
 }
 ```
 
+> **Note:** The demo uses German values (e.g., `"type": "Wartungsvertrag"`). For English implementations, use `"type": "Maintenance contract"`.
+
 ---
 
 ### 5.5 Cost (Kosten)
@@ -821,10 +842,12 @@ Costs represent operating expenses, utility costs, and other recurring costs ass
   "amount": 185000,
   "unit": "CHF/Jahr",
   "currency": "CHF",
-  "period": "Annual",
+  "period": "Jährlich",
   "referenceDate": "2024-12-01T00:00:00Z"
 }
 ```
+
+> **Note:** The demo uses German values (e.g., `"period": "Jährlich"`). For English implementations, use `"period": "Annual"`.
 
 ---
 
@@ -832,13 +855,13 @@ Costs represent operating expenses, utility costs, and other recurring costs ass
 
 The following entities are planned for future implementation:
 
-### 6.1 Certificate
+### 6.1 Certificate (Zertifikat)
 
 Building certifications (LEED, BREEAM, Minergie, etc.) with associated levels and validity periods.
 
 **Relationship:** 1 Building → n Certificates
 
-### 6.2 Valuation
+### 6.2 Valuation (Bewertung)
 
 Property valuations including market value, book value, and appraisal data.
 
@@ -854,92 +877,92 @@ Property valuations including market value, book value, and appraisal data.
 
 Used by: Land, Building
 
-| Value | Description |
-|-------|-------------|
-| `Owner` | Property is owned |
-| `Tenant` | Property is leased/rented |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Owner` | `Eigentümer` | Property is owned |
+| `Tenant` | `Mieter` | Property is leased/rented |
 
 #### Tenant Structure
 
 Used by: Land, Building
 
-| Value | Description |
-|-------|-------------|
-| `Single-tenant` | Single tenant occupancy |
-| `Multi-tenant` | Multiple tenant occupancy |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Single-tenant` | `Einzelmieter` | Single tenant occupancy |
+| `Multi-tenant` | `Mehrfachmieter` | Multiple tenant occupancy |
 
 #### Address Types
 
 Used by: Address
 
-| Value | Description |
-|-------|-------------|
-| `Primary` | Primary/main address |
-| `Other` | Secondary or alternative address |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Primary` | `Primär` | Primary/main address |
+| `Other` | `Andere` | Secondary or alternative address |
 
 #### Site Types
 
 Used by: Site
 
-| Value | Description |
-|-------|-------------|
-| `Education` | Educational facilities |
-| `Health Care` | Healthcare facilities |
-| `Hotel` | Hotel properties |
-| `Industrial` | Industrial sites |
-| `Lodging` | Lodging facilities |
-| `Leisure & Recreation` | Leisure and recreation |
-| `Mixed Use` | Mixed-use developments |
-| `Office` | Office buildings |
-| `Residential` | Residential properties |
-| `Retail` | Retail properties |
-| `Technology/Science` | Technology and science facilities |
-| `Other` | Other property types |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Education` | `Bildung` | Educational facilities |
+| `Health Care` | `Gesundheitswesen` | Healthcare facilities |
+| `Hotel` | `Hotel` | Hotel properties |
+| `Industrial` | `Industrie` | Industrial sites |
+| `Lodging` | `Beherbergung` | Lodging facilities |
+| `Leisure & Recreation` | `Freizeit & Erholung` | Leisure and recreation |
+| `Mixed Use` | `Mischnutzung` | Mixed-use developments |
+| `Office` | `Büro` | Office buildings |
+| `Residential` | `Wohnen` | Residential properties |
+| `Retail` | `Einzelhandel` | Retail properties |
+| `Technology/Science` | `Technologie/Wissenschaft` | Technology and science facilities |
+| `Other` | `Andere` | Other property types |
 
 #### Fossil Fuel Exposure
 
 Used by: Building
 
-| Value | Description |
-|-------|-------------|
-| `Extraction` | Involved in fuel extraction |
-| `Storage` | Fuel storage facilities |
-| `Transport` | Fuel transport facilities |
-| `Manufacture` | Fuel manufacturing |
-| `Other` | Other exposure types |
-| `Not exposed` | No fossil fuel exposure |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Extraction` | `Förderung` | Involved in fuel extraction |
+| `Storage` | `Lagerung` | Fuel storage facilities |
+| `Transport` | `Transport` | Fuel transport facilities |
+| `Manufacture` | `Herstellung` | Fuel manufacturing |
+| `Other` | `Andere` | Other exposure types |
+| `Not exposed` | `Nicht exponiert` | No fossil fuel exposure |
 
 #### Energy Types
 
 Used by: Building (`primaryEnergyType`)
 
-| Value | Description |
-|-------|-------------|
-| `Natural Gas` | Natural gas energy |
-| `Coal` | Coal energy |
-| `Nuclear` | Nuclear energy |
-| `Petroleum` | Petroleum-based energy |
-| `Hydropower` | Hydroelectric power |
-| `Wind` | Wind energy |
-| `Biomass` | Biomass energy |
-| `Geothermal` | Geothermal energy |
-| `Solar` | Solar energy |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Natural Gas` | `Erdgas` | Natural gas energy |
+| `Coal` | `Kohle` | Coal energy |
+| `Nuclear` | `Kernenergie` | Nuclear energy |
+| `Petroleum` | `Erdöl` | Petroleum-based energy |
+| `Hydropower` | `Wasserkraft` | Hydroelectric power |
+| `Wind` | `Windkraft` | Wind energy |
+| `Biomass` | `Biomasse` | Biomass energy |
+| `Geothermal` | `Geothermie` | Geothermal energy |
+| `Solar` | `Solarenergie` | Solar energy |
 
 #### Heating Types
 
 Used by: Building (`secondaryHeatingType`)
 
-| Value | Description |
-|-------|-------------|
-| `District heating` | District/central heating |
-| `Natural gas` | Natural gas heating |
-| `Oil-based fuels` | Oil-based heating |
-| `Solar thermal` | Solar thermal heating |
-| `Unspecified` | Unspecified heating type |
-| `Heat pump` | Heat pump systems |
-| `Electricity (radiator)` | Electric radiators |
-| `Biomass` | Biomass heating |
-| `Micro combined heat and power` | Micro CHP systems |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `District heating` | `Fernwärme` | District/central heating |
+| `Natural gas` | `Erdgas` | Natural gas heating |
+| `Oil-based fuels` | `Ölbasierte Brennstoffe` | Oil-based heating |
+| `Solar thermal` | `Solarthermie` | Solar thermal heating |
+| `Unspecified` | `Nicht spezifiziert` | Unspecified heating type |
+| `Heat pump` | `Wärmepumpe` | Heat pump systems |
+| `Electricity (radiator)` | `Elektro (Radiator)` | Electric radiators |
+| `Biomass` | `Biomasse` | Biomass heating |
+| `Micro combined heat and power` | `Mikro-Blockheizkraftwerk` | Micro CHP systems |
 
 ---
 
@@ -947,18 +970,118 @@ Used by: Building (`secondaryHeatingType`)
 
 Primary and secondary building type options for `primaryTypeOfBuilding` and `secondaryTypeOfBuilding`:
 
-| Category | Values |
-|----------|--------|
-| **Retail** | `Retail`, `Retail High Street`, `Retail Retail Centers`, `Retail Shopping Center`, `Retail Strip Mall`, `Retail Lifestyle Center`, `Retail Warehouse`, `Retail Restaurants/Bars`, `Retail Other` |
-| **Office** | `Office`, `Office Corporate`, `Office Low-Rise Office`, `Office Mid-Rise Office`, `Office High-Rise Office`, `Office Medical Office`, `Office Business Park`, `Office Other` |
-| **Industrial** | `Industrial`, `Industrial Distribution Warehouse`, `Industrial Industrial Park`, `Industrial Manufacturing`, `Industrial Refrigerated Warehouse`, `Industrial Non-refrigerated Warehouse`, `Industrial Other` |
-| **Residential** | `Residential`, `Residential Multi-Family`, `Residential Low-Rise Multi-Family`, `Residential Mid-Rise Multi-Family`, `Residential High-Rise Multi-Family`, `Residential Family Homes`, `Residential Student Housing`, `Residential Retirement Living`, `Residential Other` |
-| **Lodging** | `Hotel`, `Lodging`, `Lodging Leisure & Recreation`, `Lodging Indoor Arena`, `Lodging Fitness Center`, `Lodging Performing Arts`, `Lodging Swimming Center`, `Lodging Museum/Gallery`, `Lodging Leisure & Recreation Other` |
-| **Education** | `Education`, `Education School`, `Education University`, `Education Library`, `Education Other` |
-| **Technology/Science** | `Technology/Science`, `Technology/Science Data Center`, `Technology/Science Laboratory/Life sciences`, `Technology/Science Other` |
-| **Health Care** | `Health Care`, `Health Care Health Care Center`, `Health Care Senior Homes`, `Health Care Other` |
-| **Mixed Use** | `Mixed Use`, `Mixed Use Office/Retail`, `Mixed Use Office/Residential`, `Mixed Use Office/Industrial`, `Mixed Use Other` |
-| **Other** | `Other`, `Other Parking (Indoors)`, `Other Self-Storage` |
+#### Retail
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Retail` | `Einzelhandel` |
+| `Retail High Street` | `Einzelhandel Einkaufsstrasse` |
+| `Retail Retail Centers` | `Einzelhandel Einkaufszentren` |
+| `Retail Shopping Center` | `Einzelhandel Einkaufszentrum` |
+| `Retail Strip Mall` | `Einzelhandel Ladenzeile` |
+| `Retail Lifestyle Center` | `Einzelhandel Lifestyle-Center` |
+| `Retail Warehouse` | `Einzelhandel Lagerhaus` |
+| `Retail Restaurants/Bars` | `Einzelhandel Restaurants/Bars` |
+| `Retail Other` | `Einzelhandel Andere` |
+
+#### Office
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Office` | `Büro` |
+| `Office Corporate` | `Büro Unternehmenssitz` |
+| `Office Low-Rise Office` | `Büro Niedrigbau` |
+| `Office Mid-Rise Office` | `Büro Mittelhochbau` |
+| `Office High-Rise Office` | `Büro Hochhaus` |
+| `Office Medical Office` | `Büro Arztpraxis` |
+| `Office Business Park` | `Büro Gewerbepark` |
+| `Office Other` | `Büro Andere` |
+
+#### Industrial
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Industrial` | `Industrie` |
+| `Industrial Distribution Warehouse` | `Industrie Distributionslager` |
+| `Industrial Industrial Park` | `Industrie Industriepark` |
+| `Industrial Manufacturing` | `Industrie Fertigung` |
+| `Industrial Refrigerated Warehouse` | `Industrie Kühllager` |
+| `Industrial Non-refrigerated Warehouse` | `Industrie Lager (nicht gekühlt)` |
+| `Industrial Other` | `Industrie Andere` |
+
+#### Residential
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Residential` | `Wohnen` |
+| `Residential Multi-Family` | `Wohnen Mehrfamilienhaus` |
+| `Residential Low-Rise Multi-Family` | `Wohnen Mehrfamilienhaus Niedrigbau` |
+| `Residential Mid-Rise Multi-Family` | `Wohnen Mehrfamilienhaus Mittelhochbau` |
+| `Residential High-Rise Multi-Family` | `Wohnen Mehrfamilienhaus Hochhaus` |
+| `Residential Family Homes` | `Wohnen Einfamilienhäuser` |
+| `Residential Student Housing` | `Wohnen Studentenwohnheim` |
+| `Residential Retirement Living` | `Wohnen Seniorenwohnen` |
+| `Residential Other` | `Wohnen Andere` |
+
+#### Lodging
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Hotel` | `Hotel` |
+| `Lodging` | `Beherbergung` |
+| `Lodging Leisure & Recreation` | `Beherbergung Freizeit & Erholung` |
+| `Lodging Indoor Arena` | `Beherbergung Hallenstadion` |
+| `Lodging Fitness Center` | `Beherbergung Fitnesscenter` |
+| `Lodging Performing Arts` | `Beherbergung Veranstaltungsort` |
+| `Lodging Swimming Center` | `Beherbergung Schwimmbad` |
+| `Lodging Museum/Gallery` | `Beherbergung Museum/Galerie` |
+| `Lodging Leisure & Recreation Other` | `Beherbergung Freizeit & Erholung Andere` |
+
+#### Education
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Education` | `Bildung` |
+| `Education School` | `Bildung Schule` |
+| `Education University` | `Bildung Universität` |
+| `Education Library` | `Bildung Bibliothek` |
+| `Education Other` | `Bildung Andere` |
+
+#### Technology/Science
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Technology/Science` | `Technologie/Wissenschaft` |
+| `Technology/Science Data Center` | `Technologie/Wissenschaft Rechenzentrum` |
+| `Technology/Science Laboratory/Life sciences` | `Technologie/Wissenschaft Labor/Biowissenschaften` |
+| `Technology/Science Other` | `Technologie/Wissenschaft Andere` |
+
+#### Health Care
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Health Care` | `Gesundheitswesen` |
+| `Health Care Health Care Center` | `Gesundheitswesen Gesundheitszentrum` |
+| `Health Care Senior Homes` | `Gesundheitswesen Altersheim` |
+| `Health Care Other` | `Gesundheitswesen Andere` |
+
+#### Mixed Use
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Mixed Use` | `Mischnutzung` |
+| `Mixed Use Office/Retail` | `Mischnutzung Büro/Einzelhandel` |
+| `Mixed Use Office/Residential` | `Mischnutzung Büro/Wohnen` |
+| `Mixed Use Office/Industrial` | `Mischnutzung Büro/Industrie` |
+| `Mixed Use Other` | `Mischnutzung Andere` |
+
+#### Other
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Other` | `Andere` |
+| `Other Parking (Indoors)` | `Andere Parkhaus (Innen)` |
+| `Other Self-Storage` | `Andere Selfstorage` |
 
 ---
 
@@ -966,45 +1089,133 @@ Primary and secondary building type options for `primaryTypeOfBuilding` and `sec
 
 #### Area Measurement Units
 
-| Value | Description |
-|-------|-------------|
-| `sqm` | Square meters (m²) |
-| `sqft` | Square feet (ft²) |
-| `acr` | Acres |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `sqm` | `m²` | Square meters |
+| `sqft` | `ft²` | Square feet |
+| `acr` | `Acre` | Acres |
 
 #### Area Measurement Accuracy
 
-| Value | Description |
-|-------|-------------|
-| `Estimated` | Estimated or calculated value |
-| `Measured` | Directly measured value |
-| `Aggregated` | Aggregated from multiple sources |
-| `Unknown` | Accuracy not specified |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Estimated` | `Geschätzt` | Estimated or calculated value |
+| `Measured` | `Gemessen` | Directly measured value |
+| `Aggregated` | `Aggregiert` | Aggregated from multiple sources |
+| `Unknown` | `Unbekannt` | Accuracy not specified |
 
 #### Area Measurement Standards
 
-| Value | Description |
-|-------|-------------|
-| `SIA 416` | Swiss standard for areas and volumes in building construction |
-| `DIN 277-1` | German standard for floor areas |
-| `MFG` | Mietflächenrichtlinie für gewerblichen Raum |
-| `IPMS` | International Property Measurement Standards |
-| `RICS` | Royal Institution of Chartered Surveyors |
-| `BOMA` | Building Owners and Managers Association |
-| `NA` | Not applicable / Other standard |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `SIA 416` | `SIA 416` | Swiss standard for areas and volumes in building construction |
+| `DIN 277-1` | `DIN 277-1` | German standard for floor areas |
+| `MFG` | `MFG` | Mietflächenrichtlinie für gewerblichen Raum |
+| `IPMS` | `IPMS` | International Property Measurement Standards |
+| `RICS` | `RICS` | Royal Institution of Chartered Surveyors |
+| `BOMA` | `BOMA` | Building Owners and Managers Association |
+| `NA` | `k.A.` | Not applicable / Other standard |
 
 #### Area Types
 
-| Category | Values |
-|----------|--------|
-| **SIA 416 (Swiss)** | `Bruttogeschossfläche (BGF)`, `Nettogeschossfläche (NGF)`, `Nutzfläche (NF)`, `Verkehrsfläche (VF)`, `Funktionsfläche (FF)`, `Konstruktionsfläche (KF)` |
-| **SIA 380/1 (Swiss)** | `Energiebezugsfläche (EBF)` |
-| **DIN 277 / General** | `Gross floor area`, `Construction area`, `Net room area`, `Circulation area`, `Net usable area`, `Technical area` |
-| **Usage-specific** | `Living/residence area`, `Office area`, `Production/laboratory area`, `Storage/distribution/selling area`, `Education/teaching/culture area`, `Healing/care area`, `Other uses` |
-| **IPMS** | `Gross external area`, `External Wall area`, `Gross internal area`, `A-Vertical penetrations`, `B-Structural elements`, `C-Technical services`, `D-Hygiene areas`, `E-Circulation areas`, `F-Amenities`, `G-Workspace`, `H-Other areas` |
-| **BOMA / Rental** | `Rentable area`, `Rentable exclusion`, `Boundary area`, `Rentable area common occupancy`, `Rentable area exclusive occupancy`, `Building amenity area`, `Building service area`, `Floor service area`, `Tenant ancillary area`, `Tenant area`, `Landlord area` |
-| **Site / Land** | `Land area`, `Total surface area`, `Vegetated area`, `Non-vegetated area`, `Green ground area`, `Green roof area`, `Green wall area`, `Green terrace area` |
-| **Other** | `Major vertical penetrations`, `Occupant Storage area`, `Parking area`, `Unenclosed Building Feature: Covered Gallery`, `Vacant area`, `Energy reference area`, `Volumen`, `Arbeitsplätze`, `Reinigungsfläche`, `NA` |
+##### SIA 416 (Swiss)
+
+| Value (EN) | Value (DE) | Abbreviation |
+|------------|------------|--------------|
+| `Gross floor area` | `Bruttogeschossfläche` | BGF |
+| `Net floor area` | `Nettogeschossfläche` | NGF |
+| `Usable area` | `Nutzfläche` | NF |
+| `Circulation area` | `Verkehrsfläche` | VF |
+| `Technical area` | `Funktionsfläche` | FF |
+| `Construction area` | `Konstruktionsfläche` | KF |
+
+##### SIA 380/1 (Swiss)
+
+| Value (EN) | Value (DE) | Abbreviation |
+|------------|------------|--------------|
+| `Energy reference area` | `Energiebezugsfläche` | EBF |
+
+##### DIN 277 / General
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Gross floor area` | `Brutto-Grundfläche` |
+| `Construction area` | `Konstruktions-Grundfläche` |
+| `Net room area` | `Netto-Raumfläche` |
+| `Circulation area` | `Verkehrsfläche` |
+| `Net usable area` | `Nutzungsfläche` |
+| `Technical area` | `Technikfläche` |
+
+##### Usage-specific
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Living/residence area` | `Wohnfläche` |
+| `Office area` | `Bürofläche` |
+| `Production/laboratory area` | `Produktions-/Laborfläche` |
+| `Storage/distribution/selling area` | `Lager-/Verkaufsfläche` |
+| `Education/teaching/culture area` | `Bildungs-/Kulturfläche` |
+| `Healing/care area` | `Pflege-/Heilfläche` |
+| `Other uses` | `Sonstige Nutzung` |
+
+##### IPMS
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Gross external area` | `Brutto-Aussenfläche` |
+| `External Wall area` | `Aussenwandfläche` |
+| `Gross internal area` | `Brutto-Innenfläche` |
+| `A-Vertical penetrations` | `A-Vertikale Durchdringungen` |
+| `B-Structural elements` | `B-Tragende Elemente` |
+| `C-Technical services` | `C-Technische Anlagen` |
+| `D-Hygiene areas` | `D-Sanitärbereiche` |
+| `E-Circulation areas` | `E-Verkehrsflächen` |
+| `F-Amenities` | `F-Gemeinschaftsflächen` |
+| `G-Workspace` | `G-Arbeitsflächen` |
+| `H-Other areas` | `H-Sonstige Flächen` |
+
+##### BOMA / Rental
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Rentable area` | `Mietfläche` |
+| `Rentable exclusion` | `Mietflächenausschluss` |
+| `Boundary area` | `Grenzfläche` |
+| `Rentable area common occupancy` | `Mietfläche Gemeinschaftsnutzung` |
+| `Rentable area exclusive occupancy` | `Mietfläche Exklusivnutzung` |
+| `Building amenity area` | `Gebäude-Gemeinschaftsfläche` |
+| `Building service area` | `Gebäude-Servicefläche` |
+| `Floor service area` | `Geschoss-Servicefläche` |
+| `Tenant ancillary area` | `Mieter-Nebenfläche` |
+| `Tenant area` | `Mieterfläche` |
+| `Landlord area` | `Vermieterfläche` |
+
+##### Site / Land
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Land area` | `Grundstücksfläche` |
+| `Total surface area` | `Gesamtfläche` |
+| `Vegetated area` | `Begrünte Fläche` |
+| `Non-vegetated area` | `Nicht begrünte Fläche` |
+| `Green ground area` | `Grünfläche Boden` |
+| `Green roof area` | `Dachbegrünung` |
+| `Green wall area` | `Fassadenbegrünung` |
+| `Green terrace area` | `Terrassenbegrünung` |
+
+##### Other / Swiss-specific
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Major vertical penetrations` | `Vertikale Hauptdurchdringungen` |
+| `Occupant Storage area` | `Mieterlager` |
+| `Parking area` | `Parkfläche` |
+| `Unenclosed Building Feature: Covered Gallery` | `Offener Gebäudeteil: Überdachte Galerie` |
+| `Vacant area` | `Leerfläche` |
+| `Volume` | `Volumen` |
+| `Workplaces` | `Arbeitsplätze` |
+| `Cleaning area` | `Reinigungsfläche` |
+| `Not applicable` | `Nicht anwendbar` |
 
 ---
 
@@ -1012,90 +1223,208 @@ Primary and secondary building type options for `primaryTypeOfBuilding` and `sec
 
 #### Measurement Types
 
-| Value | Description |
-|-------|-------------|
-| `Energy` | Energy consumption (electricity, gas, heating, etc.) |
-| `Water` | Water consumption and discharge |
-| `Waste` | Waste generation and disposal |
-| `Fugitive` | Fugitive emissions (refrigerants, gases) |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Energy` | `Energie` | Energy consumption (electricity, gas, heating, etc.) |
+| `Water` | `Wasser` | Water consumption and discharge |
+| `Waste` | `Abfall` | Waste generation and disposal |
+| `Fugitive` | `Flüchtige Emissionen` | Fugitive emissions (refrigerants, gases) |
 
 #### Measurement Units
 
-| Value | Description |
-|-------|-------------|
-| `kWh` | Kilowatt-hours (energy) |
-| `cubm` | Cubic meters (m³) - water, gas |
-| `kg` | Kilograms (waste, emissions) |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `kWh` | `kWh` | Kilowatt-hours (energy) |
+| `cubm` | `m³` | Cubic meters - water, gas |
+| `kg` | `kg` | Kilograms (waste, emissions) |
 
 #### Procurement Types
 
-| Value | Description |
-|-------|-------------|
-| `Procured by third party` | Third-party procurement |
-| `Self-procured` | Self-procured resources |
-| `Unspecified` | Not specified |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Procured by third party` | `Fremdbezug` | Third-party procurement |
+| `Self-procured` | `Eigenbezug` | Self-procured resources |
+| `Unspecified` | `Nicht spezifiziert` | Not specified |
 
 #### Purpose Types
 
-| Value | Description |
-|-------|-------------|
-| `Space heating` | Heating of spaces |
-| `Water heating` | Water heating |
-| `Heating (unspecified)` | Unspecified heating |
-| `Cooling` | Cooling/air conditioning |
-| `Lighting` | Lighting |
-| `Elevator` | Elevator operation |
-| `Appliances` | Appliances |
-| `Other` | Other purposes |
-| `Unspecified` | Not specified |
-| `Heat pump` | Heat pump operation |
-| `EV charging` | Electric vehicle charging |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Space heating` | `Raumheizung` | Heating of spaces |
+| `Water heating` | `Warmwasserbereitung` | Water heating |
+| `Heating (unspecified)` | `Heizung (nicht spezifiziert)` | Unspecified heating |
+| `Cooling` | `Kühlung` | Cooling/air conditioning |
+| `Lighting` | `Beleuchtung` | Lighting |
+| `Elevator` | `Aufzug` | Elevator operation |
+| `Appliances` | `Geräte` | Appliances |
+| `Other` | `Andere` | Other purposes |
+| `Unspecified` | `Nicht spezifiziert` | Not specified |
+| `Heat pump` | `Wärmepumpe` | Heat pump operation |
+| `EV charging` | `Elektrofahrzeug-Laden` | Electric vehicle charging |
 
 #### Space Types
 
-| Value | Description |
-|-------|-------------|
-| `Shared services/Common spaces` | Shared/common areas |
-| `Tenant space` | Tenant-occupied space |
-| `Landlord space` | Landlord-managed space |
-| `Whole building` | Entire building |
-| `Unspecified` | Not specified |
-| `Shared services` | Shared services areas |
-| `Common spaces` | Common areas |
-| `Outdoor` | Outdoor areas |
-| `Exterior area` | Exterior spaces |
-| `Parking` | Parking areas |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Shared services/Common spaces` | `Gemeinschaftsflächen` | Shared/common areas |
+| `Tenant space` | `Mieterfläche` | Tenant-occupied space |
+| `Landlord space` | `Vermieterfläche` | Landlord-managed space |
+| `Whole building` | `Gesamtes Gebäude` | Entire building |
+| `Unspecified` | `Nicht spezifiziert` | Not specified |
+| `Shared services` | `Gemeinschaftsdienste` | Shared services areas |
+| `Common spaces` | `Allgemeinflächen` | Common areas |
+| `Outdoor` | `Aussenbereich` | Outdoor areas |
+| `Exterior area` | `Aussenfläche` | Exterior spaces |
+| `Parking` | `Parkierung` | Parking areas |
 
 #### Data Source Types
 
-| Value | Description |
-|-------|-------------|
-| `Export` | Exported from external system |
-| `Survey` | Collected via survey |
-| `Meter` | Read from meter |
-| `Invoice` | Extracted from invoice |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Export` | `Export` | Exported from external system |
+| `Survey` | `Erhebung` | Collected via survey |
+| `Meter` | `Zähler` | Read from meter |
+| `Invoice` | `Rechnung` | Extracted from invoice |
 
 #### Measurement SubTypes
 
-| Category | SubTypes |
-|----------|----------|
-| **Electricity** | `Electricity from grid (green electricity contract)`, `Electricity from grid (normal contract)`, `Electricity self-generated & exported`, `Electricity self-generated & consumed`, `Electricity (unspecified)`, `REC` |
-| **Gas** | `Natural gas (standard mix)`, `Green natural gas`, `Natural gas (unspecified)` |
-| **Other Energy** | `Oil-based fuels`, `Fuel (unspecified)`, `District heating`, `District heating (green contract)`, `District cooling`, `District cooling (green contract)`, `Biomass`, `Solar thermal`, `Geothermal` |
-| **Water** | `Fresh water (municipal water supply)`, `Ground water (collected on site)`, `Rain water (collected on site)`, `Reclaimed water`, `Water discharge`, `Water consumption (unspecified)`, `Water supply` |
-| **Waste (Non-hazardous)** | `Recycling: non-hazardous`, `Incineration: non-hazardous`, `Waste to energy: non-hazardous`, `Landfill: non-hazardous`, `Reuse: non-hazardous`, `Other/Unknown: non-hazardous` |
-| **Waste (Hazardous)** | `Recycling: hazardous`, `Incineration: hazardous`, `Waste to energy: hazardous`, `Landfill: hazardous`, `Reuse: hazardous`, `Other/Unknown: hazardous` |
-| **Fugitive Emissions** | `Carbon dioxide (CO2)`, `Methane (CH4)`, `Nitrous oxide (N2O)`, `Sulfur hexafluoride (SF6)`, `Nitrogen trifluoride (NF3)`, various refrigerants (R-11, R-12, R-22, R-134a, etc.) |
+##### Electricity
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Electricity from grid (green electricity contract)` | `Netzstrom (Ökostromvertrag)` |
+| `Electricity from grid (normal contract)` | `Netzstrom (Normalvertrag)` |
+| `Electricity self-generated & exported` | `Eigenstrom (eingespeist)` |
+| `Electricity self-generated & consumed` | `Eigenstrom (verbraucht)` |
+| `Electricity (unspecified)` | `Strom (nicht spezifiziert)` |
+| `REC` | `HKN` |
+
+##### Gas
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Natural gas (standard mix)` | `Erdgas (Standardmix)` |
+| `Green natural gas` | `Biogas` |
+| `Natural gas (unspecified)` | `Erdgas (nicht spezifiziert)` |
+
+##### Other Energy
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Oil-based fuels` | `Ölbasierte Brennstoffe` |
+| `Fuel (unspecified)` | `Brennstoff (nicht spezifiziert)` |
+| `District heating` | `Fernwärme` |
+| `District heating (green contract)` | `Fernwärme (Ökovertrag)` |
+| `District cooling` | `Fernkälte` |
+| `District cooling (green contract)` | `Fernkälte (Ökovertrag)` |
+| `Biomass` | `Biomasse` |
+| `Solar thermal` | `Solarthermie` |
+| `Geothermal` | `Geothermie` |
+
+##### Water
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Fresh water (municipal water supply)` | `Frischwasser (Wasserversorgung)` |
+| `Ground water (collected on site)` | `Grundwasser (vor Ort)` |
+| `Rain water (collected on site)` | `Regenwasser (vor Ort)` |
+| `Reclaimed water` | `Aufbereitetes Wasser` |
+| `Water discharge` | `Abwasser` |
+| `Water consumption (unspecified)` | `Wasserverbrauch (nicht spezifiziert)` |
+| `Water supply` | `Wasserversorgung` |
+
+##### Waste (Non-hazardous)
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Recycling: non-hazardous` | `Recycling: ungefährlich` |
+| `Incineration: non-hazardous` | `Verbrennung: ungefährlich` |
+| `Waste to energy: non-hazardous` | `Energetische Verwertung: ungefährlich` |
+| `Landfill: non-hazardous` | `Deponie: ungefährlich` |
+| `Reuse: non-hazardous` | `Wiederverwendung: ungefährlich` |
+| `Other/Unknown: non-hazardous` | `Andere/Unbekannt: ungefährlich` |
+
+##### Waste (Hazardous)
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Recycling: hazardous` | `Recycling: gefährlich` |
+| `Incineration: hazardous` | `Verbrennung: gefährlich` |
+| `Waste to energy: hazardous` | `Energetische Verwertung: gefährlich` |
+| `Landfill: hazardous` | `Deponie: gefährlich` |
+| `Reuse: hazardous` | `Wiederverwendung: gefährlich` |
+| `Other/Unknown: hazardous` | `Andere/Unbekannt: gefährlich` |
+
+##### Fugitive Emissions
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Carbon dioxide (CO2)` | `Kohlendioxid (CO2)` |
+| `Methane (CH4)` | `Methan (CH4)` |
+| `Nitrous oxide (N2O)` | `Distickstoffoxid (N2O)` |
+| `Sulfur hexafluoride (SF6)` | `Schwefelhexafluorid (SF6)` |
+| `Nitrogen trifluoride (NF3)` | `Stickstofftrifluorid (NF3)` |
+| Various refrigerants (R-11, R-12, R-22, R-134a, etc.) | Diverse Kältemittel (R-11, R-12, R-22, R-134a, etc.) |
 
 #### Accuracy Options
 
-| Category | Options |
-|----------|---------|
-| **Direct** | `Missing`, `Estimated`, `Metered`, `Extrapolated`, `Planned`, `Simulated`, `Unspecified`, `Normalised`, `Implausible` |
-| **Calculated** | `Calculated based on estimated data`, `Calculated based on metered data`, `Calculated based on extrapolated data`, `Calculated based on planned data`, `Calculated based on simulated data`, `Calculated based on data with unspecified accuracy`, `Calculated based on normalised data`, `Calculated based on implausible data` |
-| **Projection** | `Projection based on estimated data`, `Projection based on metered data`, `Projection based on extrapolated data`, `Projection based on planned data`, `Projection based on simulated data`, `Projection based on data with unspecified accuracy`, `Projection based on normalised data`, `Projection based on implausible data` |
-| **Calculated from Projection** | `Calculated based on projected estimated data`, `Calculated based on projected metered data`, `Calculated based on projected extrapolated data`, `Calculated based on projected planned data`, `Calculated based on projected simulated data`, `Calculated based on projected data with unspecified accuracy`, `Calculated based on projected normalised data` |
-| **Other** | `Retrofit scenario` |
+##### Direct
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Missing` | `Fehlend` |
+| `Estimated` | `Geschätzt` |
+| `Metered` | `Gemessen` |
+| `Extrapolated` | `Extrapoliert` |
+| `Planned` | `Geplant` |
+| `Simulated` | `Simuliert` |
+| `Unspecified` | `Nicht spezifiziert` |
+| `Normalised` | `Normalisiert` |
+| `Implausible` | `Unplausibel` |
+
+##### Calculated
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Calculated based on estimated data` | `Berechnet auf Basis geschätzter Daten` |
+| `Calculated based on metered data` | `Berechnet auf Basis gemessener Daten` |
+| `Calculated based on extrapolated data` | `Berechnet auf Basis extrapolierter Daten` |
+| `Calculated based on planned data` | `Berechnet auf Basis geplanter Daten` |
+| `Calculated based on simulated data` | `Berechnet auf Basis simulierter Daten` |
+| `Calculated based on data with unspecified accuracy` | `Berechnet auf Basis nicht spezifizierter Daten` |
+| `Calculated based on normalised data` | `Berechnet auf Basis normalisierter Daten` |
+| `Calculated based on implausible data` | `Berechnet auf Basis unplausibler Daten` |
+
+##### Projection
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Projection based on estimated data` | `Projektion auf Basis geschätzter Daten` |
+| `Projection based on metered data` | `Projektion auf Basis gemessener Daten` |
+| `Projection based on extrapolated data` | `Projektion auf Basis extrapolierter Daten` |
+| `Projection based on planned data` | `Projektion auf Basis geplanter Daten` |
+| `Projection based on simulated data` | `Projektion auf Basis simulierter Daten` |
+| `Projection based on data with unspecified accuracy` | `Projektion auf Basis nicht spezifizierter Daten` |
+| `Projection based on normalised data` | `Projektion auf Basis normalisierter Daten` |
+| `Projection based on implausible data` | `Projektion auf Basis unplausibler Daten` |
+
+##### Calculated from Projection
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Calculated based on projected estimated data` | `Berechnet auf Basis projizierter geschätzter Daten` |
+| `Calculated based on projected metered data` | `Berechnet auf Basis projizierter gemessener Daten` |
+| `Calculated based on projected extrapolated data` | `Berechnet auf Basis projizierter extrapolierter Daten` |
+| `Calculated based on projected planned data` | `Berechnet auf Basis projizierter geplanter Daten` |
+| `Calculated based on projected simulated data` | `Berechnet auf Basis projizierter simulierter Daten` |
+| `Calculated based on projected data with unspecified accuracy` | `Berechnet auf Basis projizierter nicht spezifizierter Daten` |
+| `Calculated based on projected normalised data` | `Berechnet auf Basis projizierter normalisierter Daten` |
+
+##### Other
+
+| Value (EN) | Value (DE) |
+|------------|------------|
+| `Retrofit scenario` | `Sanierungsszenario` |
 
 ---
 
@@ -1103,42 +1432,42 @@ Primary and secondary building type options for `primaryTypeOfBuilding` and `sec
 
 #### Document Types
 
-| Type | Description |
-|------|-------------|
-| `Grundriss` | Floor plan |
-| `Bauplan` | Construction/building plan |
-| `Energieausweis` | Energy certificate (GEAK, etc.) |
-| `Baubewilligung` | Building permit |
-| `Brandschutzkonzept` | Fire protection concept |
-| `Mietvertrag` | Lease agreement |
-| `Wartungsprotokoll` | Maintenance protocol |
-| `Foto` | Photograph |
-| `Sonstige` | Other |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Floor plan` | `Grundriss` | Floor plan |
+| `Building plan` | `Bauplan` | Construction/building plan |
+| `Energy certificate` | `Energieausweis` | Energy certificate (GEAK, etc.) |
+| `Building permit` | `Baubewilligung` | Building permit |
+| `Fire protection concept` | `Brandschutzkonzept` | Fire protection concept |
+| `Lease agreement` | `Mietvertrag` | Lease agreement |
+| `Maintenance protocol` | `Wartungsprotokoll` | Maintenance protocol |
+| `Photograph` | `Foto` | Photograph |
+| `Other` | `Sonstige` | Other |
 
 #### Contact Roles
 
-| Role | Description |
-|------|-------------|
-| `Objektverantwortliche` | Property manager |
-| `Hauswart` | Caretaker/janitor |
-| `Portfolioverantwortliche` | Portfolio manager |
-| `Technischer Leiter` | Technical manager |
-| `Sicherheitsbeauftragter` | Security officer |
-| `Notfallkontakt` | Emergency contact |
-| `Mietervertreter` | Tenant representative |
-| `Sonstige` | Other |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Property manager` | `Objektverantwortliche` | Property manager |
+| `Caretaker` | `Hauswart` | Caretaker/janitor |
+| `Portfolio manager` | `Portfolioverantwortliche` | Portfolio manager |
+| `Technical manager` | `Technischer Leiter` | Technical manager |
+| `Security officer` | `Sicherheitsbeauftragter` | Security officer |
+| `Emergency contact` | `Notfallkontakt` | Emergency contact |
+| `Tenant representative` | `Mietervertreter` | Tenant representative |
+| `Other` | `Sonstige` | Other |
 
 #### Contract Types
 
-| Type | Description |
-|------|-------------|
-| `Wartungsvertrag` | Maintenance contract |
-| `Reinigungsvertrag` | Cleaning contract |
-| `Sicherheitsdienst` | Security services |
-| `Mietvertrag` | Lease agreement |
-| `Servicevertrag` | General service contract |
-| `Versicherung` | Insurance contract |
-| `Sonstige` | Other |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Maintenance contract` | `Wartungsvertrag` | Maintenance contract |
+| `Cleaning contract` | `Reinigungsvertrag` | Cleaning contract |
+| `Security services` | `Sicherheitsdienst` | Security services |
+| `Lease agreement` | `Mietvertrag` | Lease agreement |
+| `Service contract` | `Servicevertrag` | General service contract |
+| `Insurance` | `Versicherung` | Insurance contract |
+| `Other` | `Sonstige` | Other |
 
 ---
 
@@ -1146,41 +1475,41 @@ Primary and secondary building type options for `primaryTypeOfBuilding` and `sec
 
 #### Asset Categories
 
-| Category | Description |
-|----------|-------------|
-| `HVAC` | Heating, ventilation, and air conditioning |
-| `Aufzüge` | Elevators and lifts |
-| `Brandschutz` | Fire protection systems |
-| `Elektro` | Electrical systems |
-| `Sanitär` | Plumbing and sanitary |
-| `Sicherheit` | Security systems |
-| `IT/Kommunikation` | IT and communication infrastructure |
-| `Gebäudeautomation` | Building automation |
-| `Sonstige` | Other |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `HVAC` | `HLK` | Heating, ventilation, and air conditioning |
+| `Elevators` | `Aufzüge` | Elevators and lifts |
+| `Fire protection` | `Brandschutz` | Fire protection systems |
+| `Electrical` | `Elektro` | Electrical systems |
+| `Plumbing` | `Sanitär` | Plumbing and sanitary |
+| `Security` | `Sicherheit` | Security systems |
+| `IT/Communication` | `IT/Kommunikation` | IT and communication infrastructure |
+| `Building automation` | `Gebäudeautomation` | Building automation |
+| `Other` | `Sonstige` | Other |
 
 #### Cost Periods
 
-| Value | Description |
-|-------|-------------|
-| `Annual` | Yearly cost |
-| `Monthly` | Monthly cost |
-| `Quarterly` | Quarterly cost |
-| `OneTime` | One-time cost |
+| Value (EN) | Value (DE) | Description |
+|------------|------------|-------------|
+| `Annual` | `Jährlich` | Yearly cost |
+| `Monthly` | `Monatlich` | Monthly cost |
+| `Quarterly` | `Quartalsweise` | Quarterly cost |
+| `OneTime` | `Einmalig` | One-time cost |
 
 #### Cost Groups (Swiss SN 506 511)
 
 Common cost group codes for building operations:
 
-| Code | Category | Description |
-|------|----------|-------------|
-| 311 | Operating | Electricity supply |
-| 312 | Operating | Heating energy |
-| 313 | Operating | Water supply |
-| 321 | Operating | Wastewater disposal |
-| 330 | Operating | Interior cleaning |
-| 350 | Operating | Security services |
-| 410 | Maintenance | Building construction maintenance |
-| 420 | Maintenance | Technical installations maintenance |
+| Code | Category (EN) | Category (DE) | Description (EN) | Description (DE) |
+|------|---------------|---------------|------------------|------------------|
+| 311 | Operating | Betrieb | Electricity supply | Stromversorgung |
+| 312 | Operating | Betrieb | Heating energy | Heizenergie |
+| 313 | Operating | Betrieb | Water supply | Wasserversorgung |
+| 321 | Operating | Betrieb | Wastewater disposal | Abwasserentsorgung |
+| 330 | Operating | Betrieb | Interior cleaning | Innenreinigung |
+| 350 | Operating | Betrieb | Security services | Sicherheitsdienste |
+| 410 | Maintenance | Instandhaltung | Building construction maintenance | Bauliche Instandhaltung |
+| 420 | Maintenance | Instandhaltung | Technical installations maintenance | Technische Instandhaltung |
 
 ---
 
@@ -1329,12 +1658,14 @@ This appendix documents the mapping rules for transforming data from the current
 
 ### B.2 Value Conversions
 
+> **Note:** The demo uses German enum values. See [Appendix A](#7-appendix-a-reference-tables) for complete EN/DE mappings.
+
 #### Ownership Type Mapping
 
-| Source Value | Target Value |
-|--------------|--------------|
-| Eigentum Bund | `Owner` |
-| Miete | `Tenant` |
+| Source Value | Target Value (DE) | Target Value (EN) |
+|--------------|-------------------|-------------------|
+| Eigentum Bund | `Eigentümer` | `Owner` |
+| Miete | `Mieter` | `Tenant` |
 
 #### Monument Protection Mapping
 
@@ -1345,20 +1676,20 @@ This appendix documents the mapping rules for transforming data from the current
 
 #### Area Measurement Accuracy Mapping
 
-| Source Value | Target Value |
-|--------------|--------------|
-| Gemessen | `Measured` |
-| Geschätzt | `Estimated` |
-| Berechnet | `Estimated` |
-| Aggregiert | `Aggregated` |
+| Source Value | Target Value (DE) | Target Value (EN) |
+|--------------|-------------------|-------------------|
+| Gemessen | `Gemessen` | `Measured` |
+| Geschätzt | `Geschätzt` | `Estimated` |
+| Berechnet | `Geschätzt` | `Estimated` |
+| Aggregiert | `Aggregiert` | `Aggregated` |
 
 #### Unit Conversion
 
-| Source Unit | Target Unit |
-|-------------|-------------|
-| m² | `sqm` |
-| ft² | `sqft` |
-| m³ | `sqm` (store original in extensionData) |
+| Source Unit | Target Unit (DE) | Target Unit (EN) |
+|-------------|------------------|------------------|
+| m² | `m²` | `sqm` |
+| ft² | `ft²` | `sqft` |
+| m³ | `m³` | `cubm` |
 
 ---
 
