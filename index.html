@@ -318,19 +318,19 @@
             
             <div class="detail-tabs">
                 <div class="detail-tabs-inner">
-                    <div class="detail-tab active" data-tab="uebersicht">Übersicht</div>
-                    <div class="detail-tab" data-tab="bemessungen">Bemessungen</div>
-                    <div class="detail-tab" data-tab="kosten">Kosten</div>
-                    <div class="detail-tab" data-tab="vertraege">Verträge</div>
-                    <div class="detail-tab" data-tab="ausstattung">Ausstattung</div>
-                    <div class="detail-tab" data-tab="dokumente">Dokumente</div>
-                    <div class="detail-tab" data-tab="kontakte">Kontakte</div>
+                    <div class="detail-tab active" data-tab="overview">Übersicht</div>
+                    <div class="detail-tab" data-tab="measurements">Bemessungen</div>
+                    <div class="detail-tab" data-tab="costs">Kosten</div>
+                    <div class="detail-tab" data-tab="contracts">Verträge</div>
+                    <div class="detail-tab" data-tab="assets">Ausstattung</div>
+                    <div class="detail-tab" data-tab="documents">Dokumente</div>
+                    <div class="detail-tab" data-tab="contacts">Kontakte</div>
                 </div>
             </div>
             
             <div class="detail-content">
                 <!-- Tab Content: Übersicht -->
-                <div class="tab-content active" data-content="uebersicht">
+                <div class="tab-content active" data-content="overview">
                 <div class="detail-grid">
                     <div class="detail-left">
                         <div class="detail-section">
@@ -510,7 +510,7 @@
                 </div>
 
                 <!-- Tab Content: Bemessungen -->
-                <div class="tab-content" data-content="bemessungen">
+                <div class="tab-content" data-content="measurements">
                     <div class="detail-table-container">
                         <div class="detail-section">
                             <div class="detail-section-title">Bemessungen</div>
@@ -585,7 +585,7 @@
                 </div>
 
                 <!-- Tab Content: Kosten -->
-                <div class="tab-content" data-content="kosten">
+                <div class="tab-content" data-content="costs">
                     <div class="detail-table-container">
                         <div class="detail-section">
                             <div class="detail-section-title">Kosten</div>
@@ -593,22 +593,22 @@
                             <div class="toolbar">
                                 <div class="toolbar-search">
                                     <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="kosten-filter" placeholder="Alle Spalten filtern">
+                                    <input type="text" id="costs-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action kosten-action" disabled>
+                                    <button class="btn-action costs-action" disabled>
                                         <span class="material-symbols-outlined">edit</span>
                                         Bearbeiten
                                     </button>
-                                    <button class="btn-action kosten-action" disabled>
+                                    <button class="btn-action costs-action" disabled>
                                         <span class="material-symbols-outlined">delete</span>
                                         Löschen
                                     </button>
-                                    <button class="btn-action kosten-action" disabled>
+                                    <button class="btn-action costs-action" disabled>
                                         <span class="material-symbols-outlined">description</span>
                                         Details
                                     </button>
-                                    <button class="btn-back" id="btn-add-kosten">
+                                    <button class="btn-back" id="btn-add-cost">
                                         <span class="material-symbols-outlined">add</span>
                                         Hinzufügen
                                     </button>
@@ -616,39 +616,39 @@
                             </div>
 
                             <div class="detail-table-wrapper">
-                                <table class="detail-table" id="kosten-table">
+                                <table class="detail-table" id="costs-table">
                                     <thead>
                                         <tr>
                                             <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-kosten">
+                                                <input type="checkbox" id="select-all-costs">
                                             </th>
-                                            <th class="col-kosten-id sortable" data-sort="id">
+                                            <th class="col-cost-id sortable" data-sort="id">
                                                 ID
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-kosten-gruppe sortable" data-sort="kostengruppe">
+                                            <th class="col-cost-group sortable" data-sort="kostengruppe">
                                                 Kostengruppe
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-kosten-art sortable" data-sort="kostenart">
+                                            <th class="col-cost-type sortable" data-sort="kostenart">
                                                 Kostenart
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-kosten-betrag sortable" data-sort="betrag">
+                                            <th class="col-cost-amount sortable" data-sort="betrag">
                                                 Betrag
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-kosten-einheit sortable" data-sort="einheit">
+                                            <th class="col-cost-unit sortable" data-sort="einheit">
                                                 Einheit
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-kosten-stichtag sortable" data-sort="stichtag">
+                                            <th class="col-cost-date sortable" data-sort="stichtag">
                                                 Stichtag
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody id="kosten-tbody">
+                                    <tbody id="costs-tbody">
                                         <!-- Populated by JavaScript -->
                                     </tbody>
                                 </table>
@@ -658,7 +658,7 @@
                 </div>
 
                 <!-- Tab Content: Verträge -->
-                <div class="tab-content" data-content="vertraege">
+                <div class="tab-content" data-content="contracts">
                     <div class="detail-table-container">
                         <div class="detail-section">
                             <div class="detail-section-title">Verträge</div>
@@ -666,22 +666,22 @@
                             <div class="toolbar">
                                 <div class="toolbar-search">
                                     <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="vertraege-filter" placeholder="Alle Spalten filtern">
+                                    <input type="text" id="contracts-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action vertraege-action" disabled>
+                                    <button class="btn-action contracts-action" disabled>
                                         <span class="material-symbols-outlined">edit</span>
                                         Bearbeiten
                                     </button>
-                                    <button class="btn-action vertraege-action" disabled>
+                                    <button class="btn-action contracts-action" disabled>
                                         <span class="material-symbols-outlined">delete</span>
                                         Löschen
                                     </button>
-                                    <button class="btn-action vertraege-action" disabled>
+                                    <button class="btn-action contracts-action" disabled>
                                         <span class="material-symbols-outlined">description</span>
                                         Details
                                     </button>
-                                    <button class="btn-back" id="btn-add-vertrag">
+                                    <button class="btn-back" id="btn-add-contract">
                                         <span class="material-symbols-outlined">add</span>
                                         Hinzufügen
                                     </button>
@@ -689,43 +689,43 @@
                             </div>
 
                             <div class="detail-table-wrapper">
-                                <table class="detail-table" id="vertraege-table">
+                                <table class="detail-table" id="contracts-table">
                                     <thead>
                                         <tr>
                                             <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-vertraege">
+                                                <input type="checkbox" id="select-all-contracts">
                                             </th>
-                                            <th class="col-vertrag-id sortable" data-sort="id">
+                                            <th class="col-contract-id sortable" data-sort="id">
                                                 ID
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-vertrag-art sortable" data-sort="vertragsart">
+                                            <th class="col-contract-type sortable" data-sort="vertragsart">
                                                 Vertragsart
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-vertrag-partner sortable" data-sort="vertragspartner">
+                                            <th class="col-contract-partner sortable" data-sort="vertragspartner">
                                                 Vertragspartner
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-vertrag-beginn sortable" data-sort="vertragsbeginn">
+                                            <th class="col-contract-start sortable" data-sort="vertragsbeginn">
                                                 Beginn
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-vertrag-ende sortable" data-sort="vertragsende">
+                                            <th class="col-contract-end sortable" data-sort="vertragsende">
                                                 Ende
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-vertrag-betrag sortable" data-sort="betrag">
+                                            <th class="col-contract-amount sortable" data-sort="betrag">
                                                 Betrag/Jahr
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-vertrag-status sortable" data-sort="status">
+                                            <th class="col-contract-status sortable" data-sort="status">
                                                 Status
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody id="vertraege-tbody">
+                                    <tbody id="contracts-tbody">
                                         <!-- Populated by JavaScript -->
                                     </tbody>
                                 </table>
@@ -735,7 +735,7 @@
                 </div>
 
                 <!-- Tab Content: Ausstattung -->
-                <div class="tab-content" data-content="ausstattung">
+                <div class="tab-content" data-content="assets">
                     <div class="detail-table-container">
                         <div class="detail-section">
                             <div class="detail-section-title">Ausstattung</div>
@@ -743,22 +743,22 @@
                             <div class="toolbar">
                                 <div class="toolbar-search">
                                     <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="ausstattung-filter" placeholder="Alle Spalten filtern">
+                                    <input type="text" id="assets-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action ausstattung-action" disabled>
+                                    <button class="btn-action assets-action" disabled>
                                         <span class="material-symbols-outlined">edit</span>
                                         Bearbeiten
                                     </button>
-                                    <button class="btn-action ausstattung-action" disabled>
+                                    <button class="btn-action assets-action" disabled>
                                         <span class="material-symbols-outlined">delete</span>
                                         Löschen
                                     </button>
-                                    <button class="btn-action ausstattung-action" disabled>
+                                    <button class="btn-action assets-action" disabled>
                                         <span class="material-symbols-outlined">info</span>
                                         Details
                                     </button>
-                                    <button class="btn-back" id="btn-add-ausstattung">
+                                    <button class="btn-back" id="btn-add-asset">
                                         <span class="material-symbols-outlined">add</span>
                                         Hinzufügen
                                     </button>
@@ -766,39 +766,39 @@
                             </div>
 
                             <div class="detail-table-wrapper">
-                                <table class="detail-table" id="ausstattung-table">
+                                <table class="detail-table" id="assets-table">
                                     <thead>
                                         <tr>
                                             <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-ausstattung">
+                                                <input type="checkbox" id="select-all-assets">
                                             </th>
-                                            <th class="col-ausstattung-id sortable" data-sort="id">
+                                            <th class="col-asset-id sortable" data-sort="id">
                                                 ID
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-ausstattung-bezeichnung sortable" data-sort="bezeichnung">
+                                            <th class="col-asset-name sortable" data-sort="bezeichnung">
                                                 Bezeichnung
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-ausstattung-kategorie sortable" data-sort="kategorie">
+                                            <th class="col-asset-category sortable" data-sort="kategorie">
                                                 Kategorie
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-ausstattung-hersteller sortable" data-sort="hersteller">
+                                            <th class="col-asset-manufacturer sortable" data-sort="hersteller">
                                                 Hersteller
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-ausstattung-baujahr sortable" data-sort="baujahr">
+                                            <th class="col-asset-year sortable" data-sort="baujahr">
                                                 Baujahr
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-ausstattung-standort sortable" data-sort="standort">
+                                            <th class="col-asset-location sortable" data-sort="standort">
                                                 Standort
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody id="ausstattung-tbody">
+                                    <tbody id="assets-tbody">
                                         <!-- Populated by JavaScript -->
                                     </tbody>
                                 </table>
@@ -808,7 +808,7 @@
                 </div>
 
                 <!-- Tab Content: Dokumente -->
-                <div class="tab-content" data-content="dokumente">
+                <div class="tab-content" data-content="documents">
                     <div class="detail-table-container">
                         <div class="detail-section">
                             <div class="detail-section-title">Dokumente</div>
@@ -875,7 +875,7 @@
                 </div>
 
                 <!-- Tab Content: Kontakte -->
-                <div class="tab-content" data-content="kontakte">
+                <div class="tab-content" data-content="contacts">
                     <div class="detail-table-container">
                         <div class="detail-section">
                             <div class="detail-section-title">Kontakte</div>
@@ -883,22 +883,22 @@
                             <div class="toolbar">
                                 <div class="toolbar-search">
                                     <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="kontakte-filter" placeholder="Alle Spalten filtern">
+                                    <input type="text" id="contacts-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action kontakte-action" disabled>
+                                    <button class="btn-action contacts-action" disabled>
                                         <span class="material-symbols-outlined">edit</span>
                                         Bearbeiten
                                     </button>
-                                    <button class="btn-action kontakte-action" disabled>
+                                    <button class="btn-action contacts-action" disabled>
                                         <span class="material-symbols-outlined">delete</span>
                                         Löschen
                                     </button>
-                                    <button class="btn-action kontakte-action" disabled>
+                                    <button class="btn-action contacts-action" disabled>
                                         <span class="material-symbols-outlined">mail</span>
                                         Kontaktieren
                                     </button>
-                                    <button class="btn-back" id="btn-add-kontakt">
+                                    <button class="btn-back" id="btn-add-contact">
                                         <span class="material-symbols-outlined">add</span>
                                         Hinzufügen
                                     </button>
@@ -906,33 +906,33 @@
                             </div>
 
                             <div class="detail-table-wrapper">
-                                <table class="detail-table" id="kontakte-table">
+                                <table class="detail-table" id="contacts-table">
                                     <thead>
                                         <tr>
                                             <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-kontakte">
+                                                <input type="checkbox" id="select-all-contacts">
                                             </th>
-                                            <th class="col-kontakt-id sortable" data-sort="id">
+                                            <th class="col-contact-id sortable" data-sort="id">
                                                 ID
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-kontakt-name sortable" data-sort="name">
+                                            <th class="col-contact-name sortable" data-sort="name">
                                                 Name
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-kontakt-rolle sortable" data-sort="rolle">
+                                            <th class="col-contact-role sortable" data-sort="rolle">
                                                 Rolle
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-kontakt-org sortable" data-sort="organisation">
+                                            <th class="col-contact-org sortable" data-sort="organisation">
                                                 Organisation
                                                 <span class="material-symbols-outlined sort-icon">unfold_more</span>
                                             </th>
-                                            <th class="col-kontakt-telefon">Telefon</th>
-                                            <th class="col-kontakt-email">E-Mail</th>
+                                            <th class="col-contact-phone">Telefon</th>
+                                            <th class="col-contact-email">E-Mail</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="kontakte-tbody">
+                                    <tbody id="contacts-tbody">
                                         <!-- Populated by JavaScript -->
                                     </tbody>
                                 </table>
