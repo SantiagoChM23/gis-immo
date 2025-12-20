@@ -515,8 +515,7 @@
 
         function toggleSmartDrawer(open, tab) {
             var drawer = document.getElementById('smart-drawer');
-            var filterBtn = document.getElementById('filter-btn');
-            var aiBtn = document.getElementById('ai-assistant-btn');
+            var drawerBtn = document.getElementById('smart-drawer-btn');
 
             if (open === undefined) {
                 open = !drawer.classList.contains('open');
@@ -524,17 +523,15 @@
 
             if (open) {
                 drawer.classList.add('open');
+                drawerBtn.classList.add('panel-open');
+                drawerBtn.setAttribute('aria-expanded', 'true');
                 if (tab) {
                     switchDrawerTab(tab);
                 }
-                // Update button states based on which tab is active
-                updateDrawerButtonStates();
             } else {
                 drawer.classList.remove('open');
-                filterBtn.classList.remove('panel-open');
-                filterBtn.setAttribute('aria-expanded', 'false');
-                aiBtn.classList.remove('panel-open');
-                aiBtn.setAttribute('aria-expanded', 'false');
+                drawerBtn.classList.remove('panel-open');
+                drawerBtn.setAttribute('aria-expanded', 'false');
             }
 
             // Resize map after transition completes
@@ -563,28 +560,6 @@
 
             // Update data attribute for CSS
             drawer.setAttribute('data-active-tab', tab);
-
-            // Update header button states
-            updateDrawerButtonStates();
-        }
-
-        function updateDrawerButtonStates() {
-            var drawer = document.getElementById('smart-drawer');
-            var filterBtn = document.getElementById('filter-btn');
-            var aiBtn = document.getElementById('ai-assistant-btn');
-            var isOpen = drawer.classList.contains('open');
-
-            if (isOpen && smartDrawerActiveTab === 'filter') {
-                filterBtn.classList.add('panel-open');
-                filterBtn.setAttribute('aria-expanded', 'true');
-                aiBtn.classList.remove('panel-open');
-                aiBtn.setAttribute('aria-expanded', 'false');
-            } else if (isOpen && smartDrawerActiveTab === 'assistant') {
-                aiBtn.classList.add('panel-open');
-                aiBtn.setAttribute('aria-expanded', 'true');
-                filterBtn.classList.remove('panel-open');
-                filterBtn.setAttribute('aria-expanded', 'false');
-            }
         }
 
         // Legacy function for backward compatibility
@@ -663,14 +638,9 @@
         }
 
         function initFilterPane() {
-            // Toggle filter via header button - opens drawer to filter tab
-            document.getElementById('filter-btn').addEventListener('click', function() {
-                var drawer = document.getElementById('smart-drawer');
-                if (drawer.classList.contains('open') && smartDrawerActiveTab === 'filter') {
-                    toggleSmartDrawer(false);
-                } else {
-                    toggleSmartDrawer(true, 'filter');
-                }
+            // Toggle smart drawer via header button
+            document.getElementById('smart-drawer-btn').addEventListener('click', function() {
+                toggleSmartDrawer();
             });
 
             // Close smart drawer
@@ -2184,19 +2154,6 @@
             document.getElementById('info-panel').classList.remove('show');
             selectedBuildingId = null;
             updateSelectedBuilding();
-        });
-
-        // ===== AI ASSISTANT (now part of Smart Drawer) =====
-        var aiAssistantBtn = document.getElementById('ai-assistant-btn');
-
-        // AI button opens smart drawer to assistant tab
-        aiAssistantBtn.addEventListener('click', function() {
-            var drawer = document.getElementById('smart-drawer');
-            if (drawer.classList.contains('open') && smartDrawerActiveTab === 'assistant') {
-                toggleSmartDrawer(false);
-            } else {
-                toggleSmartDrawer(true, 'assistant');
-            }
         });
 
         // ===== DETAIL TABS =====
