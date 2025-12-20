@@ -40,9 +40,8 @@ This document describes the data model for the BBL Immobilienportfolio applicati
    - A.5 [Document, Contact & Contract Types](#a5-document-contact--contract-types)
    - A.6 [Asset Categories & Cost Groups](#a6-asset-categories--cost-groups)
 8. [Appendix B: Data Transformation Guide](#8-appendix-b-data-transformation-guide)
-   - B.1 [Source Field Mappings](#b1-source-field-mappings)
-   - B.2 [Value Conversions](#b2-value-conversions)
-   - B.3 [ISO 8601 Date Handling](#b3-iso-8601-date-handling)
+   - B.1 [Value Conversions](#b2-value-conversions)
+   - B.2 [ISO 8601 Date Handling](#b3-iso-8601-date-handling)
 9. [Version History](#9-version-history)
 10. [References](#10-references)
 
@@ -1513,7 +1512,7 @@ Common cost group codes for building operations:
 
 ---
 
-### B.2 Value Conversions
+### B.1 Value Conversions
 
 > **Note:** The demo uses German enum values. See [Appendix A](#7-appendix-a-reference-tables) for complete EN/DE mappings.
 
@@ -1550,7 +1549,7 @@ Common cost group codes for building operations:
 
 ---
 
-### B.3 ISO 8601 Date Handling
+### B.2 ISO 8601 Date Handling
 
 All dates must be converted to ISO 8601 format: `yyyy-mm-ddThh:mm:ssZ`
 
