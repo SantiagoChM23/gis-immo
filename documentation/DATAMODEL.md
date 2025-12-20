@@ -92,7 +92,7 @@ A site represents a logical grouping of buildings, such as a campus, property, o
 
 ---
 
-## Entity: Building
+## Entity: Building (Gebäude)
 
 The building is the core entity representing a physical structure in the portfolio.
 
@@ -183,7 +183,7 @@ The building is the core entity representing a physical structure in the portfol
 
 ---
 
-## Entity: Address
+## Entity: Address (Adresse)
 
 Addresses represent the physical location of a building. A building can have multiple addresses (e.g., corner buildings with entrances on different streets).
 
