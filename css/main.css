@@ -873,21 +873,8 @@
             overflow: auto;
         }
 
-        body.detail-active #main {
-            overflow: visible;
-            flex: none;
-        }
-
-        body.detail-active .main-content {
-            overflow: visible;
-            flex: none;
-            display: block;
-        }
-
         body.detail-active #detail-view {
             overflow-y: visible;
-            min-height: auto;
-            flex: none;
         }
 
         .detail-header {
