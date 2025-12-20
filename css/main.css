@@ -879,6 +879,7 @@
 
         body.detail-active #detail-view {
             overflow: visible;
+            align-self: flex-start;
         }
 
         .detail-header {
