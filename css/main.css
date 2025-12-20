@@ -859,7 +859,7 @@
             display: none;
             flex-direction: column;
             background: var(--grey-50);
-            overflow: visible;
+            overflow-y: auto;
         }
         
         #detail-view.active {
