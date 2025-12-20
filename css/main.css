@@ -873,27 +873,8 @@
             overflow: auto;
         }
 
-        body.detail-active #main {
-            overflow: visible;
-            flex: none;
-        }
-
-        body.detail-active .main-content {
-            overflow: visible;
-            flex: none;
-            display: block;
-        }
-
         body.detail-active #detail-view {
             overflow-y: visible;
-            min-height: auto;
-            flex: none;
-        }
-
-        /* Hide panels in detail view - they're not relevant and break layout */
-        body.detail-active #filter-pane,
-        body.detail-active #ai-assistant-panel {
-            display: none;
         }
 
         .detail-header {
