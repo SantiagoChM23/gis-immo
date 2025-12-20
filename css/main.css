@@ -1877,11 +1877,6 @@
             display: block;
         }
 
-        /* Move style switcher left when smart-drawer is open */
-        #main:has(#smart-drawer.open) .style-switcher {
-            right: 420px; /* 400px drawer + 20px margin */
-        }
-
         .style-switcher-btn {
             background: var(--white);
             border: 2px solid var(--grey-300);
