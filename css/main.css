@@ -952,9 +952,14 @@
             min-height: calc(100vh - 120px); /* header 90px + footer ~30px */
         }
 
-        /* Fix smart-drawer height in detail view - collapse when closed */
+        /* Fix smart-drawer height in detail view - fully collapse when closed */
         body.detail-active #smart-drawer:not(.open) {
             height: 0;
+            min-height: 0;
+            width: 0;
+            min-width: 0;
+            padding: 0;
+            border: none;
         }
 
         /* When open, match detail-view height */
