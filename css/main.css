@@ -877,6 +877,10 @@
             flex: none;
         }
 
+        body.detail-active .main-content {
+            align-self: flex-start;
+        }
+
         body.detail-active #detail-view {
             overflow: visible;
             align-self: flex-start;
