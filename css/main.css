@@ -936,10 +936,12 @@
         body.detail-active {
             height: auto;
             overflow: auto;
+            background: var(--grey-50); /* Grey background fills viewport */
         }
 
         body.detail-active #main {
             flex: none;
+            min-height: calc(100vh - 90px); /* #main fills viewport, not detail-view */
         }
 
         body.detail-active .main-content {
@@ -949,7 +951,7 @@
         body.detail-active #detail-view {
             overflow: visible;
             align-self: flex-start;
-            min-height: calc(100vh - 90px); /* fill viewport below main header */
+            /* No min-height - content determines height, grey background from body fills rest */
         }
 
         /* Fix smart-drawer height in detail view - fully collapse when closed */
@@ -3043,8 +3045,8 @@
                 padding: var(--space-4);
             }
 
-            /* Detail-view min-height for tablet */
-            body.detail-active #detail-view {
+            /* #main min-height for tablet */
+            body.detail-active #main {
                 min-height: calc(100vh - 70px);
             }
 
