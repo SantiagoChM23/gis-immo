@@ -873,6 +873,14 @@
             overflow: auto;
         }
 
+        body.detail-active #main {
+            flex: none;
+        }
+
+        body.detail-active .main-content {
+            flex: none;
+        }
+
         body.detail-active #detail-view {
             overflow-y: visible;
             flex: none;
