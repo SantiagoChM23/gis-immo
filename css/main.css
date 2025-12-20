@@ -886,9 +886,9 @@
             align-self: flex-start;
         }
 
-        /* Hide filter-pane in detail view - its height: 100% causes layout issues */
-        body.detail-active #filter-pane {
-            display: none;
+        /* Fix filter-pane height in detail view - collapse when closed */
+        body.detail-active #filter-pane:not(.open) {
+            height: 0;
         }
 
         /* Fix AI panel height in detail view */
@@ -897,10 +897,9 @@
             height: 0;
         }
 
-        /* When open, size to content */
+        /* When open, stretch to available height */
         body.detail-active #ai-assistant-panel.show {
             height: auto;
-            align-self: flex-start;
         }
 
         .detail-header {
