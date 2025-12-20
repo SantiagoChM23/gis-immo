@@ -875,6 +875,7 @@
 
         body.detail-active #detail-view {
             overflow-y: visible;
+            flex: none;
         }
 
         .detail-header {
