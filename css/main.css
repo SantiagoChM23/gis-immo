@@ -873,15 +873,7 @@
             overflow: auto;
         }
 
-        body.detail-active #header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-        }
-
         body.detail-active #main {
-            margin-top: 90px;
             overflow: visible;
             flex: none;
         }
