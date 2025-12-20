@@ -2207,11 +2207,19 @@
         }
 
         /* ===== SHARED DETAIL TABLE STYLES ===== */
-        .detail-table .col-id   { width: 12%; }
+        .detail-table .col-id,
+        .detail-table [class*="-id"] {
+            width: 150px;
+            min-width: 120px;
+            max-width: 180px;
+            word-break: break-all;
+            font-size: 12px;
+            color: var(--grey-600);
+        }
         .detail-table .col-type { width: 18%; }
 
-        /* ===== MEASUREMENTS TABLE: 9 columns = 100% ===== */
-        /* checkbox:4% + id:20% + type:18% + area:10% + source:10% + accuracy:10% + standard:10% + from:9% + until:9% = 100% */
+        /* ===== MEASUREMENTS TABLE: 9 columns ===== */
+        /* checkbox:4% + id:150px + type:18% + area:10% + source:10% + accuracy:10% + standard:10% + from:9% + until:9% */
         #measurements-table .col-area     { width: 10%; text-align: right; }
         #measurements-table .col-source   { max-width: 10%; }
         #measurements-table .col-accuracy { max-width: 10%; }
@@ -2219,16 +2227,15 @@
         #measurements-table .col-from     { max-width: 9%; }
         #measurements-table .col-until    { max-width: 9%; }
 
-        /* ===== DOCUMENTS TABLE: 7 columns = 100% ===== */
-        /* checkbox:4% + id:20% + title:30% + type:16% + format:10% + date:10% + size:10% = 100% */
+        /* ===== DOCUMENTS TABLE: 7 columns ===== */
+        /* checkbox:4% + id:150px + title:34% + type:auto + format:10% + date:10% + size:auto */
         #documents-table .col-title  { width: 34%; }
         #documents-table .col-format { max-width: 10%; }
         #documents-table .col-date   { max-width: 10%; }
         #documents-table .col-size   { width: auto;}
 
-        /* ===== KONTAKTE TABLE: 7 columns = 100% ===== */
-        /* checkbox:4% + id:12% + name:20% + rolle:16% + org:18% + telefon:15% + email:15% = 100% */
-        #kontakte-table .col-kontakt-id      { width: 12%; }
+        /* ===== KONTAKTE TABLE: 7 columns ===== */
+        /* checkbox:4% + id:150px + name:20% + rolle:16% + org:18% + telefon:15% + email:auto */
         #kontakte-table .col-kontakt-name    { width: 20%; }
         #kontakte-table .col-kontakt-rolle   { width: 16%; }
         #kontakte-table .col-kontakt-org     { width: 18%; }
@@ -2245,9 +2252,8 @@
             text-decoration: underline;
         }
 
-        /* ===== KOSTEN TABLE: 7 columns = 100% ===== */
-        /* checkbox:4% + id:10% + gruppe:12% + art:26% + betrag:16% + einheit:14% + stichtag:auto */
-        #kosten-table .col-kosten-id       { width: 10%; }
+        /* ===== KOSTEN TABLE: 7 columns ===== */
+        /* checkbox:4% + id:150px + gruppe:12% + art:26% + betrag:16% + einheit:14% + stichtag:auto */
         #kosten-table .col-kosten-gruppe   { width: 12%; }
         #kosten-table .col-kosten-art      { width: 26%; }
         #kosten-table .col-kosten-betrag   { width: 16%; text-align: right; }
@@ -2259,9 +2265,8 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* ===== VERTRAEGE TABLE: 8 columns = 100% ===== */
-        /* checkbox:4% + id:9% + art:17% + partner:26% + beginn:10% + ende:10% + betrag:14% + status:10% = 100% */
-        #vertraege-table .col-vertrag-id      { width: 9%; }
+        /* ===== VERTRAEGE TABLE: 8 columns ===== */
+        /* checkbox:4% + id:150px + art:17% + partner:26% + beginn:10% + ende:10% + betrag:14% + status:10% */
         #vertraege-table .col-vertrag-art     { width: 17%; }
         #vertraege-table .col-vertrag-partner { width: 26%; }
         #vertraege-table .col-vertrag-beginn  { width: 10%; }
@@ -2294,9 +2299,8 @@
             color: #757575;
         }
 
-        /* ===== AUSSTATTUNG TABLE: 7 columns = 100% ===== */
-        /* checkbox:4% + id:10% + bezeichnung:24% + kategorie:14% + hersteller:18% + baujahr:10% + standort:auto */
-        #ausstattung-table .col-ausstattung-id          { width: 10%; }
+        /* ===== AUSSTATTUNG TABLE: 7 columns ===== */
+        /* checkbox:4% + id:150px + bezeichnung:24% + kategorie:14% + hersteller:18% + baujahr:10% + standort:auto */
         #ausstattung-table .col-ausstattung-bezeichnung { width: 24%; }
         #ausstattung-table .col-ausstattung-kategorie   { width: 14%; }
         #ausstattung-table .col-ausstattung-hersteller  { width: 18%; }
