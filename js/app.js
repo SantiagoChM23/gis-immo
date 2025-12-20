@@ -465,25 +465,27 @@
         }
 
         function updateFilterButtonState() {
-            var filterBtn = document.getElementById('filter-btn');
+            var drawerBtn = document.getElementById('smart-drawer-btn');
+            if (!drawerBtn) return;
+
             var count = getActiveFilterCount();
 
             if (count > 0) {
                 // Add active filters highlight
-                filterBtn.classList.add('has-active-filters');
+                drawerBtn.classList.add('has-active-filters');
                 // Add or update count badge
-                var badge = filterBtn.querySelector('.filter-count');
+                var badge = drawerBtn.querySelector('.filter-count');
                 if (!badge) {
                     badge = document.createElement('span');
                     badge.className = 'filter-count';
-                    filterBtn.appendChild(badge);
+                    drawerBtn.appendChild(badge);
                 }
                 badge.textContent = count;
             } else {
                 // Remove active filters highlight
-                filterBtn.classList.remove('has-active-filters');
+                drawerBtn.classList.remove('has-active-filters');
                 // Remove count badge
-                var badge = filterBtn.querySelector('.filter-count');
+                var badge = drawerBtn.querySelector('.filter-count');
                 if (badge) {
                     badge.remove();
                 }
@@ -510,29 +512,64 @@
             // Map view updates via updateMapFilter()
         }
 
-        function toggleFilterPane(open) {
-            var pane = document.getElementById('filter-pane');
-            var filterBtn = document.getElementById('filter-btn');
+        // ===== SMART DRAWER =====
+        var smartDrawerActiveTab = 'filter';
+
+        function toggleSmartDrawer(open, tab) {
+            var drawer = document.getElementById('smart-drawer');
+            var drawerBtn = document.getElementById('smart-drawer-btn');
 
             if (open === undefined) {
-                open = !pane.classList.contains('open');
+                open = !drawer.classList.contains('open');
             }
 
             if (open) {
-                pane.classList.add('open');
-                filterBtn.classList.add('panel-open');
-                filterBtn.setAttribute('aria-expanded', 'true');
+                drawer.classList.add('open');
+                drawerBtn.classList.add('panel-open');
+                drawerBtn.setAttribute('aria-expanded', 'true');
+                if (tab) {
+                    switchDrawerTab(tab);
+                }
             } else {
-                pane.classList.remove('open');
-                filterBtn.classList.remove('panel-open');
-                filterBtn.setAttribute('aria-expanded', 'false');
+                drawer.classList.remove('open');
+                drawerBtn.classList.remove('panel-open');
+                drawerBtn.setAttribute('aria-expanded', 'false');
             }
 
             // Resize map after transition completes
             if (window.map) {
                 setTimeout(function() {
                     map.resize();
-                }, 350); // Slightly longer than CSS transition (300ms)
+                }, 350);
+            }
+        }
+
+        function switchDrawerTab(tab) {
+            smartDrawerActiveTab = tab;
+            var drawer = document.getElementById('smart-drawer');
+
+            // Update tab buttons
+            document.querySelectorAll('.smart-drawer-tab').forEach(function(tabBtn) {
+                var isActive = tabBtn.dataset.drawerTab === tab;
+                tabBtn.classList.toggle('active', isActive);
+                tabBtn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+
+            // Update content visibility
+            document.querySelectorAll('.smart-drawer-content').forEach(function(content) {
+                content.style.display = content.dataset.drawerContent === tab ? '' : 'none';
+            });
+
+            // Update data attribute for CSS
+            drawer.setAttribute('data-active-tab', tab);
+        }
+
+        // Legacy function for backward compatibility
+        function toggleFilterPane(open) {
+            if (open === false) {
+                toggleSmartDrawer(false);
+            } else {
+                toggleSmartDrawer(true, 'filter');
             }
         }
 
@@ -603,19 +640,26 @@
         }
 
         function initFilterPane() {
-            // Toggle filter pane
-            document.getElementById('filter-btn').addEventListener('click', function() {
-                toggleFilterPane();
+            // Toggle smart drawer via header button
+            document.getElementById('smart-drawer-btn').addEventListener('click', function() {
+                toggleSmartDrawer();
             });
 
-            // Close filter pane
-            document.getElementById('filter-close-btn').addEventListener('click', function() {
-                toggleFilterPane(false);
+            // Close smart drawer
+            document.getElementById('drawer-close-btn').addEventListener('click', function() {
+                toggleSmartDrawer(false);
             });
 
-            // Reset filters (button inside pane)
-            document.getElementById('filter-reset-btn').addEventListener('click', function() {
+            // Reset filters (button inside drawer)
+            document.getElementById('drawer-reset-btn').addEventListener('click', function() {
                 resetFilters();
+            });
+
+            // Smart drawer tab switching
+            document.querySelectorAll('.smart-drawer-tab').forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    switchDrawerTab(this.dataset.drawerTab);
+                });
             });
 
             // Filter section accordion toggle
@@ -629,7 +673,7 @@
             // Close on Escape key
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
-                    toggleFilterPane(false);
+                    toggleSmartDrawer(false);
                 }
             });
 
@@ -2112,43 +2156,6 @@
             document.getElementById('info-panel').classList.remove('show');
             selectedBuildingId = null;
             updateSelectedBuilding();
-        });
-
-        // ===== AI ASSISTANT PANEL =====
-        var aiAssistantBtn = document.getElementById('ai-assistant-btn');
-        var aiAssistantPanel = document.getElementById('ai-assistant-panel');
-        var aiPanelClose = document.getElementById('ai-panel-close');
-        var aiPanelOpen = false;
-
-        function toggleAiPanel(forceClose) {
-            if (forceClose === true) {
-                aiPanelOpen = false;
-            } else {
-                aiPanelOpen = !aiPanelOpen;
-            }
-
-            if (aiPanelOpen) {
-                aiAssistantPanel.classList.add('show');
-                aiAssistantBtn.classList.add('panel-open');
-            } else {
-                aiAssistantPanel.classList.remove('show');
-                aiAssistantBtn.classList.remove('panel-open');
-            }
-
-            // Resize map after transition completes
-            if (window.map) {
-                setTimeout(function() {
-                    map.resize();
-                }, 350);
-            }
-        }
-
-        aiAssistantBtn.addEventListener('click', function() {
-            toggleAiPanel();
-        });
-
-        aiPanelClose.addEventListener('click', function() {
-            toggleAiPanel(true);
         });
 
         // ===== DETAIL TABS =====
