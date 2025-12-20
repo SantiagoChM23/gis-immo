@@ -980,7 +980,7 @@
             position: fixed;
             top: 214px; /* below header-main (90px) + header-detail (124px) */
             right: 0;
-            height: calc(100vh - 214px - 30px); /* viewport minus header and footer */
+            height: calc(100vh - 214px - 27px); /* viewport minus header and footer */
             z-index: 100;
         }
 
