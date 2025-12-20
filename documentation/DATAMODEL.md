@@ -16,19 +16,19 @@ This document describes the data model for the BBL Immobilienportfolio applicati
    - 2.2 [Entity Hierarchy](#22-entity-hierarchy)
    - 2.3 [Demo vs. Production Implementation](#23-demo-vs-production-implementation)
 3. [Core Entities](#3-core-entities)
-   - 3.1 [Site (Standort) [Preview]](#31-entity-site-standort-preview)
-   - 3.2 [Land (Grundstück)](#32-entity-land-grundstück)
-   - 3.3 [Building (Gebäude)](#33-entity-building-gebäude)
-   - 3.4 [Address (Adresse)](#34-entity-address-adresse)
+   - 3.1 [Site (Standort) [Preview]](#31-site-standort-preview)
+   - 3.2 [Land (Grundstück)](#32-land-grundstück)
+   - 3.3 [Building (Gebäude)](#33-building-gebäude)
+   - 3.4 [Address (Adresse)](#34-address-adresse)
 4. [Measurement Entities](#4-measurement-entities)
-   - 4.1 [Area Measurement (Bemessung)](#41-entity-area-measurement-bemessung)
-   - 4.2 [Operational Measurement [Preview]](#42-entity-operational-measurement-preview)
+   - 4.1 [Area Measurement (Bemessung)](#41-area-measurement-bemessung)
+   - 4.2 [Operational Measurement (Betriebsmessung) [Preview]](#42-operational-measurement-betriebsmessung-preview)
 5. [Supporting Entities](#5-supporting-entities)
-   - 5.1 [Document (Dokument)](#51-entity-document-dokument)
-   - 5.2 [Contact (Kontakt)](#52-entity-contact-kontakt)
-   - 5.3 [Asset (Ausstattung)](#53-entity-asset-ausstattung)
-   - 5.4 [Contract (Vertrag)](#54-entity-contract-vertrag)
-   - 5.5 [Cost (Kosten)](#55-entity-cost-kosten)
+   - 5.1 [Document (Dokument)](#51-document-dokument)
+   - 5.2 [Contact (Kontakt)](#52-contact-kontakt)
+   - 5.3 [Asset (Ausstattung)](#53-asset-ausstattung)
+   - 5.4 [Contract (Vertrag)](#54-contract-vertrag)
+   - 5.5 [Cost (Kosten)](#55-cost-kosten)
 6. [Future Entities [Preview]](#6-future-entities-preview)
    - 6.1 [Certificate](#61-certificate)
    - 6.2 [Valuation](#62-valuation)
@@ -235,7 +235,7 @@ In a production system, these would be separate entities with foreign key relati
 
 ## 3. Core Entities
 
-### 3.1 Entity: Site (Standort) [Preview]
+### 3.1 Site (Standort) [Preview]
 
 > **Note:** This entity is not currently implemented in the demo. It is documented here for future implementation planning.
 
@@ -290,7 +290,7 @@ A site represents a logical grouping of buildings, such as a campus, property, o
 
 ---
 
-### 3.2 Entity: Land (Grundstück)
+### 3.2 Land (Grundstück)
 
 Land represents a parcel of land or plot that belongs to a site. In the current demo, land information is partially embedded in building properties (`grundstueck_id`, `grundstueck_name`). In a production system, Land would be a separate entity allowing multiple land parcels per site.
 
@@ -340,7 +340,7 @@ Land represents a parcel of land or plot that belongs to a site. In the current 
 
 ---
 
-### 3.3 Entity: Building (Gebäude)
+### 3.3 Building (Gebäude)
 
 The building is the core entity representing a physical structure in the portfolio.
 
@@ -431,7 +431,7 @@ The building is the core entity representing a physical structure in the portfol
 
 ---
 
-### 3.4 Entity: Address (Adresse)
+### 3.4 Address (Adresse)
 
 Addresses represent the physical location of a building. A building can have multiple addresses (e.g., corner buildings with entrances on different streets).
 
@@ -491,7 +491,7 @@ Addresses represent the physical location of a building. A building can have mul
 
 ## 4. Measurement Entities
 
-### 4.1 Entity: Area Measurement (Bemessung)
+### 4.1 Area Measurement (Bemessung)
 
 Area measurements capture floor areas, volumes, and other quantitative measurements for buildings, floors, spaces, or sites. In the current demo, measurements are embedded in the `bemessungen` array within each building.
 
@@ -521,10 +521,8 @@ Area measurements capture floor areas, volumes, and other quantitative measureme
 
 | Field | Type | Description | Alias (EN) | Alias (DE) |
 |-------|------|-------------|------------|------------|
-| extensionData.siaStandard | string | Swiss SIA standard reference (e.g., "SIA 416", "SIA 380/1") | SIA Standard | SIA-Norm |
 | extensionData.source | string | Data source (e.g., "CAD/BIM", "Vermessung", "Schätzmodell", "Manuell") | Source | Quelle |
 | extensionData.originalUnit | string | Original unit before conversion (e.g., "m²", "m³", "Stk") | Original Unit | Urspr. Einheit |
-| extensionData.originalType | string | Original German area type name | Original Type | Urspr. Flächenart |
 | extensionData.measurementCategory | string | Category for non-standard measurements (e.g., "volume", "count") | Category | Kategorie |
 
 #### Example: Area Measurement Object
@@ -532,20 +530,18 @@ Area measurements capture floor areas, volumes, and other quantitative measureme
 ```json
 {
   "areaMeasurementId": "BBL-001-M1",
-  "type": "Gross floor area",
+  "type": "Bruttogeschossfläche (BGF)",
   "value": 15000,
   "unit": "sqm",
   "validFrom": "2019-03-15T00:00:00Z",
   "validUntil": null,
   "bmEstimation": false,
   "accuracy": "Measured",
-  "standard": "NA",
+  "standard": "SIA 416",
   "buildingIds": ["BBL-001"],
   "extensionData": {
-    "siaStandard": "SIA 416",
     "source": "CAD/BIM",
-    "originalUnit": "m²",
-    "originalType": "Bruttogeschossfläche"
+    "originalUnit": "m²"
   }
 }
 ```
@@ -557,20 +553,18 @@ For measurements that don't fit the standard area types (volumes, counts):
 ```json
 {
   "areaMeasurementId": "BBL-001-M4",
-  "type": "NA",
+  "type": "Volumen",
   "value": 52500,
   "unit": "sqm",
   "validFrom": "2019-03-15T00:00:00Z",
   "validUntil": null,
   "bmEstimation": false,
   "accuracy": "Measured",
-  "standard": "NA",
+  "standard": "SIA 416",
   "buildingIds": ["BBL-001"],
   "extensionData": {
-    "siaStandard": "SIA 416",
     "source": "CAD/BIM",
     "originalUnit": "m³",
-    "originalType": "Volumen",
     "measurementCategory": "volume"
   }
 }
@@ -578,7 +572,7 @@ For measurements that don't fit the standard area types (volumes, counts):
 
 ---
 
-### 4.2 Entity: Operational Measurement [Preview]
+### 4.2 Operational Measurement (Betriebsmessung) [Preview]
 
 > **Note:** This entity is not currently implemented in the demo. It is documented here for future implementation planning.
 
@@ -640,7 +634,7 @@ Operational measurements track resource consumption (energy, water, waste) and e
 
 ## 5. Supporting Entities
 
-### 5.1 Entity: Document (Dokument)
+### 5.1 Document (Dokument)
 
 Documents represent files and records associated with a building, such as floor plans, certificates, permits, and technical documentation.
 
@@ -679,7 +673,7 @@ Documents represent files and records associated with a building, such as floor 
 
 ---
 
-### 5.2 Entity: Contact (Kontakt)
+### 5.2 Contact (Kontakt)
 
 Contacts represent persons associated with a building, such as property managers, caretakers, or portfolio managers.
 
@@ -717,7 +711,7 @@ Contacts represent persons associated with a building, such as property managers
 
 ---
 
-### 5.3 Entity: Asset (Ausstattung)
+### 5.3 Asset (Ausstattung)
 
 Assets represent technical equipment, installations, and building components that require maintenance or tracking.
 
@@ -758,7 +752,7 @@ Assets represent technical equipment, installations, and building components tha
 
 ---
 
-### 5.4 Entity: Contract (Vertrag)
+### 5.4 Contract (Vertrag)
 
 Contracts represent service agreements, maintenance contracts, and other contractual arrangements associated with a building.
 
@@ -796,7 +790,7 @@ Contracts represent service agreements, maintenance contracts, and other contrac
 
 ---
 
-### 5.5 Entity: Cost (Kosten)
+### 5.5 Cost (Kosten)
 
 Costs represent operating expenses, utility costs, and other recurring costs associated with a building. Costs are typically categorized using standard cost group codes.
 
@@ -991,6 +985,7 @@ Primary and secondary building type options for `primaryTypeOfBuilding` and `sec
 
 | Value | Description |
 |-------|-------------|
+| `SIA 416` | Swiss standard for areas and volumes in building construction |
 | `DIN 277-1` | German standard for floor areas |
 | `MFG` | Mietflächenrichtlinie für gewerblichen Raum |
 | `IPMS` | International Property Measurement Standards |
@@ -1002,27 +997,14 @@ Primary and secondary building type options for `primaryTypeOfBuilding` and `sec
 
 | Category | Values |
 |----------|--------|
+| **SIA 416 (Swiss)** | `Bruttogeschossfläche (BGF)`, `Nettogeschossfläche (NGF)`, `Nutzfläche (NF)`, `Verkehrsfläche (VF)`, `Funktionsfläche (FF)`, `Konstruktionsfläche (KF)` |
+| **SIA 380/1 (Swiss)** | `Energiebezugsfläche (EBF)` |
 | **DIN 277 / General** | `Gross floor area`, `Construction area`, `Net room area`, `Circulation area`, `Net usable area`, `Technical area` |
 | **Usage-specific** | `Living/residence area`, `Office area`, `Production/laboratory area`, `Storage/distribution/selling area`, `Education/teaching/culture area`, `Healing/care area`, `Other uses` |
 | **IPMS** | `Gross external area`, `External Wall area`, `Gross internal area`, `A-Vertical penetrations`, `B-Structural elements`, `C-Technical services`, `D-Hygiene areas`, `E-Circulation areas`, `F-Amenities`, `G-Workspace`, `H-Other areas` |
 | **BOMA / Rental** | `Rentable area`, `Rentable exclusion`, `Boundary area`, `Rentable area common occupancy`, `Rentable area exclusive occupancy`, `Building amenity area`, `Building service area`, `Floor service area`, `Tenant ancillary area`, `Tenant area`, `Landlord area` |
 | **Site / Land** | `Land area`, `Total surface area`, `Vegetated area`, `Non-vegetated area`, `Green ground area`, `Green roof area`, `Green wall area`, `Green terrace area` |
-| **Other** | `Major vertical penetrations`, `Occupant Storage area`, `Parking area`, `Unenclosed Building Feature: Covered Gallery`, `Vacant area`, `Energy reference area`, `NA` |
-
-#### SIA Type Mapping (Swiss Source → Target)
-
-| Current `areaType` (German) | Target `type` | SIA Reference |
-|-----------------------------|---------------|---------------|
-| Bruttogeschossfläche | `Gross floor area` | SIA 416: BGF |
-| Nettogeschossfläche | `Net room area` | SIA 416: NGF |
-| Energiebezugsfläche | `Energy reference area` | SIA 380/1: EBF |
-| Nutzfläche | `Net usable area` | SIA 416: NF |
-| Verkehrsfläche | `Circulation area` | SIA 416: VF |
-| Funktionsfläche | `Technical area` | SIA 416: FF |
-| Konstruktionsfläche | `Construction area` | SIA 416: KF |
-| Volumen | `NA` | Store as extensionData (not an area) |
-| Arbeitsplätze | `NA` | Store as extensionData (count, not area) |
-| Reinigungsfläche | `NA` | Store as extensionData (Swiss-specific) |
+| **Other** | `Major vertical penetrations`, `Occupant Storage area`, `Parking area`, `Unenclosed Building Feature: Covered Gallery`, `Vacant area`, `Energy reference area`, `Volumen`, `Arbeitsplätze`, `Reinigungsfläche`, `NA` |
 
 ---
 
@@ -1284,18 +1266,16 @@ This appendix documents the mapping rules for transforming data from the current
 | Target Field | Source Field | Notes |
 |--------------|--------------|-------|
 | areaMeasurementId | `bemessungen[].id` | |
-| type | `bemessungen[].areaType` | Needs value mapping (see SIA mapping) |
+| type | `bemessungen[].areaType` | Use SIA 416 types directly (e.g., "Bruttogeschossfläche (BGF)") |
 | value | `bemessungen[].value` | |
 | unit | `bemessungen[].unit` | "m²" → `sqm` |
 | validFrom | `bemessungen[].validFrom` | Convert to ISO 8601 |
 | validUntil | `bemessungen[].validUntil` | Convert to ISO 8601 |
 | bmEstimation | (default) | Default: `false` for imported data |
 | accuracy | `bemessungen[].accuracy` | See accuracy mapping |
-| standard | `bemessungen[].standard` | "SIA 416" → extensionData, "DIN 277" → `DIN 277-1` |
-| extensionData.siaStandard | `bemessungen[].standard` | Swiss extension |
+| standard | `bemessungen[].standard` | Use `SIA 416` for Swiss measurements |
 | extensionData.source | `bemessungen[].source` | Swiss extension |
 | extensionData.originalUnit | `bemessungen[].unit` | Swiss extension |
-| extensionData.originalType | `bemessungen[].areaType` | Swiss extension |
 
 #### Document Entity
 
