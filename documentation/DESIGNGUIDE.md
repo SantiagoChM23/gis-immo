@@ -401,7 +401,7 @@ Pill-shaped badges indicating building state.
   font-weight: var(--font-semibold);
 }
 
-.status-badge.in-betrieb {
+.status-badge.status-active {
   background: var(--status-active-bg);
   color: var(--status-active-text);
 }

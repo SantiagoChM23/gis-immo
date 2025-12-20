@@ -1112,17 +1112,17 @@
             // Load documents for this building
             loadDocumentsForBuilding(building);
 
-            // Load kontakte for this building
-            loadKontakteForBuilding(building);
+            // Load contacts for this building
+            loadContactsForBuilding(building);
 
-            // Load kosten for this building
-            loadKostenForBuilding(building);
+            // Load costs for this building
+            loadCostsForBuilding(building);
 
-            // Load vertraege for this building
-            loadVertraegeForBuilding(building);
+            // Load contracts for this building
+            loadContractsForBuilding(building);
 
-            // Load ausstattung for this building
-            loadAusstattungForBuilding(building);
+            // Load assets for this building
+            loadAssetsForBuilding(building);
 
             // Initialize carousel
             initCarousel();
@@ -1354,9 +1354,9 @@
             dataToRender.features.forEach(function(feature) {
                 var props = feature.properties;
                 var ext = props.extensionData || {};
-                var statusClass = props.status === 'In Betrieb' ? 'in-betrieb' :
-                                  props.status === 'In Renovation' ? 'in-renovation' :
-                                  props.status === 'In Planung' ? 'in-planung' : 'ausser-betrieb';
+                var statusClass = props.status === 'In Betrieb' ? 'status-active' :
+                                  props.status === 'In Renovation' ? 'status-renovation' :
+                                  props.status === 'In Planung' ? 'status-planning' : 'status-inactive';
                 var flaeche = Number(ext.netFloorArea || 0).toLocaleString('de-CH');
 
                 html += '<tr data-id="' + props.buildingId + '" tabindex="0" role="row">' +
@@ -2174,34 +2174,34 @@
                     targetContent.classList.add('active');
                 }
 
-                // Render measurements table when switching to Bemessungen tab
-                if (targetTab === 'bemessungen') {
+                // Render measurements table when switching to measurements tab
+                if (targetTab === 'measurements') {
                     renderMeasurementsTable();
                 }
 
-                // Render documents table when switching to Dokumente tab
-                if (targetTab === 'dokumente') {
+                // Render documents table when switching to documents tab
+                if (targetTab === 'documents') {
                     renderDocumentsTable();
                 }
 
-                // Render kontakte table when switching to Kontakte tab
-                if (targetTab === 'kontakte') {
-                    renderKontakteTable();
+                // Render contacts table when switching to contacts tab
+                if (targetTab === 'contacts') {
+                    renderContactsTable();
                 }
 
-                // Render kosten table when switching to Kosten tab
-                if (targetTab === 'kosten') {
-                    renderKostenTable();
+                // Render costs table when switching to costs tab
+                if (targetTab === 'costs') {
+                    renderCostsTable();
                 }
 
-                // Render vertraege table when switching to Verträge tab
-                if (targetTab === 'vertraege') {
-                    renderVertraegeTable();
+                // Render contracts table when switching to contracts tab
+                if (targetTab === 'contracts') {
+                    renderContractsTable();
                 }
 
-                // Render ausstattung table when switching to Ausstattung tab
-                if (targetTab === 'ausstattung') {
-                    renderAusstattungTable();
+                // Render assets table when switching to assets tab
+                if (targetTab === 'assets') {
+                    renderAssetsTable();
                 }
             });
         });
@@ -2553,12 +2553,12 @@
             }).format(amount);
         }
 
-        function getStatusClass(status) {
+        function getContractStatusClassName(status) {
             if (!status) return '';
             var s = status.toLowerCase();
-            if (s === 'aktiv') return 'aktiv';
-            if (s === 'gekündigt') return 'gekuendigt';
-            if (s === 'ausgelaufen') return 'ausgelaufen';
+            if (s === 'aktiv') return 'status-active';
+            if (s === 'gekündigt') return 'status-terminated';
+            if (s === 'ausgelaufen') return 'status-expired';
             return '';
         }
 
@@ -2636,152 +2636,152 @@
             searchFields: ['id', 'titel', 'dokumentTyp', 'dateiformat', 'datum', 'dateigroesse']
         });
 
-        var kontakteTable = createEntityTable({
-            tableId: 'kontakte-table',
-            tbodyId: 'kontakte-tbody',
-            checkboxClass: 'kontakt-checkbox',
-            selectAllId: 'select-all-kontakte',
-            actionClass: 'kontakte-action',
-            filterId: 'kontakte-filter',
-            addBtnId: 'btn-add-kontakt',
+        var contactsTable = createEntityTable({
+            tableId: 'contacts-table',
+            tbodyId: 'contacts-tbody',
+            checkboxClass: 'contact-checkbox',
+            selectAllId: 'select-all-contacts',
+            actionClass: 'contacts-action',
+            filterId: 'contacts-filter',
+            addBtnId: 'btn-add-contact',
             addBtnMessage: 'Kontakt hinzufügen - kommt bald...',
             defaultSort: 'name',
             dataSource: function() { return allContacts; },
-            transform: function(k) {
+            transform: function(contact) {
                 return {
-                    id: k.contactId,
-                    name: k.name,
-                    rolle: k.role,
-                    organisation: k.organisation,
-                    telefon: k.phone,
-                    email: k.email
+                    id: contact.contactId,
+                    name: contact.name,
+                    rolle: contact.role,
+                    organisation: contact.organisation,
+                    telefon: contact.phone,
+                    email: contact.email
                 };
             },
             columns: [
-                { key: 'id', className: 'col-kontakt-id' },
-                { key: 'name', className: 'col-kontakt-name' },
-                { key: 'rolle', className: 'col-kontakt-rolle' },
-                { key: 'organisation', className: 'col-kontakt-org' },
-                { key: 'telefon', className: 'col-kontakt-telefon', render: function(k) {
-                    return '<a href="tel:' + k.telefon + '">' + k.telefon + '</a>';
+                { key: 'id', className: 'col-contact-id' },
+                { key: 'name', className: 'col-contact-name' },
+                { key: 'rolle', className: 'col-contact-role' },
+                { key: 'organisation', className: 'col-contact-org' },
+                { key: 'telefon', className: 'col-contact-phone', render: function(contact) {
+                    return '<a href="tel:' + contact.telefon + '">' + contact.telefon + '</a>';
                 }},
-                { key: 'email', className: 'col-kontakt-email', render: function(k) {
-                    return '<a href="mailto:' + k.email + '">' + k.email + '</a>';
+                { key: 'email', className: 'col-contact-email', render: function(contact) {
+                    return '<a href="mailto:' + contact.email + '">' + contact.email + '</a>';
                 }}
             ],
             searchFields: ['id', 'name', 'rolle', 'organisation', 'telefon', 'email']
         });
 
-        var kostenTable = createEntityTable({
-            tableId: 'kosten-table',
-            tbodyId: 'kosten-tbody',
-            checkboxClass: 'kosten-checkbox',
-            selectAllId: 'select-all-kosten',
-            actionClass: 'kosten-action',
-            filterId: 'kosten-filter',
-            addBtnId: 'btn-add-kosten',
+        var costsTable = createEntityTable({
+            tableId: 'costs-table',
+            tbodyId: 'costs-tbody',
+            checkboxClass: 'cost-checkbox',
+            selectAllId: 'select-all-costs',
+            actionClass: 'costs-action',
+            filterId: 'costs-filter',
+            addBtnId: 'btn-add-cost',
             addBtnMessage: 'Kosten hinzufügen - kommt bald...',
             defaultSort: 'kostengruppe',
             dataSource: function() { return allCosts; },
-            transform: function(k) {
+            transform: function(cost) {
                 return {
-                    id: k.costId,
-                    kostengruppe: k.costGroup,
-                    kostenart: k.costType,
-                    betrag: k.amount,
-                    einheit: k.unit,
-                    stichtag: k.referenceDate
+                    id: cost.costId,
+                    kostengruppe: cost.costGroup,
+                    kostenart: cost.costType,
+                    betrag: cost.amount,
+                    einheit: cost.unit,
+                    stichtag: cost.referenceDate
                 };
             },
             columns: [
-                { key: 'id', className: 'col-kosten-id' },
-                { key: 'kostengruppe', className: 'col-kosten-gruppe' },
-                { key: 'kostenart', className: 'col-kosten-art' },
-                { key: 'betrag', className: 'col-kosten-betrag', render: function(k) {
-                    return formatCurrencyWithUnit(k.betrag, k.einheit);
+                { key: 'id', className: 'col-cost-id' },
+                { key: 'kostengruppe', className: 'col-cost-group' },
+                { key: 'kostenart', className: 'col-cost-type' },
+                { key: 'betrag', className: 'col-cost-amount', render: function(cost) {
+                    return formatCurrencyWithUnit(cost.betrag, cost.einheit);
                 }},
-                { key: 'einheit', className: 'col-kosten-einheit', render: function(k) {
-                    return k.einheit || '—';
+                { key: 'einheit', className: 'col-cost-unit', render: function(cost) {
+                    return cost.einheit || '—';
                 }},
-                { key: 'stichtag', className: 'col-kosten-stichtag', render: function(k) {
-                    return k.stichtag || '—';
+                { key: 'stichtag', className: 'col-cost-date', render: function(cost) {
+                    return cost.stichtag || '—';
                 }}
             ],
             searchFields: ['id', 'kostengruppe', 'kostenart', 'betrag', 'einheit', 'stichtag']
         });
 
-        var vertraegeTable = createEntityTable({
-            tableId: 'vertraege-table',
-            tbodyId: 'vertraege-tbody',
-            checkboxClass: 'vertrag-checkbox',
-            selectAllId: 'select-all-vertraege',
-            actionClass: 'vertraege-action',
-            filterId: 'vertraege-filter',
-            addBtnId: 'btn-add-vertrag',
+        var contractsTable = createEntityTable({
+            tableId: 'contracts-table',
+            tbodyId: 'contracts-tbody',
+            checkboxClass: 'contract-checkbox',
+            selectAllId: 'select-all-contracts',
+            actionClass: 'contracts-action',
+            filterId: 'contracts-filter',
+            addBtnId: 'btn-add-contract',
             addBtnMessage: 'Vertrag hinzufügen - kommt bald...',
             defaultSort: 'vertragsart',
             dataSource: function() { return allContracts; },
-            transform: function(v) {
+            transform: function(contract) {
                 return {
-                    id: v.contractId,
-                    vertragsart: v.type,
-                    vertragspartner: v.contractPartner,
-                    vertragsbeginn: v.validFrom,
-                    vertragsende: v.validUntil,
-                    betrag: v.amount,
-                    status: v.status
+                    id: contract.contractId,
+                    vertragsart: contract.type,
+                    vertragspartner: contract.contractPartner,
+                    vertragsbeginn: contract.validFrom,
+                    vertragsende: contract.validUntil,
+                    betrag: contract.amount,
+                    status: contract.status
                 };
             },
             columns: [
-                { key: 'id', className: 'col-vertrag-id' },
-                { key: 'vertragsart', className: 'col-vertrag-art' },
-                { key: 'vertragspartner', className: 'col-vertrag-partner' },
-                { key: 'vertragsbeginn', className: 'col-vertrag-beginn', render: function(v) {
-                    return v.vertragsbeginn || '—';
+                { key: 'id', className: 'col-contract-id' },
+                { key: 'vertragsart', className: 'col-contract-type' },
+                { key: 'vertragspartner', className: 'col-contract-partner' },
+                { key: 'vertragsbeginn', className: 'col-contract-start', render: function(contract) {
+                    return contract.vertragsbeginn || '—';
                 }},
-                { key: 'vertragsende', className: 'col-vertrag-ende', render: function(v) {
-                    return v.vertragsende || 'unbefristet';
+                { key: 'vertragsende', className: 'col-contract-end', render: function(contract) {
+                    return contract.vertragsende || 'unbefristet';
                 }},
-                { key: 'betrag', className: 'col-vertrag-betrag', render: function(v) {
-                    return formatCurrency(v.betrag);
+                { key: 'betrag', className: 'col-contract-amount', render: function(contract) {
+                    return formatCurrency(contract.betrag);
                 }},
-                { key: 'status', className: 'col-vertrag-status', render: function(v) {
-                    return '<span class="vertrag-status ' + getStatusClass(v.status) + '">' + v.status + '</span>';
+                { key: 'status', className: 'col-contract-status', render: function(contract) {
+                    return '<span class="contract-status ' + getContractStatusClassName(contract.status) + '">' + contract.status + '</span>';
                 }}
             ],
             searchFields: ['id', 'vertragsart', 'vertragspartner', 'vertragsbeginn', 'vertragsende', 'betrag', 'status']
         });
 
-        var ausstattungTable = createEntityTable({
-            tableId: 'ausstattung-table',
-            tbodyId: 'ausstattung-tbody',
-            checkboxClass: 'ausstattung-checkbox',
-            selectAllId: 'select-all-ausstattung',
-            actionClass: 'ausstattung-action',
-            filterId: 'ausstattung-filter',
-            addBtnId: 'btn-add-ausstattung',
+        var assetsTable = createEntityTable({
+            tableId: 'assets-table',
+            tbodyId: 'assets-tbody',
+            checkboxClass: 'asset-checkbox',
+            selectAllId: 'select-all-assets',
+            actionClass: 'assets-action',
+            filterId: 'assets-filter',
+            addBtnId: 'btn-add-asset',
             addBtnMessage: 'Ausstattung hinzufügen - kommt bald...',
             defaultSort: 'bezeichnung',
             dataSource: function() { return allAssets; },
-            transform: function(a) {
+            transform: function(asset) {
                 return {
-                    id: a.assetId,
-                    bezeichnung: a.name,
-                    kategorie: a.category,
-                    hersteller: a.manufacturer,
-                    baujahr: a.installationYear,
-                    standort: a.location
+                    id: asset.assetId,
+                    bezeichnung: asset.name,
+                    kategorie: asset.category,
+                    hersteller: asset.manufacturer,
+                    baujahr: asset.installationYear,
+                    standort: asset.location
                 };
             },
             columns: [
-                { key: 'id', className: 'col-ausstattung-id' },
-                { key: 'bezeichnung', className: 'col-ausstattung-bezeichnung' },
-                { key: 'kategorie', className: 'col-ausstattung-kategorie', render: function(a) {
-                    return '<span class="kategorie-badge">' + a.kategorie + '</span>';
+                { key: 'id', className: 'col-asset-id' },
+                { key: 'bezeichnung', className: 'col-asset-name' },
+                { key: 'kategorie', className: 'col-asset-category', render: function(asset) {
+                    return '<span class="kategorie-badge">' + asset.kategorie + '</span>';
                 }},
-                { key: 'hersteller', className: 'col-ausstattung-hersteller' },
-                { key: 'baujahr', className: 'col-ausstattung-baujahr' },
-                { key: 'standort', className: 'col-ausstattung-standort' }
+                { key: 'hersteller', className: 'col-asset-manufacturer' },
+                { key: 'baujahr', className: 'col-asset-year' },
+                { key: 'standort', className: 'col-asset-location' }
             ],
             searchFields: ['id', 'bezeichnung', 'kategorie', 'hersteller', 'baujahr', 'standort']
         });
@@ -2789,24 +2789,23 @@
         // Initialize all entity tables
         measurementsTable.init();
         documentsTable.init();
-        kontakteTable.init();
-        kostenTable.init();
-        vertraegeTable.init();
-        ausstattungTable.init();
+        contactsTable.init();
+        costsTable.init();
+        contractsTable.init();
+        assetsTable.init();
 
-        // ===== LEGACY FUNCTION ALIASES (for backward compatibility) =====
-        // These maintain the old API so existing code continues to work
+        // ===== ENTITY TABLE LOADER AND RENDER FUNCTIONS =====
 
         function loadMeasurementsForBuilding(building) { measurementsTable.load(building); }
         function loadDocumentsForBuilding(building) { documentsTable.load(building); }
-        function loadKontakteForBuilding(building) { kontakteTable.load(building); }
-        function loadKostenForBuilding(building) { kostenTable.load(building); }
-        function loadVertraegeForBuilding(building) { vertraegeTable.load(building); }
-        function loadAusstattungForBuilding(building) { ausstattungTable.load(building); }
+        function loadContactsForBuilding(building) { contactsTable.load(building); }
+        function loadCostsForBuilding(building) { costsTable.load(building); }
+        function loadContractsForBuilding(building) { contractsTable.load(building); }
+        function loadAssetsForBuilding(building) { assetsTable.load(building); }
 
         function renderMeasurementsTable() { measurementsTable.render(); }
         function renderDocumentsTable() { documentsTable.render(); }
-        function renderKontakteTable() { kontakteTable.render(); }
-        function renderKostenTable() { kostenTable.render(); }
-        function renderVertraegeTable() { vertraegeTable.render(); }
-        function renderAusstattungTable() { ausstattungTable.render(); }
+        function renderContactsTable() { contactsTable.render(); }
+        function renderCostsTable() { costsTable.render(); }
+        function renderContractsTable() { contractsTable.render(); }
+        function renderAssetsTable() { assetsTable.render(); }
