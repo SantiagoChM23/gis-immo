@@ -161,7 +161,6 @@
         .header-detail {
             display: none;
             flex-direction: column;
-            border-bottom: 1px solid var(--grey-200);
             position: relative;
             z-index: 0;
         }
