@@ -160,26 +160,29 @@
             display: none;
             flex-direction: column;
             border-bottom: 1px solid var(--grey-200);
-            transition: padding-right var(--transition-slow);
         }
 
         body.detail-active .header-detail {
             display: flex;
         }
 
-        /* Align header-detail with main-content when drawer is open */
-        body:has(#smart-drawer.open) .header-detail {
-            padding-right: 400px;
-        }
-
         /* Detail header and tabs now in header */
         .header-detail .detail-header {
             background: var(--white);
             padding: var(--space-4) var(--space-5);
+            transition: padding-right var(--transition-slow);
         }
 
         .header-detail .detail-tabs {
             background: var(--white);
+            transition: padding-right var(--transition-slow);
+        }
+
+        /* Align header elements with detail-content when drawer is open */
+        /* 400px drawer + var(--space-6) to match detail-content padding */
+        body:has(#smart-drawer.open) .header-detail .detail-header,
+        body:has(#smart-drawer.open) .header-detail .detail-tabs {
+            padding-right: calc(400px + var(--space-6));
         }
 
         #logo-area {
@@ -2994,9 +2997,10 @@
                 min-width: 340px;
             }
 
-            /* Match header-detail padding to tablet drawer width */
-            body:has(#smart-drawer.open) .header-detail {
-                padding-right: 340px;
+            /* Match header elements padding to tablet drawer width */
+            body:has(#smart-drawer.open) .header-detail .detail-header,
+            body:has(#smart-drawer.open) .header-detail .detail-tabs {
+                padding-right: calc(340px + var(--space-6));
             }
 
             #accordion-panel {
@@ -3109,8 +3113,9 @@
             }
 
             /* No padding adjustment on mobile - drawer is fullscreen overlay */
-            body:has(#smart-drawer.open) .header-detail {
-                padding-right: 0;
+            body:has(#smart-drawer.open) .header-detail .detail-header,
+            body:has(#smart-drawer.open) .header-detail .detail-tabs {
+                padding-right: var(--space-4);
             }
 
             /* Smart drawer - full screen on mobile */
