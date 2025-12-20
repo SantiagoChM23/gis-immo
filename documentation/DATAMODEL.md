@@ -139,7 +139,7 @@ Related entities (Bemessungen, Dokumente, Kontakte, Verträge) are embedded as a
 
 ---
 
-## 3. Entity: Site
+## Entity: Site (Standort)
 
 > **Note:** This entity is not currently implemented in the demo. It is documented here for future implementation planning.
 
