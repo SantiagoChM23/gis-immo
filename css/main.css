@@ -1995,14 +1995,15 @@
         .ai-panel-header-title {
             display: flex;
             align-items: center;
-            gap: var(--space-3);
-            font-size: var(--text-base);
+            gap: var(--space-2);
+            padding: var(--space-2) 0;
+            font-size: var(--text-sm);
             font-weight: var(--font-semibold);
             color: var(--grey-900);
         }
 
         .ai-panel-header-title .material-symbols-outlined {
-            font-size: 24px;
+            font-size: 16px;
             color: var(--grey-600);
         }
 
@@ -2378,14 +2379,15 @@
         .filter-pane-title {
             display: flex;
             align-items: center;
-            gap: var(--space-3);
-            font-size: var(--text-base);
+            gap: var(--space-2);
+            padding: var(--space-2) 0;
+            font-size: var(--text-sm);
             font-weight: var(--font-semibold);
             color: var(--grey-900);
         }
 
         .filter-pane-title .material-symbols-outlined {
-            font-size: 24px;
+            font-size: 16px;
             color: var(--grey-600);
         }
 
