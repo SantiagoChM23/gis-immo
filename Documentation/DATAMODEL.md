@@ -42,6 +42,91 @@ Related entities (Bemessungen, Dokumente, Kontakte, Verträge) are embedded as a
 
 ---
 
+## Entity: Site
+
+A site represents a logical grouping of buildings, such as a campus, property, or land parcel. Buildings belong to exactly one site.
+
+### Schema Definition
+
+| Field | Type | Description | Constraints |
+|-------|------|-------------|-------------|
+| **siteId** | string | Unique identifier; must either originate from the previous system or be explicitly defined. | **mandatory**, minLength: 1, maxLength: 50 |
+| **name** | string | Name of the site. | **mandatory**, minLength: 1, maxLength: 50 |
+| **type** | string, enum | Type of site. See [Site Types](#site-types). | **mandatory** |
+| **addressIds** | array[string] | Array of address IDs linked to this site. | **mandatory**, minLength: 1, maxLength: 50 per ID |
+| **validFrom** | string | The record can be used from this date onwards. ISO 8601 format: `yyyy-mm-ddThh:mm:ssZ` | **mandatory**, minLength: 20 |
+| **validUntil** | string | The record is valid until this date. ISO 8601 format: `yyyy-mm-ddThh:mm:ssZ` | **mandatory**, minLength: 20 (null allowed for currently valid records) |
+| energyRatingIds | array[string] | Array of energy rating IDs. | minLength: 1, maxLength: 50 per ID |
+| eventType | string, enum | Type of the event as domain event. Options: `SiteAdded`, `SiteUpdated`, `SiteDeleted` | |
+| extensionData | object | Extension data for storing any custom data. | JSON object |
+| siteCode | string | User specific site code. | minLength: 1, maxLength: 70 |
+| status | string | Status of site. | minLength: 1, maxLength: 50 |
+
+### Site Types
+
+Options for the `type` field:
+
+- `Education`
+- `Health Care`
+- `Hotel`
+- `Industrial`
+- `Lodging`
+- `Leisure & Recreation`
+- `Mixed Use`
+- `Office`
+- `Residential`
+- `Retail`
+- `Technology/Science`
+- `Other`
+
+### Swiss-Specific Fields (BBL Extension)
+
+These fields are specific to the Swiss context and stored in `extensionData`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| egrid | string | Eidgenössischer Grundstücksidentifikator (Federal Property Identifier) |
+| parzellenNummer | string | Official parcel number |
+| grundbuchKreis | string | Land registry district |
+| katasterNummer | string | Cadastral number |
+| teilportfolioGruppe | string | Sub-portfolio group (e.g., "Bundesverwaltung") |
+
+### Mapping: Current GeoJSON → Target Schema
+
+| Current Field (GeoJSON) | Target Field | Notes |
+|------------------------|--------------|-------|
+| `grundstueck_id` | `siteId` | Direct mapping |
+| `grundstueck_name` | `name` | Direct mapping |
+| (derived) | `type` | Derive from `teilportfolio` or `objektart1` |
+| (from building addresses) | `addressIds` | Collect from linked buildings |
+| `gueltig_von` | `validFrom` | Convert to ISO 8601 |
+| `gueltig_bis` | `validUntil` | Convert to ISO 8601 |
+| `teilportfolio_gruppe` | `extensionData.teilportfolioGruppe` | Swiss-specific |
+| `egrid` | `extensionData.egrid` | Swiss-specific |
+
+### Example: Site Object
+
+```json
+{
+  "siteId": "BE-3003-1001",
+  "name": "Bundesplatz Parzelle A",
+  "type": "Office",
+  "addressIds": ["BBL-001-ADDR-1"],
+  "validFrom": "1900-01-01T00:00:00Z",
+  "validUntil": null,
+  "siteCode": "BPL-A",
+  "status": "Aktiv",
+  "extensionData": {
+    "egrid": "CH123456789012",
+    "teilportfolioGruppe": "Bundesverwaltung",
+    "grundbuchKreis": "Bern",
+    "parzellenNummer": "1001"
+  }
+}
+```
+
+---
+
 ## Entity: Building
 
 The building is the core entity representing a physical structure in the portfolio.
@@ -405,7 +490,7 @@ The following entities are related to buildings and will be documented in separa
 
 | Entity | Description | Relationship |
 |--------|-------------|--------------|
-| **Site** | A logical grouping of buildings (e.g., campus, property) | 1 Site → n Buildings |
+| ~~**Site**~~ | ~~A logical grouping of buildings (e.g., campus, property)~~ | ~~1 Site → n Buildings~~ *(documented above)* |
 | ~~**Address**~~ | ~~Physical address of a building~~ | ~~1 Building → n Addresses~~ *(documented above)* |
 | **Bemessung (Area Measurement)** | Area and volume measurements | 1 Building → n Measurements |
 | **Dokument (Document)** | Related documents (plans, certificates) | 1 Building → n Documents |
@@ -423,6 +508,7 @@ The following entities are related to buildings and will be documented in separa
 |---------|------|--------|---------|
 | 0.1.0 | 2024-XX-XX | - | Initial draft - Building entity |
 | 0.2.0 | 2024-XX-XX | - | Added Address entity with Swiss extensions |
+| 0.3.0 | 2024-XX-XX | - | Added Site entity with Swiss extensions |
 
 ---
 
