@@ -593,7 +593,7 @@
             // Get min/max from CSS variables
             var styles = getComputedStyle(document.documentElement);
             var minWidth = parseInt(styles.getPropertyValue('--drawer-min-width')) || 300;
-            var maxWidth = parseInt(styles.getPropertyValue('--drawer-max-width')) || 600;
+            var maxWidth = parseInt(styles.getPropertyValue('--drawer-max-width')) || 800;
 
             // Load saved width from localStorage
             var savedWidth = localStorage.getItem('drawerWidth');
@@ -606,6 +606,7 @@
                 startX = e.clientX;
                 startWidth = drawer.offsetWidth;
                 handle.classList.add('dragging');
+                drawer.classList.add('resizing');
                 document.body.style.cursor = 'ew-resize';
                 document.body.style.userSelect = 'none';
                 e.preventDefault();
@@ -626,6 +627,7 @@
 
                 isResizing = false;
                 handle.classList.remove('dragging');
+                drawer.classList.remove('resizing');
                 document.body.style.cursor = '';
                 document.body.style.userSelect = '';
 

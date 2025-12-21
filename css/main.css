@@ -129,9 +129,9 @@
             --header-total-height: calc(var(--header-main-height) + var(--header-detail-height));
 
             /* Smart Drawer */
-            --drawer-width: 400px;
+            --drawer-width: 450px;
             --drawer-min-width: 300px;
-            --drawer-max-width: 600px;
+            --drawer-max-width: 800px;
         }
         
         * {
@@ -2453,6 +2453,11 @@
             overflow: hidden;
             transition: width var(--transition-slow), min-width var(--transition-slow);
             flex-shrink: 0;
+        }
+
+        /* Disable transitions during resize for smooth dragging */
+        #smart-drawer.resizing {
+            transition: none;
         }
 
         #smart-drawer.open {
